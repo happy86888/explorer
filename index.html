@@ -274,9 +274,9 @@
           </div>
         </a>
 
-        <!-- 預留位 1 -->
-        <div class="tool-card coming">
-          <span class="tool-badge soon">COMING</span>
+        <!-- 報價產生器 -->
+        <a href="#" class="tool-card" data-tool="quote" data-href="tools/quote.html">
+          <span class="tool-badge new">NEW</span>
           <div class="tool-num">02</div>
           <div class="tool-title">高價報價產生器</div>
           <div class="tool-en">The Price Architect</div>
@@ -285,14 +285,14 @@
             告別「工時 × 時薪」的窮忙公式。
           </div>
           <div class="tool-cta">
-            <span>規劃中</span>
-            <span class="tool-cta-arrow">·</span>
+            <span>進入工具</span>
+            <span class="tool-cta-arrow">→</span>
           </div>
-        </div>
+        </a>
 
-        <!-- 預留位 2 -->
-        <div class="tool-card coming">
-          <span class="tool-badge soon">COMING</span>
+        <!-- 異議拆解器 -->
+        <a href="#" class="tool-card" data-tool="objection" data-href="tools/objection.html">
+          <span class="tool-badge new">NEW</span>
           <div class="tool-num">03</div>
           <div class="tool-title">客戶異議拆解器</div>
           <div class="tool-en">The Objection Decoder</div>
@@ -301,10 +301,10 @@
             讓「我再考慮看看」變成「那我們什麼時候開始」。
           </div>
           <div class="tool-cta">
-            <span>規劃中</span>
-            <span class="tool-cta-arrow">·</span>
+            <span>進入工具</span>
+            <span class="tool-cta-arrow">→</span>
           </div>
-        </div>
+        </a>
 
       </div>
     </section>
@@ -359,8 +359,7 @@
   function updateStatus() {
     if (auth.isVerified()) {
       statusDot.classList.remove('locked');
-      const days = auth.daysRemaining();
-      statusText.textContent = `已驗證 · 剩 ${days} 天`;
+      statusText.textContent = '已驗證學員';
     } else {
       statusDot.classList.add('locked');
       statusText.textContent = '未驗證';

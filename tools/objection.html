@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>客戶異議拆解器 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) {
+    window.location.href = '../index.html';
+  }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+</head>
+<body>
+
+<div class="ce-app">
+
+  <div class="ce-modal-overlay" id="ce-key-modal">
+    <div class="ce-modal">
+      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
+      <div class="ce-modal-title">Connect Your Brain</div>
+      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
+      <div class="ce-modal-body">
+        這個工具用 <strong>Anthropic Claude AI</strong> 幫你拆解客戶的拒絕。<br/>
+        <strong>申請步驟(一次性):</strong><br/>
+        1. 到 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> 註冊<br/>
+        2. API Keys → Create Key<br/>
+        3. 複製 sk-ant- 開頭的 Key 貼到下面<br/>
+        4. 在 Billing 充值最低 5 美金
+      </div>
+      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="ce-modal-actions">
+        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
+      </div>
+      <div class="ce-modal-cost">
+        <strong>費用估算:</strong>每次拆解約 NT$1,深挖一次約 NT$0.5。
+      </div>
+    </div>
+  </div>
+
+  <nav class="ce-nav">
+    <div class="ce-nav-brand">
+      <div class="ce-nav-mark">CEO Brian</div>
+      <div class="ce-nav-title">客戶異議拆解器</div>
+    </div>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新拆解</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Decoded Objections</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <div id="ce-form-page">
+        <header class="ce-header">
+          <div class="ce-eyebrow">Decode What Clients Really Mean</div>
+          <h1 class="ce-title">The Objection Decoder</h1>
+          <div class="ce-title-cn">客戶異議拆解器</div>
+          <div class="ce-divider"></div>
+          <p class="ce-subtitle">
+            把客戶的拒絕原話貼進來,<br/>
+            AI 用 Brian 的方法拆解他真正擔心的是什麼,<br/>
+            給你 3 種回應劇本,讓「我再考慮看看」變成「那我們什麼時候開始」。
+          </p>
+        </header>
+
+        <section class="ce-form-card">
+          <form id="ce-form" class="ce-form-grid">
+            <div class="ce-field ce-full">
+              <label for="ob-text">客戶說了什麼(原話)</label>
+              <textarea id="ob-text" placeholder="把對方原話貼進來,越完整越好。例如:&#10;&#10;『你的提案我們看過了,內容是不錯,但是預算這部分超過我們原本的規劃,可能要再評估。我們也有跟其他兩家在談,等我們內部開完會再回覆你。』" required style="min-height:140px;"></textarea>
+              <div class="ce-helper">不要只貼「太貴」、「再考慮」三個字。完整原話能讓 AI 看出對方真正的心理</div>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="ob-context">背景補充(選填,但會大幅提升準確度)</label>
+              <textarea id="ob-context" placeholder="例如:這是第二次會議,第一次有給對方初步報價 30 萬;對方是製造業,老闆是創二代;這次見面老闆全程低頭看手機..."></textarea>
+            </div>
+
+            <div class="ce-field">
+              <label for="ob-trade">你的專業</label>
+              <input type="text" id="ob-trade" placeholder="例如:品牌設計" required />
+            </div>
+
+            <div class="ce-field">
+              <label for="ob-stage">目前處在哪個階段</label>
+              <select id="ob-stage">
+                <option>第一次會議(剛認識)</option>
+                <option selected>已經提案,等對方回應</option>
+                <option>已經報價,正在議價</option>
+                <option>合約快簽了,對方突然猶豫</option>
+                <option>合作進行中,對方有疑慮</option>
+                <option>合作結束,想續約被婉拒</option>
+              </select>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="ob-history">這個客戶你已經做了什麼(選填)</label>
+              <textarea id="ob-history" placeholder="例如:免費做了一份分析報告、寄過 3 封 email 都沒回、已經給過一次 8 折優惠..."></textarea>
+            </div>
+
+            <button type="submit" class="ce-submit" id="ce-submit-btn">
+              拆解這段話 →
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section class="ce-results" id="ce-results"></section>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 客戶異議拆解器</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('objections');
+  let currentId = null;
+
+  const form = document.getElementById('ce-form');
+  const formPage = document.getElementById('ce-form-page');
+  const resultsEl = document.getElementById('ce-results');
+  const submitBtn = document.getElementById('ce-submit-btn');
+  const savedListEl = document.getElementById('ce-saved-list');
+  const savedCountEl = document.getElementById('ce-saved-count');
+
+  T.setupApiKeyModal('ce-key-modal', 'ce-api-key', 'ce-key-save');
+  document.getElementById('ce-settings-btn').addEventListener('click', () => {
+    document.getElementById('ce-api-key').value = T.getApiKey();
+    document.getElementById('ce-key-modal').classList.add('show');
+  });
+  document.getElementById('ce-new-btn').addEventListener('click', () => {
+    showFormPage(); form.reset(); currentId = null;
+  });
+
+  function showFormPage() {
+    formPage.classList.remove('ce-hidden');
+    resultsEl.innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideFormPage() { formPage.classList.add('ce-hidden'); }
+
+  loadSavedList();
+  if (!T.getApiKey()) document.getElementById('ce-key-modal').classList.add('show');
+
+  function loadSavedList() {
+    const records = storage.list();
+    savedCountEl.textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      savedListEl.innerHTML = `<div class="ce-empty-state">尚未儲存任何拆解。產生第一份後會自動存在這裡。</div>`;
+      return;
+    }
+    savedListEl.innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => `
+          <div class="ce-saved-card" data-id="${r.id}">
+            <button class="ce-saved-del" data-del="${r.id}">✕</button>
+            <div class="ce-saved-trade">${T.escapeHtml(r.input.trade)}</div>
+            <div class="ce-saved-target">"${T.escapeHtml(r.input.text.substring(0, 50))}${r.input.text.length > 50 ? '...' : ''}"</div>
+            <div class="ce-saved-meta">${T.formatDate(r.createdAt)} · ${T.escapeHtml(r.input.stage)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    savedListEl.querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) { currentId = r.id; hideFormPage(); renderResults(r); }
+      });
+    });
+    savedListEl.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除?')) {
+          storage.delete(btn.dataset.del);
+          loadSavedList();
+          if (currentId === btn.dataset.del) { showFormPage(); currentId = null; }
+        }
+      });
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!T.getApiKey()) { document.getElementById('ce-key-modal').classList.add('show'); return; }
+
+    const input = {
+      text: document.getElementById('ob-text').value.trim(),
+      context: document.getElementById('ob-context').value.trim(),
+      trade: document.getElementById('ob-trade').value.trim(),
+      stage: document.getElementById('ob-stage').value,
+      history: document.getElementById('ob-history').value.trim()
+    };
+    if (!input.text || !input.trade) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '正在拆解客戶心理...';
+    resultsEl.innerHTML = `
+      <div class="ce-loading">
+        <div class="ce-loading-text">Brian 正在解讀對方真正的擔心...</div>
+        <div class="ce-loading-bar"></div>
+      </div>
+    `;
+
+    try {
+      const data = await decodeObjection(input);
+      const id = 'ob_' + Date.now();
+      const record = { id, input, data, createdAt: Date.now() };
+      storage.save(id, record);
+      currentId = id;
+      renderResults(record);
+      loadSavedList();
+    } catch (err) {
+      console.error(err);
+      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${T.escapeHtml(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '拆解這段話 →';
+    }
+  });
+
+  async function decodeObjection(input) {
+    const prompt = `你是 Brian(老闆的接案學院創辦人),13 年實戰經驗,專門教接案者解讀客戶異議的「真正含義」。
+
+你的核心信念:客戶說的話 90% 不是真話。「太貴」可能是「我不確定值不值得」,「再考慮」可能是「我不敢做決定」,「我們有別家」可能是「給我一個非選你不可的理由」。
+
+請拆解以下這段客戶說的話:
+
+【接案者背景】
+- 專業:${input.trade}
+- 目前階段:${input.stage}
+- 已經做的事:${input.history || '(未填寫)'}
+- 背景補充:${input.context || '(未填寫)'}
+
+【客戶原話】
+${input.text}
+
+請輸出 JSON,只回 JSON 不要 markdown code fence:
+
+{
+  "brian_note": "用 Brian 口吻寫一段 100-150 字的「教練筆記」,直接告訴接案者:對方這段話最重要的訊號是什麼、你應該怎麼想、不要被表面困住。",
+
+  "decode": {
+    "surface_meaning": "字面上對方在說什麼(1-2 句)",
+    "real_meaning": "對方真正在想什麼(2-3 句,要解讀)",
+    "emotion": "對方此刻的情緒狀態(例如:焦慮+觀望、強勢+試探、客套+逃避)",
+    "deal_temperature": "成交溫度(熱/溫/冷),並解釋為什麼",
+    "key_signals": ["從原話中抓到的關鍵訊號 1", "訊號 2", "訊號 3"]
+  },
+
+  "scripts": [
+    {
+      "name": "劇本名稱(例如:價值重塑型)",
+      "tone": "口吻定位(例如:溫和但堅定)",
+      "best_when": "什麼情況下用這個劇本最好",
+      "response": "完整的回應話術(150-250 字,口語、可直接用)",
+      "expected_reaction": "對方聽完最可能的反應",
+      "next_move": "對方反應後你的下一步該是什麼"
+    }
+  ],
+
+  "do_not_say": [
+    "絕對不能講的回應 1(以及為什麼)",
+    "絕對不能講的回應 2(以及為什麼)",
+    "絕對不能講的回應 3(以及為什麼)"
+  ],
+
+  "follow_up_plan": {
+    "immediate": "現場 / 當下立刻要做什麼",
+    "within_24h": "24 小時內的跟進動作",
+    "within_week": "一週內的跟進動作",
+    "if_no_reply": "如果對方一直不回,什麼時候放棄、怎麼漂亮地放生"
+  }
+}
+
+要求:
+- scripts 一定要 3 個劇本,風格各有不同(例如:價值重塑型、邀請對話型、直接逼決型)
+- response 要寫得像真人說話,不是寫文章。可以有「嗯,我懂...」這種口語停頓
+- do_not_say 要寫實際容易犯的錯,例如:「我可以再給你 9 折優惠」(教為什麼這句話會把客戶推走)
+- follow_up_plan 要具體可執行,寫實際時間和動作
+- 全部繁體中文,台灣口吻`;
+
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 4000 });
+  }
+
+  function renderResults(record) {
+    hideFormPage();
+    const d = record.data;
+    const dec = d.decode || {};
+    const tempColor = dec.deal_temperature?.includes('熱') ? 'var(--rust)' :
+                      dec.deal_temperature?.includes('冷') ? 'var(--ink-mute)' : 'var(--gold-deep)';
+
+    let html = `
+      <div class="ce-result-toolbar">
+        <div class="ce-result-info"><strong>${T.escapeHtml(record.input.trade)}</strong> · ${T.escapeHtml(record.input.stage)}</div>
+        <div class="ce-result-actions">
+          <button class="ce-action-btn" id="ce-print-btn">列印 / 存 PDF</button>
+          <button class="ce-action-btn" id="ce-back-btn">+ 新拆解</button>
+        </div>
+      </div>
+
+      <!-- 客戶原話 -->
+      <div class="ce-block">
+        <div class="ce-block-header">
+          <div class="ce-block-title">客戶原話</div>
+          <div class="ce-block-tag" style="background:${tempColor};color:white;">${T.escapeHtml(dec.deal_temperature || '')}</div>
+        </div>
+        <div class="ce-block-body">
+          <div class="ce-quote-box" style="font-style:normal;">"${T.escapeHtml(record.input.text)}"</div>
+        </div>
+      </div>
+
+      ${d.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${T.escapeHtml(d.brian_note)}</div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Decode</div>
+        <div class="ce-section-cn">心理拆解</div>
+        <div class="ce-block">
+          <div class="ce-block-body">
+            <div class="ce-block-row"><div class="ce-block-key">字面意思</div><div class="ce-block-val">${T.escapeHtml(dec.surface_meaning || '')}</div></div>
+            <div class="ce-block-row"><div class="ce-block-key">真正想的</div><div class="ce-block-val" style="font-weight:700;">${T.escapeHtml(dec.real_meaning || '')}</div></div>
+            <div class="ce-block-row"><div class="ce-block-key">情緒狀態</div><div class="ce-block-val">${T.escapeHtml(dec.emotion || '')}</div></div>
+            <div class="ce-block-row"><div class="ce-block-key">關鍵訊號</div><div class="ce-block-val"><ul style="list-style:none;padding:0;">${(dec.key_signals || []).map(s => `<li style="padding:4px 0 4px 16px;position:relative;"><span style="position:absolute;left:0;color:var(--gold);">◆</span> ${T.escapeHtml(s)}</li>`).join('')}</ul></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Response Scripts</div>
+        <div class="ce-section-cn">三種回應劇本</div>
+        ${(d.scripts || []).map((s, i) => renderScript(s, i)).join('')}
+      </div>
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Do Not Say</div>
+        <div class="ce-section-cn">這些話絕對不要說</div>
+        <div class="ce-block">
+          <div class="ce-block-body">
+            ${(d.do_not_say || []).map((item, i) => `
+              <div class="ce-block-row">
+                <div class="ce-block-key" style="color:var(--rust);">✗ NO ${i+1}</div>
+                <div class="ce-block-val">${T.escapeHtml(item)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Follow-up Plan</div>
+        <div class="ce-section-cn">後續跟進計畫</div>
+        <div class="ce-block">
+          <div class="ce-block-body">
+            ${renderFollowUp('立刻', d.follow_up_plan?.immediate)}
+            ${renderFollowUp('24 小時內', d.follow_up_plan?.within_24h)}
+            ${renderFollowUp('一週內', d.follow_up_plan?.within_week)}
+            ${renderFollowUp('放棄訊號', d.follow_up_plan?.if_no_reply)}
+          </div>
+        </div>
+      </div>
+
+      <div class="ce-result-section">
+        <div class="ce-block">
+          <div class="ce-block-header">
+            <div class="ce-block-title">進階深挖</div>
+          </div>
+          <div class="ce-block-body">
+            <div class="ce-deep-buttons">
+              <button class="ce-deep-btn btn-primary" data-action="rehearsal">🎭 跟我演練 - 模擬對方還會說什麼</button>
+              <button class="ce-deep-btn btn-rust" data-action="email-followup">✉️ 寫一封跟進 Email</button>
+              <button class="ce-deep-btn" data-action="line-followup">寫一段 LINE 跟進訊息</button>
+              <button class="ce-deep-btn" data-action="walk-away">如果決定放生,怎麼漂亮收尾</button>
+              <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
+            </div>
+            <div class="ce-deep-result" id="ce-deep-result"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    resultsEl.innerHTML = html;
+    bindResultEvents(record);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderScript(s, i) {
+    return `
+      <div class="ce-block">
+        <div class="ce-block-header">
+          <div class="ce-block-title">劇本 ${i+1} · ${T.escapeHtml(s.name || '')}</div>
+          <div class="ce-block-tag">${T.escapeHtml(s.tone || '')}</div>
+        </div>
+        <div class="ce-block-body">
+          <div class="ce-block-row"><div class="ce-block-key">最適合</div><div class="ce-block-val">${T.escapeHtml(s.best_when || '')}</div></div>
+          <div class="ce-block-row">
+            <div class="ce-block-key">回應話術</div>
+            <div class="ce-block-val">
+              <div class="ce-quote-box">${T.escapeHtml(s.response || '')}</div>
+              <button class="ce-copy-btn" data-copy="${T.escapeHtml(s.response || '')}">複製話術</button>
+            </div>
+          </div>
+          <div class="ce-block-row"><div class="ce-block-key">預期反應</div><div class="ce-block-val">${T.escapeHtml(s.expected_reaction || '')}</div></div>
+          <div class="ce-block-row"><div class="ce-block-key">下一步</div><div class="ce-block-val"><div class="ce-insight">💡 ${T.escapeHtml(s.next_move || '')}</div></div></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderFollowUp(label, text) {
+    if (!text) return '';
+    return `
+      <div class="ce-block-row">
+        <div class="ce-block-key">${label}</div>
+        <div class="ce-block-val">${T.escapeHtml(text)}</div>
+      </div>
+    `;
+  }
+
+  function bindResultEvents(record) {
+    document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
+    document.getElementById('ce-back-btn').addEventListener('click', () => {
+      showFormPage(); currentId = null; form.reset();
+    });
+
+    document.querySelectorAll('.ce-copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard?.writeText(btn.dataset.copy).then(() => {
+          btn.textContent = '✓ 已複製';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = '複製話術'; btn.classList.remove('copied'); }, 1800);
+        });
+      });
+    });
+
+    document.querySelectorAll('.ce-deep-btn[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const action = btn.dataset.action;
+        const resultEl = document.getElementById('ce-deep-result');
+        btn.disabled = true;
+        const orig = btn.textContent;
+        btn.textContent = '思考中...';
+        resultEl.classList.add('show');
+        resultEl.textContent = 'Brian 正在分析...';
+
+        try {
+          const result = await deepDive(record, action);
+          resultEl.textContent = result;
+        } catch (err) {
+          resultEl.textContent = '產生失敗:' + err.message;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = orig;
+        }
+      });
+    });
+  }
+
+  async function deepDive(record, action) {
+    const prompts = {
+      'rehearsal': `請幫我做一場「對話演練」。
+假設我用了第 1 個劇本回應對方,請幫我預演接下來 3 輪對話:
+
+【第 2 回合】對方可能怎麼回應(寫他可能說的話)、我該怎麼接(寫我的話術 100 字內)
+【第 3 回合】同上
+【第 4 回合】同上,並寫到一個明確的「成交決策點」(對方要做出 yes/no 的時刻)
+
+格式要清楚分開每一回合,標示「對方:」「我:」。
+要寫得像真實對話,不要寫成劇本說明。`,
+
+      'email-followup': `請寫一封跟進 Email,用「不催促但前進」的口吻。
+要求:
+- 主旨清楚不超過 20 字
+- 開頭不要用「想跟您確認進度」這種俗套
+- 中段給對方一個新的價值點(例如分享一個觀察、案例、報告)讓他有動力回信
+- 結尾給對方明確但低壓的下一步選項(例如:「方便這週四前回覆嗎?如果還在內部評估,告訴我大概的時間線即可」)
+- 全文 200-300 字`,
+
+      'line-followup': `請寫 2-3 個版本的 LINE 跟進訊息,每個都不超過 80 字,風格不同:
+A. 輕鬆型:像朋友關心
+B. 價值型:丟一個對方關心的資訊
+C. 直接型:直接問決策時間
+
+每個版本前標示 A/B/C 和適用情境,訊息之間用空行分開。`,
+
+      'walk-away': `如果評估後決定不再追這個客戶,請幫我設計「漂亮放生」的策略:
+
+1. 為什麼不再追的判斷標準(列出 3-5 個訊號代表「該放生了」)
+2. 最後一封結束聯繫的訊息(150 字內,要讓對方知道門還是開的,但你不會再主動聯絡)
+3. 半年後重新接觸的時機與方式(對方可能因為什麼原因會主動回頭)
+4. 從這次經驗應該學到什麼(避免下次踩同樣的坑)`
+    };
+
+    const prompt = `你是 Brian。
+案件背景:
+- 專業:${record.input.trade}
+- 階段:${record.input.stage}
+- 客戶原話:${record.input.text}
+- 已拆解的核心觀察:${record.data.brian_note || ''}
+
+任務:${prompts[action]}
+
+繁體中文,台灣口吻,直接輸出內容,不要前言。`;
+
+    return await T.callClaude(prompt, { maxTokens: 3000 });
+  }
+})();
+</script>
+</body>
+</html>

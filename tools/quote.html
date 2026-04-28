@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>高價報價產生器 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) {
+    window.location.href = '../index.html';
+  }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+</head>
+<body>
+
+<div class="ce-app">
+
+  <!-- API Key Modal -->
+  <div class="ce-modal-overlay" id="ce-key-modal">
+    <div class="ce-modal">
+      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
+      <div class="ce-modal-title">Connect Your Brain</div>
+      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
+      <div class="ce-modal-body">
+        這個工具用 <strong>Anthropic Claude AI</strong> 來幫你產出高價報價。<br/>
+        為了保護你的資料和費用,你需要使用<strong>自己的 API Key</strong>。<br/><br/>
+        <strong>申請步驟(一次性):</strong><br/>
+        1. 到 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> 註冊<br/>
+        2. API Keys → Create Key<br/>
+        3. 複製 sk-ant- 開頭的 Key 貼到下面<br/>
+        4. 在 Billing 充值最低 5 美金
+      </div>
+      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="ce-modal-actions">
+        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
+      </div>
+      <div class="ce-modal-cost">
+        <strong>費用估算:</strong>每份報價約 NT$1.5,深挖一次約 NT$0.5。
+        Key 只存在你瀏覽器,不會傳到任何第三方。
+      </div>
+    </div>
+  </div>
+
+  <nav class="ce-nav">
+    <div class="ce-nav-brand">
+      <div class="ce-nav-mark">CEO Brian</div>
+      <div class="ce-nav-title">高價報價產生器</div>
+    </div>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新報價</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Saved Quotes</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <div id="ce-form-page">
+        <header class="ce-header">
+          <div class="ce-eyebrow">Stop Selling Time · Sell Outcomes</div>
+          <h1 class="ce-title">The Price Architect</h1>
+          <div class="ce-title-cn">高價報價產生器</div>
+          <div class="ce-divider"></div>
+          <p class="ce-subtitle">
+            告別「工時 × 時薪」的窮忙公式,<br/>
+            讓 AI 用 Brian 的「商業價值思維」幫你產出<br/>
+            客戶看了不殺價、願意簽長約的報價結構。
+          </p>
+        </header>
+
+        <section class="ce-form-card">
+          <form id="ce-form" class="ce-form-grid">
+            <div class="ce-field ce-full">
+              <label for="qt-trade">你的專業</label>
+              <input type="text" id="qt-trade" placeholder="例如:商業空間室內設計" required />
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="qt-project">本次案件描述</label>
+              <textarea id="qt-project" placeholder="例如:餐飲品牌想開第二家分店,40 坪,需要從風格定調、平面規劃到完工督工。客戶之前一家店是自己找師傅做的,但裝修期拖了 5 個月、裝完客人覺得不夠特別。" required></textarea>
+              <div class="ce-helper">越具體越好。AI 會用這段話判斷客戶痛點,推算合理的高價策略</div>
+            </div>
+
+            <div class="ce-field">
+              <label for="qt-client">客戶類型</label>
+              <select id="qt-client">
+                <option>個人(屋主、家庭)</option>
+                <option>小型企業(年營收 1000 萬以下)</option>
+                <option selected>中小型企業(年營收 1000 萬到 1 億)</option>
+                <option>大型企業</option>
+                <option>連鎖品牌 / 集團</option>
+                <option>政府單位 / 學校</option>
+                <option>非營利組織</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="qt-target">客戶最在乎的</label>
+              <select id="qt-target">
+                <option selected>賺更多錢 / 提升營收</option>
+                <option>省更多錢 / 降低成本</option>
+                <option>節省時間 / 提高效率</option>
+                <option>降低風險 / 避免出錯</option>
+                <option>提升品牌形象 / 對外面子</option>
+                <option>解決個人麻煩 / 心情焦慮</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="qt-old">你過去報價區間</label>
+              <select id="qt-old">
+                <option>一萬以下</option>
+                <option>一萬到五萬</option>
+                <option selected>五萬到二十萬</option>
+                <option>二十萬到一百萬</option>
+                <option>一百萬到五百萬</option>
+                <option>五百萬以上</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="qt-target-price">本次想衝的目標</label>
+              <select id="qt-target-price">
+                <option>跟過去差不多</option>
+                <option selected>提高 1.5 倍</option>
+                <option>提高 2 倍</option>
+                <option>提高 3 倍</option>
+                <option>讓對方願意簽長期年約</option>
+              </select>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="qt-strength">你的差異化優勢(可選填)</label>
+              <textarea id="qt-strength" placeholder="例如:做過 30 家以上餐飲空間、能整合品牌設計+空間設計、跟在地工班合作 5 年以上、有設計獎項..."></textarea>
+            </div>
+
+            <button type="submit" class="ce-submit" id="ce-submit-btn">
+              產生高價報價策略 →
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section class="ce-results" id="ce-results"></section>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 高價報價產生器</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('quotes');
+  let currentId = null;
+
+  const form = document.getElementById('ce-form');
+  const formPage = document.getElementById('ce-form-page');
+  const resultsEl = document.getElementById('ce-results');
+  const submitBtn = document.getElementById('ce-submit-btn');
+  const savedListEl = document.getElementById('ce-saved-list');
+  const savedCountEl = document.getElementById('ce-saved-count');
+
+  T.setupApiKeyModal('ce-key-modal', 'ce-api-key', 'ce-key-save');
+  document.getElementById('ce-settings-btn').addEventListener('click', () => {
+    document.getElementById('ce-api-key').value = T.getApiKey();
+    document.getElementById('ce-key-modal').classList.add('show');
+  });
+
+  document.getElementById('ce-new-btn').addEventListener('click', () => {
+    showFormPage();
+    form.reset();
+    currentId = null;
+  });
+
+  function showFormPage() {
+    formPage.classList.remove('ce-hidden');
+    resultsEl.innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideFormPage() { formPage.classList.add('ce-hidden'); }
+
+  // === 啟動 ===
+  loadSavedList();
+  if (!T.getApiKey()) document.getElementById('ce-key-modal').classList.add('show');
+
+  function loadSavedList() {
+    const records = storage.list();
+    savedCountEl.textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      savedListEl.innerHTML = `<div class="ce-empty-state">尚未儲存任何報價。產生第一份後會自動存在這裡。</div>`;
+      return;
+    }
+    savedListEl.innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => `
+          <div class="ce-saved-card" data-id="${r.id}">
+            <button class="ce-saved-del" data-del="${r.id}">✕</button>
+            <div class="ce-saved-trade">${T.escapeHtml(r.input.trade)}</div>
+            <div class="ce-saved-target">→ ${T.escapeHtml(r.input.project.substring(0, 40))}${r.input.project.length > 40 ? '...' : ''}</div>
+            <div class="ce-saved-meta">${T.formatDate(r.createdAt)} · ${T.escapeHtml(r.input.targetPrice)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    savedListEl.querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) { currentId = r.id; hideFormPage(); renderResults(r); }
+      });
+    });
+    savedListEl.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除這份報價?')) {
+          storage.delete(btn.dataset.del);
+          loadSavedList();
+          if (currentId === btn.dataset.del) { showFormPage(); currentId = null; }
+        }
+      });
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!T.getApiKey()) { document.getElementById('ce-key-modal').classList.add('show'); return; }
+
+    const input = {
+      trade: document.getElementById('qt-trade').value.trim(),
+      project: document.getElementById('qt-project').value.trim(),
+      client: document.getElementById('qt-client').value,
+      targetCare: document.getElementById('qt-target').value,
+      oldPrice: document.getElementById('qt-old').value,
+      targetPrice: document.getElementById('qt-target-price').value,
+      strength: document.getElementById('qt-strength').value.trim()
+    };
+    if (!input.trade || !input.project) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '正在思考你的報價策略...';
+    resultsEl.innerHTML = `
+      <div class="ce-loading">
+        <div class="ce-loading-text">Brian 正在用「商業價值」邏輯重新設計你的報價...</div>
+        <div class="ce-loading-bar"></div>
+      </div>
+    `;
+
+    try {
+      const data = await generateQuote(input);
+      const id = 'qt_' + Date.now();
+      const record = { id, input, data, createdAt: Date.now() };
+      storage.save(id, record);
+      currentId = id;
+      renderResults(record);
+      loadSavedList();
+    } catch (err) {
+      console.error(err);
+      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${T.escapeHtml(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '產生高價報價策略 →';
+    }
+  });
+
+  async function generateQuote(input) {
+    const prompt = `你是 Brian(老闆的接案學院創辦人),13 年實戰經驗,專門教接案者用「商業價值思維」做高價報價。
+
+你的核心理念:報價不是「成本+利潤」,是「對方的商業獲利 × 你的合理分成」。
+客戶不會殺一個能讓他賺更多的方案,只會殺一個「看起來像成本」的方案。
+
+請為以下案件,設計一份完整的「高價報價策略」:
+
+【案件資料】
+- 接案者專業:${input.trade}
+- 案件描述:${input.project}
+- 客戶類型:${input.client}
+- 客戶最在乎的:${input.targetCare}
+- 接案者過去報價:${input.oldPrice}
+- 本次想衝的目標:${input.targetPrice}
+- 接案者差異化優勢:${input.strength || '(未填寫)'}
+
+請輸出 JSON,只回 JSON 不要 markdown code fence:
+
+{
+  "brian_note": "用 Brian 口吻寫一段 100-150 字的「策略註解」,告訴接案者:這個案件最大的高價機會在哪、最容易讓對方殺價的盲點是什麼。要有教練在面對面講話的感覺。",
+
+  "value_analysis": {
+    "client_pain": "對方真正的痛點是什麼(從案件描述推論,2-3 句)",
+    "client_gain": "成功之後對方的商業獲利會是什麼(具體量化,例如:多開一家店一年多賺 300 萬)",
+    "your_leverage": "你跟一般接案者的不同點在哪、為什麼這個價值只有你能給"
+  },
+
+  "price_structure": {
+    "summary": "一句話總結這次報價的設計策略",
+    "tiers": [
+      {
+        "name": "方案名稱(取個讓對方有感的名字,不要叫『標準版/進階版』,例如『品牌全套規劃』『單點救火方案』)",
+        "tag": "BASIC / RECOMMENDED / PREMIUM",
+        "price_range": "建議報價區間(用台幣)",
+        "deliverables": ["交付項目 1", "交付項目 2", "交付項目 3", "..."],
+        "best_for": "什麼樣的客戶會選這個方案",
+        "psychology": "這個方案的價格心理學:設計這個價位的目的是什麼(例如:錨定、誘餌、主推)"
+      }
+    ]
+  },
+
+  "talking_points": {
+    "opening": "開報價會議的開場白(60-100 字),不能講價格,先建立價值錨點",
+    "transition": "從價值轉到價格的關鍵句(50 字內),讓對方準備好聽到數字",
+    "anchor": "報出價格後立刻補上的一句話(30 字內),消除對方的價格震驚",
+    "closing": "結束的話術(60 字內),引導對方做決定不要拖"
+  },
+
+  "objection_preview": [
+    {
+      "objection": "對方最可能說什麼(例如:預算有限)",
+      "response": "Brian 風格的回應(150 字內,不卑不亢、用顧問口吻)"
+    }
+  ]
+}
+
+要求:
+- price_structure.tiers 一定要 3 個方案(BASIC, RECOMMENDED, PREMIUM)
+- 三個方案的價差要符合「錨定效應」原理,RECOMMENDED 應該是主推
+- objection_preview 給 3 個最常見的拒絕理由
+- 所有金額用台幣 NT$ 格式,要實際合理(不要報得離譜)
+- 全部繁體中文,台灣商業用語`;
+
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 4000 });
+  }
+
+  function renderResults(record) {
+    hideFormPage();
+    const d = record.data;
+    const va = d.value_analysis || {};
+    const ps = d.price_structure || {};
+    const tp = d.talking_points || {};
+
+    let html = `
+      <div class="ce-result-toolbar">
+        <div class="ce-result-info"><strong>${T.escapeHtml(record.input.trade)}</strong> · ${T.escapeHtml(record.input.project.substring(0, 50))}${record.input.project.length > 50 ? '...' : ''}</div>
+        <div class="ce-result-actions">
+          <button class="ce-action-btn" id="ce-print-btn">列印 / 存 PDF</button>
+          <button class="ce-action-btn" id="ce-back-btn">+ 新報價</button>
+        </div>
+      </div>
+
+      ${d.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${T.escapeHtml(d.brian_note)}</div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Value Analysis</div>
+        <div class="ce-section-cn">商業價值分析</div>
+        <div class="ce-block">
+          <div class="ce-block-body">
+            <div class="ce-block-row"><div class="ce-block-key">客戶痛點</div><div class="ce-block-val">${T.escapeHtml(va.client_pain || '')}</div></div>
+            <div class="ce-block-row"><div class="ce-block-key">商業獲利</div><div class="ce-block-val">${T.escapeHtml(va.client_gain || '')}</div></div>
+            <div class="ce-block-row"><div class="ce-block-key">你的槓桿</div><div class="ce-block-val">${T.escapeHtml(va.your_leverage || '')}</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Price Structure</div>
+        <div class="ce-section-cn">三段式報價設計</div>
+        <p style="font-size:14.5px;color:var(--ink-soft);line-height:1.85;margin-bottom:24px;">${T.escapeHtml(ps.summary || '')}</p>
+        ${(ps.tiers || []).map((t, i) => renderTier(t, i)).join('')}
+      </div>
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Talking Points</div>
+        <div class="ce-section-cn">報價會議話術</div>
+        ${renderTalkingPoint('開場白', tp.opening, '會議一開始就講,不能談價格')}
+        ${renderTalkingPoint('轉折句', tp.transition, '從價值轉到價格的橋樑')}
+        ${renderTalkingPoint('錨點句', tp.anchor, '報出價格後立刻補這句,化解震驚')}
+        ${renderTalkingPoint('收尾句', tp.closing, '引導對方做決定不要拖')}
+      </div>
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Objection Preview</div>
+        <div class="ce-section-cn">預想對方的拒絕</div>
+        ${(d.objection_preview || []).map((o, i) => `
+          <div class="ce-block">
+            <div class="ce-block-header">
+              <div class="ce-block-title">${i+1}. ${T.escapeHtml(o.objection)}</div>
+            </div>
+            <div class="ce-block-body">
+              <div class="ce-quote-box">${T.escapeHtml(o.response)}</div>
+              <button class="ce-copy-btn" data-copy="${T.escapeHtml(o.response)}">複製回應</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="ce-result-section">
+        <div class="ce-block">
+          <div class="ce-block-header">
+            <div class="ce-block-title">進階深挖</div>
+          </div>
+          <div class="ce-block-body">
+            <div class="ce-deep-buttons">
+              <button class="ce-deep-btn btn-primary" data-action="proposal">📄 給我一份完整提案大綱</button>
+              <button class="ce-deep-btn btn-rust" data-action="email-version">✉️ 把報價寫成正式 Email</button>
+              <button class="ce-deep-btn" data-action="negotiate">如果他說「太貴」,逐句拆解</button>
+              <button class="ce-deep-btn" data-action="long-term">轉成年約 / 訂閱制</button>
+              <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
+            </div>
+            <div class="ce-deep-result" id="ce-deep-result"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    resultsEl.innerHTML = html;
+    bindResultEvents(record);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderTier(t, i) {
+    const tagClass = t.tag === 'PREMIUM' ? 'rust' : (t.tag === 'RECOMMENDED' ? 'gold' : 'gray');
+    const tagBg = t.tag === 'PREMIUM' ? 'var(--rust)' : (t.tag === 'RECOMMENDED' ? 'var(--gold)' : 'var(--ink-mute)');
+    const tagColor = t.tag === 'RECOMMENDED' ? 'var(--ink)' : 'white';
+    return `
+      <div class="ce-block" style="${t.tag === 'RECOMMENDED' ? 'border-color:var(--gold);border-width:2px;' : ''}">
+        <div class="ce-block-header" style="background:${t.tag === 'RECOMMENDED' ? 'var(--gold-deep)' : 'var(--ink)'};">
+          <div class="ce-block-title">${T.escapeHtml(t.name || '')}</div>
+          <div class="ce-block-tag" style="background:${tagBg};color:${tagColor};">${T.escapeHtml(t.tag || '')}</div>
+        </div>
+        <div class="ce-block-body">
+          <div class="ce-block-row"><div class="ce-block-key">建議報價</div><div class="ce-block-val" style="font-size:18px;font-weight:700;color:var(--gold-deep);">${T.escapeHtml(t.price_range || '')}</div></div>
+          <div class="ce-block-row"><div class="ce-block-key">交付項目</div><div class="ce-block-val"><ul style="list-style:none;padding:0;">${(t.deliverables || []).map(d => `<li style="padding:4px 0 4px 16px;position:relative;"><span style="position:absolute;left:0;color:var(--gold);">◆</span> ${T.escapeHtml(d)}</li>`).join('')}</ul></div></div>
+          <div class="ce-block-row"><div class="ce-block-key">適合誰</div><div class="ce-block-val">${T.escapeHtml(t.best_for || '')}</div></div>
+          <div class="ce-block-row"><div class="ce-block-key">設計心理學</div><div class="ce-block-val"><div class="ce-insight">💡 ${T.escapeHtml(t.psychology || '')}</div></div></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderTalkingPoint(label, text, hint) {
+    if (!text) return '';
+    return `
+      <div class="ce-block">
+        <div class="ce-block-header">
+          <div class="ce-block-title">${label}</div>
+          <div style="font-size:11px;color:var(--paper-deep);font-style:italic;">${hint}</div>
+        </div>
+        <div class="ce-block-body">
+          <div class="ce-quote-box">${T.escapeHtml(text)}</div>
+          <button class="ce-copy-btn" data-copy="${T.escapeHtml(text)}">複製話術</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function bindResultEvents(record) {
+    document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
+    document.getElementById('ce-back-btn').addEventListener('click', () => {
+      showFormPage(); currentId = null; form.reset();
+    });
+
+    document.querySelectorAll('.ce-copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard?.writeText(btn.dataset.copy).then(() => {
+          btn.textContent = '✓ 已複製';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = btn.dataset.copy.length > 50 ? '複製話術' : '複製回應'; btn.classList.remove('copied'); }, 1800);
+        });
+      });
+    });
+
+    document.querySelectorAll('.ce-deep-btn[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const action = btn.dataset.action;
+        const resultEl = document.getElementById('ce-deep-result');
+        btn.disabled = true;
+        const orig = btn.textContent;
+        btn.textContent = '思考中...';
+        resultEl.classList.add('show');
+        resultEl.textContent = 'Brian 正在分析...';
+
+        try {
+          const result = await deepDive(record, action);
+          resultEl.textContent = result;
+        } catch (err) {
+          resultEl.textContent = '產生失敗:' + err.message;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = orig;
+        }
+      });
+    });
+  }
+
+  async function deepDive(record, action) {
+    const prompts = {
+      'proposal': `請寫一份完整的「合作提案大綱」,包含以下段落並用 ━━━ 分隔:
+
+【1. 封面與摘要】(1 頁)
+- 提案標題
+- 一句話價值主張
+- 提案版本/日期
+
+【2. 你的痛點 / 我聽到的需求】(1 頁)
+重述客戶痛點,證明你聽懂他
+
+【3. 我的解決方案】(2-3 頁)
+分階段呈現怎麼解決
+
+【4. 預期成果與 ROI 試算】(1 頁)
+量化客戶能獲得的回報
+
+【5. 投資方案(三段報價)】(1 頁)
+直接列出 3 個方案+價格
+
+【6. 為什麼是我】(1 頁)
+案例、優勢、保證
+
+【7. 下一步】(1 頁)
+明確的決策路徑
+
+每段請寫實際內容,不要寫「此處放 XXX」這種空話。`,
+
+      'email-version': `請把整份報價策略改寫成一封正式 Email。
+要求:
+- 主旨明確、不超過 20 字
+- 開頭 1-2 句問候
+- 引言段點出痛點
+- 中段用條列呈現 3 個方案的價格與差異
+- 用「為什麼是我」段落建立信任
+- 結尾邀約下一步(具體時間/方式)
+- 簽名檔位置標出
+- 全文 400-600 字`,
+
+      'negotiate': `客戶聽完報價後說「太貴了」。
+請逐句拆解:
+1. 對方真正在說的是什麼?(預算限制 vs. 不認同價值 vs. 議價試水溫)
+2. Brian 風格的 3 種應對策略,每種寫具體話術(150 字內)
+3. 哪些「絕對不能說的」回應(列 3 個常見錯誤)
+4. 如果對方堅持殺價,你的底線該設在哪、給折讓時要換什麼條件`,
+
+      'long-term': `請設計把這次的單次案件,轉成「年約 / 訂閱制 / 長期顧問合約」的路徑。
+寫:
+1. 為什麼這個案件適合轉長期(從客戶角度)
+2. 第一次合作要埋的鋪陳(在交付過程中,要讓客戶感覺到什麼,他才會想續約)
+3. 提出長期合約的時機與話術
+4. 長期方案的設計建議(月費/季費/年費怎麼定)
+5. 如果對方拒絕長期,怎麼留個門讓他半年後願意回來`
+    };
+
+    const prompt = `你是 Brian。
+案件背景:
+- 專業:${record.input.trade}
+- 案件:${record.input.project}
+- 客戶類型:${record.input.client}
+- 已產生的報價策略摘要:${record.data.brian_note || ''}
+
+任務:${prompts[action]}
+
+繁體中文,台灣口吻,直接輸出內容,不要前言。`;
+
+    return await T.callClaude(prompt, { maxTokens: 3000 });
+  }
+})();
+</script>
+</body>
+</html>
