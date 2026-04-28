@@ -3,1363 +3,424 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>異業合作探索器 · 老闆的接案學院</title>
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>Brian's Tool Studio · 老闆的接案學院</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
   :root {
-    --ink: #1a1612;
-    --ink-soft: #3d342a;
-    --ink-mute: #6b5e4f;
-    --paper: #f4ede0;
-    --paper-deep: #ebe0cc;
-    --paper-card: #faf5e9;
-    --gold: #b8893a;
-    --gold-deep: #8a6224;
-    --rust: #a8442a;
-    --moss: #4a5d3a;
+    --ink: #1a1612; --ink-soft: #3d342a; --ink-mute: #6b5e4f;
+    --paper: #f4ede0; --paper-deep: #ebe0cc; --paper-card: #faf5e9;
+    --gold: #b8893a; --gold-deep: #8a6224; --rust: #a8442a; --moss: #4a5d3a;
     --line: rgba(26, 22, 18, 0.15);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--paper); font-family: 'Noto Serif TC', serif; color: var(--ink); }
 
-  .ce-app {
+  .home {
     min-height: 100vh;
     background-image:
-      radial-gradient(circle at 20% 10%, rgba(184, 137, 58, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 80% 80%, rgba(168, 68, 42, 0.06) 0%, transparent 40%);
+      radial-gradient(circle at 20% 10%, rgba(184, 137, 58, 0.1) 0%, transparent 45%),
+      radial-gradient(circle at 80% 80%, rgba(168, 68, 42, 0.08) 0%, transparent 45%);
+    padding: 60px 24px 80px;
   }
 
-  /* === Nav === */
-  .ce-nav {
-    background: var(--ink); color: var(--paper); padding: 14px 28px;
+  .home-container { max-width: 1080px; margin: 0 auto; }
+
+  /* === Hero === */
+  .home-nav {
     display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 16px; border-bottom: 3px solid var(--gold);
+    margin-bottom: 80px; flex-wrap: wrap; gap: 16px;
   }
-  .ce-nav-brand { display: flex; align-items: baseline; gap: 12px; }
-  .ce-nav-mark {
+  .home-mark {
     font-family: 'Cormorant Garamond', serif; font-style: italic;
-    font-size: 22px; color: var(--gold); font-weight: 600;
+    font-size: 26px; color: var(--ink); font-weight: 700;
   }
-  .ce-nav-title { font-size: 13px; letter-spacing: 0.15em; }
-  .ce-nav-actions { display: flex; gap: 8px; }
-  .ce-nav-btn {
-    background: transparent; border: 1px solid var(--paper); color: var(--paper);
-    padding: 8px 14px; font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s;
+  .home-mark .accent { color: var(--gold-deep); }
+  .home-status {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; color: var(--ink-mute); display: flex; align-items: center; gap: 8px;
   }
-  .ce-nav-btn:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+  .home-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--moss); display: inline-block;
+    box-shadow: 0 0 0 3px rgba(74, 93, 58, 0.2);
+  }
+  .home-dot.locked { background: var(--rust); box-shadow: 0 0 0 3px rgba(168, 68, 42, 0.2); }
 
-  .ce-main { padding: 40px 24px 80px; }
-  .ce-container { max-width: 1100px; margin: 0 auto; }
+  .home-hero { text-align: center; margin-bottom: 70px; }
+  .home-eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    letter-spacing: 0.35em; color: var(--gold-deep);
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  .home-title {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(48px, 7vw, 80px); font-weight: 600;
+    line-height: 1; margin-bottom: 14px;
+  }
+  .home-subtitle {
+    font-size: clamp(18px, 2.2vw, 24px);
+    font-weight: 700; letter-spacing: 0.05em; margin-bottom: 22px;
+  }
+  .home-divider {
+    width: 80px; height: 1px; background: var(--gold);
+    margin: 24px auto; position: relative;
+  }
+  .home-divider::before, .home-divider::after {
+    content: ''; position: absolute; top: 50%; width: 6px; height: 6px;
+    background: var(--gold); border-radius: 50%; transform: translateY(-50%);
+  }
+  .home-divider::before { left: -18px; }
+  .home-divider::after { right: -18px; }
+  .home-tagline {
+    font-size: 16px; color: var(--ink-soft); max-width: 580px;
+    margin: 0 auto; line-height: 1.85;
+  }
 
-  /* === API Key 設定 Modal === */
-  .ce-modal-overlay {
+  /* === 工具卡 === */
+  .home-section-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.25em; color: var(--gold-deep);
+    text-transform: uppercase; margin-bottom: 18px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--line);
+  }
+
+  .tools-grid {
+    display: grid; grid-template-columns: 1fr; gap: 18px;
+  }
+  @media (min-width: 720px) {
+    .tools-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .tool-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 32px 28px; cursor: pointer; position: relative;
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+    text-decoration: none; color: inherit;
+    display: flex; flex-direction: column; min-height: 240px;
+  }
+  .tool-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+  }
+  .tool-card.locked {
+    opacity: 0.55; cursor: default; pointer-events: auto;
+  }
+  .tool-card.locked:hover { transform: none; border-color: var(--line); box-shadow: none; }
+  .tool-card.coming {
+    background: transparent;
+    border: 1px dashed var(--line);
+    cursor: default;
+  }
+  .tool-card.coming:hover { transform: none; border-color: var(--line); box-shadow: none; }
+
+  .tool-num {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 60px; font-weight: 600; color: var(--gold);
+    line-height: 0.8; margin-bottom: 16px; opacity: 0.4;
+  }
+  .tool-title {
+    font-size: 22px; font-weight: 700; margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .tool-en {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 14px; color: var(--gold-deep); margin-bottom: 14px;
+  }
+  .tool-desc {
+    font-size: 13.5px; line-height: 1.75; color: var(--ink-soft);
+    margin-bottom: auto; padding-bottom: 18px;
+  }
+  .tool-cta {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; color: var(--ink); text-transform: uppercase;
+    padding-top: 14px; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .tool-cta-arrow { font-size: 16px; transition: transform 0.2s; }
+  .tool-card:hover .tool-cta-arrow { transform: translateX(4px); }
+
+  .tool-badge {
+    position: absolute; top: 20px; right: 20px;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    padding: 4px 8px; letter-spacing: 0.15em;
+    background: var(--ink); color: var(--paper);
+  }
+  .tool-badge.new { background: var(--moss); }
+  .tool-badge.soon { background: var(--ink-mute); }
+
+  /* === 密碼 Modal === */
+  .pw-overlay {
     position: fixed; inset: 0;
-    background: rgba(26, 22, 18, 0.85);
-    backdrop-filter: blur(4px);
+    background: rgba(26, 22, 18, 0.92);
+    backdrop-filter: blur(8px);
     display: none; align-items: center; justify-content: center;
     z-index: 1000; padding: 20px;
   }
-  .ce-modal-overlay.show { display: flex; }
-  .ce-modal {
-    background: var(--paper);
-    border: 3px solid var(--gold);
-    max-width: 540px; width: 100%;
-    padding: 36px;
+  .pw-overlay.show { display: flex; animation: fadeIn 0.2s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .pw-card {
+    background: var(--paper); border: 3px solid var(--gold);
+    max-width: 460px; width: 100%; padding: 40px 36px;
     position: relative;
-    max-height: 90vh; overflow-y: auto;
   }
-  .ce-modal-eyebrow {
+  .pw-eyebrow {
     font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    letter-spacing: 0.25em; color: var(--gold-deep); margin-bottom: 12px;
+    letter-spacing: 0.25em; color: var(--gold-deep); margin-bottom: 14px;
   }
-  .ce-modal-title {
+  .pw-title {
     font-family: 'Cormorant Garamond', serif; font-style: italic;
-    font-size: 30px; font-weight: 600; margin-bottom: 8px;
+    font-size: 32px; font-weight: 600; margin-bottom: 8px;
   }
-  .ce-modal-cn { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
-  .ce-modal-body { font-size: 14.5px; line-height: 1.85; color: var(--ink-soft); margin-bottom: 22px; }
-  .ce-modal-body strong { color: var(--ink); }
-  .ce-modal-body a { color: var(--gold-deep); text-decoration: underline; }
-  .ce-modal input {
-    width: 100%; padding: 14px; background: white;
+  .pw-cn { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+  .pw-desc {
+    font-size: 14px; line-height: 1.85; color: var(--ink-soft);
+    margin-bottom: 22px;
+  }
+  .pw-input {
+    width: 100%; padding: 14px 16px; background: white;
     border: 1px solid var(--line); font-family: 'JetBrains Mono', monospace;
-    font-size: 13px; margin-bottom: 14px;
+    font-size: 16px; letter-spacing: 0.1em; margin-bottom: 14px;
   }
-  .ce-modal input:focus { outline: none; border-color: var(--gold); }
-  .ce-modal-actions { display: flex; gap: 10px; }
-  .ce-modal-btn {
+  .pw-input:focus { outline: none; border-color: var(--gold); }
+  .pw-error {
+    background: rgba(168, 68, 42, 0.1); color: var(--rust);
+    padding: 10px 14px; font-size: 13px; margin-bottom: 14px;
+    display: none;
+  }
+  .pw-error.show { display: block; }
+  .pw-actions { display: flex; gap: 10px; }
+  .pw-btn {
     flex: 1; padding: 14px; border: none; cursor: pointer;
-    font-family: 'Noto Serif TC', serif; font-size: 14px; font-weight: 700;
-    letter-spacing: 0.1em; transition: all 0.2s;
-  }
-  .ce-modal-btn.primary { background: var(--ink); color: var(--paper); }
-  .ce-modal-btn.primary:hover { background: var(--gold-deep); }
-  .ce-modal-btn.secondary { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
-  .ce-modal-cost {
-    margin-top: 18px; padding: 12px 14px;
-    background: rgba(184, 137, 58, 0.08); border-left: 3px solid var(--gold);
-    font-size: 13px; color: var(--ink-soft); line-height: 1.6;
-  }
-
-  /* === 已存地圖 === */
-  .ce-saved-section { margin-bottom: 40px; }
-  .ce-saved-header {
-    display: flex; justify-content: space-between; align-items: baseline;
-    margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line);
-  }
-  .ce-saved-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-style: italic; }
-  .ce-saved-count { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-mute); letter-spacing: 0.15em; }
-  .ce-saved-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-  .ce-saved-card {
-    background: var(--paper-card); border: 1px solid var(--line); padding: 16px 18px;
-    cursor: pointer; transition: all 0.2s; position: relative;
-  }
-  .ce-saved-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
-  .ce-saved-trade { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-  .ce-saved-target { font-size: 12.5px; color: var(--ink-mute); margin-bottom: 8px; line-height: 1.5; }
-  .ce-saved-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold-deep); letter-spacing: 0.05em; text-transform: uppercase; }
-  .ce-saved-del {
-    position: absolute; top: 8px; right: 8px; background: transparent; border: none;
-    color: var(--ink-mute); cursor: pointer; font-size: 14px; padding: 4px 6px;
-    opacity: 0; transition: opacity 0.2s;
-  }
-  .ce-saved-card:hover .ce-saved-del { opacity: 1; }
-  .ce-saved-del:hover { color: var(--rust); }
-  .ce-empty-state { text-align: center; padding: 24px; color: var(--ink-mute); font-size: 13px; font-style: italic; border: 1px dashed var(--line); }
-
-  /* === 表單 === */
-  .ce-header { text-align: center; margin-bottom: 40px; }
-  .ce-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.3em; color: var(--gold-deep); text-transform: uppercase; margin-bottom: 14px; }
-  .ce-title { font-family: 'Cormorant Garamond', 'Noto Serif TC', serif; font-size: clamp(38px, 5.5vw, 60px); font-weight: 600; font-style: italic; line-height: 1.05; margin-bottom: 10px; }
-  .ce-title-cn { font-size: clamp(20px, 2.5vw, 26px); font-weight: 700; letter-spacing: 0.05em; }
-  .ce-subtitle { font-size: 14.5px; color: var(--ink-soft); max-width: 540px; margin: 18px auto 0; line-height: 1.8; }
-  .ce-divider { width: 60px; height: 1px; background: var(--gold); margin: 22px auto; position: relative; }
-  .ce-divider::before, .ce-divider::after { content: ''; position: absolute; top: 50%; width: 5px; height: 5px; background: var(--gold); border-radius: 50%; transform: translateY(-50%); }
-  .ce-divider::before { left: -14px; } .ce-divider::after { right: -14px; }
-
-  .ce-form-card { background: var(--paper-card); border: 1px solid var(--line); padding: 36px; margin-bottom: 32px; position: relative; }
-  .ce-form-card::before { content: ''; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px solid var(--line); pointer-events: none; }
-  .ce-form-grid { display: grid; grid-template-columns: 1fr; gap: 22px; position: relative; }
-  @media (min-width: 720px) { .ce-form-grid { grid-template-columns: 1fr 1fr; } .ce-form-grid .ce-full { grid-column: 1 / -1; } }
-  .ce-field label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 8px; font-weight: 500; }
-  .ce-field input, .ce-field textarea, .ce-field select {
-    width: 100%; padding: 13px 15px; background: var(--paper); border: 1px solid var(--line);
-    font-family: 'Noto Serif TC', serif; font-size: 15px; color: var(--ink); transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  .ce-field textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
-  .ce-field input:focus, .ce-field textarea:focus, .ce-field select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184, 137, 58, 0.15); }
-  .ce-helper { font-size: 12px; color: var(--ink-mute); margin-top: 5px; font-style: italic; }
-  .ce-submit { margin-top: 28px; width: 100%; padding: 18px 32px; background: var(--ink); color: var(--paper); border: none; font-family: 'Noto Serif TC', serif; font-size: 16px; font-weight: 700; letter-spacing: 0.15em; cursor: pointer; transition: background 0.3s, transform 0.1s; }
-  .ce-submit:hover:not(:disabled) { background: var(--gold-deep); }
-  .ce-submit:active { transform: translateY(1px); }
-  .ce-submit:disabled { background: var(--ink-soft); cursor: not-allowed; opacity: 0.6; }
-
-  /* === 結果 === */
-  .ce-results { margin-top: 32px; }
-  .ce-loading { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
-  .ce-loading-text { font-style: italic; font-size: 15px; margin-bottom: 20px; }
-  .ce-loading-bar { width: 220px; height: 2px; background: var(--line); margin: 0 auto; overflow: hidden; position: relative; }
-  .ce-loading-bar::after { content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 40%; background: var(--gold); animation: ce-load 1.4s ease-in-out infinite; }
-  @keyframes ce-load { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
-
-  .ce-result-toolbar {
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 12px; margin-bottom: 24px; padding: 14px 20px;
-    background: var(--ink); color: var(--paper);
-  }
-  .ce-result-info { font-size: 13px; line-height: 1.5; }
-  .ce-result-info strong { color: var(--gold); font-weight: 700; }
-  .ce-result-actions { display: flex; gap: 8px; }
-  .ce-action-btn { background: transparent; border: 1px solid var(--paper); color: var(--paper); padding: 7px 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s; }
-  .ce-action-btn:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
-
-  .ce-result-section { margin-bottom: 44px; }
-  .ce-section-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-style: italic; font-weight: 600; margin-bottom: 6px; }
-  .ce-section-cn { font-size: 16px; font-weight: 700; margin-bottom: 22px; padding-bottom: 10px; border-bottom: 2px solid var(--ink); display: inline-block; }
-  .ce-tier-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-  @media (min-width: 720px) { .ce-tier-grid { grid-template-columns: repeat(3, 1fr); } }
-  .ce-tier-card { background: var(--paper-card); border: 1px solid var(--line); padding: 22px; }
-  .ce-tier-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.25em; color: var(--gold-deep); text-transform: uppercase; margin-bottom: 6px; }
-  .ce-tier-name { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-  .ce-tier-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
-  .ce-tier-list { list-style: none; }
-  .ce-tier-list li { font-size: 13.5px; padding: 7px 0; border-bottom: 1px dashed var(--line); position: relative; padding-left: 16px; }
-  .ce-tier-list li::before { content: '◆'; position: absolute; left: 0; color: var(--gold); font-size: 8px; top: 11px; }
-  .ce-tier-list li:last-child { border-bottom: none; }
-
-  .ce-partner { background: var(--paper-card); border: 1px solid var(--line); margin-bottom: 18px; overflow: hidden; }
-  .ce-partner-header { padding: 18px 22px; background: var(--ink); color: var(--paper); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-  .ce-partner-name { font-size: 17px; font-weight: 700; }
-  .ce-partner-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; background: var(--gold); color: var(--ink); padding: 4px 10px; text-transform: uppercase; font-weight: 700; }
-  .ce-partner-body { padding: 22px; }
-  .ce-partner-row { display: grid; grid-template-columns: 130px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--line); align-items: start; }
-  @media (max-width: 600px) { .ce-partner-row { grid-template-columns: 1fr; gap: 4px; } }
-  .ce-partner-row:last-child { border-bottom: none; }
-  .ce-partner-key { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em; color: var(--gold-deep); text-transform: uppercase; padding-top: 2px; font-weight: 500; }
-  .ce-partner-val { font-size: 14.5px; line-height: 1.75; }
-  .ce-pitch-wrap { position: relative; }
-  .ce-pitch { background: var(--paper); border-left: 3px solid var(--gold); padding: 14px 18px; margin-top: 6px; font-style: italic; font-size: 14.5px; line-height: 1.85; color: var(--ink-soft); white-space: pre-wrap; }
-  .ce-copy-btn { margin-top: 8px; background: transparent; border: 1px solid var(--line); color: var(--ink-soft); padding: 5px 10px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; cursor: pointer; transition: all 0.15s; }
-  .ce-copy-btn:hover { border-color: var(--gold); color: var(--gold-deep); }
-  .ce-copy-btn.copied { background: var(--moss); color: white; border-color: var(--moss); }
-  .ce-channels { display: flex; flex-wrap: wrap; gap: 8px; }
-  .ce-channel-pill { background: var(--paper); border: 1px solid var(--line); padding: 6px 12px; font-size: 13px; }
-
-  .ce-deep-row { grid-column: 1 / -1; padding-top: 18px !important; margin-top: 8px; border-top: 2px solid var(--ink) !important; border-bottom: none !important; background: rgba(184, 137, 58, 0.08); padding-left: 16px !important; padding-right: 16px !important; padding-bottom: 16px !important; }
-  .ce-deep-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-  .ce-deep-btn { background: var(--paper); border: 1px solid var(--gold); color: var(--gold-deep); padding: 10px 14px; font-family: 'Noto Serif TC', serif; font-size: 13px; cursor: pointer; transition: all 0.2s; flex: 1 1 auto; min-width: 140px; }
-  .ce-deep-btn:hover:not(:disabled) { background: var(--gold); color: var(--ink); }
-  .ce-deep-btn[data-action="find-them"] { background: var(--ink); color: var(--paper); border-color: var(--ink); font-weight: 700; flex: 1 1 100%; }
-  .ce-deep-btn[data-action="find-them"]:hover:not(:disabled) { background: var(--gold-deep); color: var(--paper); border-color: var(--gold-deep); }
-  .ce-deep-btn[data-action="content-pack"] {
-    background: linear-gradient(135deg, rgba(184, 137, 58, 0.15) 0%, rgba(168, 68, 42, 0.1) 100%);
-    border-color: var(--rust); color: var(--rust); font-weight: 700; flex: 1 1 100%;
-  }
-  .ce-deep-btn[data-action="content-pack"]:hover:not(:disabled) {
-    background: var(--rust); color: white; border-color: var(--rust);
-  }
-  .ce-deep-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .ce-deep-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .ce-deep-result { margin-top: 16px; padding: 18px 20px; background: rgba(184, 137, 58, 0.06); border-left: 3px solid var(--gold-deep); font-size: 14.5px; line-height: 1.85; white-space: pre-wrap; display: none; }
-  .ce-deep-result.show { display: block; }
-
-  .ce-note { background: rgba(184, 137, 58, 0.1); border-left: 3px solid var(--gold); padding: 14px 18px; margin-bottom: 28px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; }
-
-  /* === Brian's Note - 教練筆記 === */
-  .ce-brian-note {
-    background: var(--ink); color: var(--paper);
-    padding: 24px 26px; margin-bottom: 32px;
-    border-left: 4px solid var(--gold);
-    position: relative;
-  }
-  .ce-brian-note::before {
-    content: '"'; position: absolute; top: -10px; left: 16px;
-    font-family: 'Cormorant Garamond', serif; font-size: 80px;
-    color: var(--gold); line-height: 1; font-style: italic; opacity: 0.5;
-  }
-  .ce-brian-note-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    letter-spacing: 0.25em; color: var(--gold); margin-bottom: 10px;
-    text-transform: uppercase; font-weight: 700;
-  }
-  .ce-brian-note-body {
-    font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
-    font-size: 16px; line-height: 1.85; font-style: italic;
-    color: var(--paper-deep);
-  }
-
-  /* === 教練觀念提醒 === */
-  .ce-insight {
-    margin-top: 10px; padding: 10px 12px;
-    background: rgba(184, 137, 58, 0.1);
-    border-left: 2px solid var(--gold);
-    font-size: 13px; line-height: 1.65;
-    color: var(--ink-soft); font-style: italic;
-  }
-
-  /* === 對話面板 === */
-  .ce-chat-overlay {
-    position: fixed; inset: 0;
-    background: rgba(26, 22, 18, 0.7);
-    backdrop-filter: blur(6px);
-    display: none; align-items: stretch; justify-content: flex-end;
-    z-index: 999;
-  }
-  .ce-chat-overlay.show { display: flex; animation: ce-fade-in 0.2s ease; }
-  @keyframes ce-fade-in { from { opacity: 0; } to { opacity: 1; } }
-
-  .ce-chat-panel {
-    width: 100%; max-width: 540px;
-    background: var(--paper); display: flex; flex-direction: column;
-    border-left: 3px solid var(--gold);
-    animation: ce-slide-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
-  }
-  @keyframes ce-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
-
-  .ce-chat-header {
-    padding: 20px 24px;
-    background: var(--ink); color: var(--paper);
-    display: flex; justify-content: space-between; align-items: flex-start;
-    gap: 12px; border-bottom: 2px solid var(--gold);
-  }
-  .ce-chat-eyebrow {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    letter-spacing: 0.25em; color: var(--gold); margin-bottom: 4px;
-  }
-  .ce-chat-title {
-    font-family: 'Cormorant Garamond', serif; font-style: italic;
-    font-size: 22px; font-weight: 600;
-  }
-  .ce-chat-sub { font-size: 12px; color: var(--paper-deep); margin-top: 4px; opacity: 0.7; }
-  .ce-chat-close {
-    background: transparent; border: 1px solid var(--paper);
-    color: var(--paper); width: 32px; height: 32px;
-    cursor: pointer; font-size: 14px; flex-shrink: 0;
-  }
-  .ce-chat-close:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
-
-  .ce-chat-messages {
-    flex: 1; overflow-y: auto; padding: 20px 24px;
-    display: flex; flex-direction: column; gap: 14px;
-  }
-  .ce-msg {
-    max-width: 85%; padding: 12px 16px;
-    font-size: 14.5px; line-height: 1.7;
-    white-space: pre-wrap; word-wrap: break-word;
-  }
-  .ce-msg-user {
-    align-self: flex-end;
-    background: var(--ink); color: var(--paper);
-    border-radius: 14px 14px 2px 14px;
-  }
-  .ce-msg-brian {
-    align-self: flex-start;
-    background: var(--paper-card); color: var(--ink);
-    border-left: 3px solid var(--gold);
-    border-radius: 0 14px 14px 14px;
-  }
-  .ce-msg-brian-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 9px;
-    letter-spacing: 0.2em; color: var(--gold-deep); margin-bottom: 6px;
-    text-transform: uppercase;
-  }
-  .ce-msg-loading { font-style: italic; color: var(--ink-mute); }
-
-  .ce-chat-suggestions {
-    padding: 12px 24px; display: flex; flex-wrap: wrap; gap: 6px;
-    background: var(--paper-deep); border-top: 1px solid var(--line);
-  }
-  .ce-suggestion-chip {
-    background: var(--paper); border: 1px solid var(--line);
-    padding: 6px 10px; font-size: 12px; cursor: pointer;
-    font-family: 'Noto Serif TC', serif;
-    color: var(--ink-soft); transition: all 0.15s;
-  }
-  .ce-suggestion-chip:hover {
-    background: var(--gold); color: var(--ink); border-color: var(--gold);
-  }
-
-  .ce-chat-input-area {
-    padding: 14px 16px;
-    background: var(--paper);
-    border-top: 1px solid var(--line);
-    display: flex; gap: 8px;
-  }
-  .ce-chat-input-area textarea {
-    flex: 1; padding: 10px 12px;
-    background: var(--paper-card); border: 1px solid var(--line);
     font-family: 'Noto Serif TC', serif; font-size: 14px;
-    color: var(--ink); resize: none; line-height: 1.5;
+    font-weight: 700; letter-spacing: 0.1em; transition: all 0.2s;
   }
-  .ce-chat-input-area textarea:focus { outline: none; border-color: var(--gold); }
-  .ce-chat-send {
-    background: var(--ink); color: var(--paper); border: none;
-    padding: 0 20px; cursor: pointer;
-    font-family: 'Noto Serif TC', serif; font-size: 14px; font-weight: 700;
-    letter-spacing: 0.1em; flex-shrink: 0;
+  .pw-btn.primary { background: var(--ink); color: var(--paper); }
+  .pw-btn.primary:hover { background: var(--gold-deep); }
+  .pw-btn.secondary {
+    background: transparent; color: var(--ink-mute);
+    border: 1px solid var(--line);
   }
-  .ce-chat-send:hover:not(:disabled) { background: var(--gold-deep); }
-  .ce-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+  .pw-btn.secondary:hover { color: var(--ink); border-color: var(--ink); }
+  .pw-help {
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--ink-mute); line-height: 1.7;
+  }
+  .pw-help a { color: var(--gold-deep); text-decoration: underline; }
 
-  @media (max-width: 600px) {
-    .ce-chat-panel { max-width: 100%; }
-    .ce-chat-overlay { align-items: stretch; }
+  /* === 頁腳 === */
+  .home-footer {
+    text-align: center; margin-top: 80px; padding-top: 32px;
+    border-top: 1px solid var(--line); font-size: 12px;
+    color: var(--ink-mute); letter-spacing: 0.1em;
   }
-
-  /* LINE 一對一按鈕 - 綠色強調 */
-  .ce-deep-line-btn {
-    background: #06C755 !important;
-    border-color: #06C755 !important;
-    color: white !important;
-    flex: 1 1 100% !important;
-    font-weight: 700;
-    text-decoration: none !important;
-    text-align: center;
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
+  .home-footer-mark {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 18px; color: var(--gold-deep); margin-bottom: 8px;
   }
-  .ce-deep-line-btn:hover {
-    background: #05a847 !important;
-    border-color: #05a847 !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(6, 199, 85, 0.3);
-  }
-
-  /* 聊天按鈕特殊樣式 */
-  .ce-deep-chat-btn {
-    background: rgba(74, 93, 58, 0.1) !important;
-    border-color: var(--moss) !important;
-    color: var(--moss) !important;
-    flex: 1 1 100% !important;
-    font-weight: 700;
-  }
-  .ce-deep-chat-btn:hover:not(:disabled) {
-    background: var(--moss) !important;
-    color: white !important;
-    border-color: var(--moss) !important;
-  }
-  .ce-error { background: rgba(168, 68, 42, 0.1); border-left: 3px solid var(--rust); padding: 16px 20px; color: var(--rust); font-size: 14px; }
-
-  .ce-footer { text-align: center; margin-top: 60px; padding-top: 28px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-mute); letter-spacing: 0.1em; }
-  .ce-footer-mark { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 16px; color: var(--gold-deep); margin-bottom: 6px; }
-
-  @media print {
-    .ce-nav, .ce-form-card, .ce-saved-section, .ce-result-toolbar, .ce-deep-buttons, .ce-copy-btn { display: none !important; }
-    .ce-app { background: white; padding: 0; }
-    .ce-partner { page-break-inside: avoid; }
-  }
-  .ce-hidden { display: none !important; }
 </style>
 </head>
 <body>
-<div class="ce-app">
 
-  <!-- 對話面板 -->
-  <div class="ce-chat-overlay" id="ce-chat-overlay">
-    <div class="ce-chat-panel">
-      <div class="ce-chat-header">
-        <div>
-          <div class="ce-chat-eyebrow">CHAT WITH BRIAN</div>
-          <div class="ce-chat-title" id="ce-chat-title">跟教練聊聊這個對象</div>
-          <div class="ce-chat-sub" id="ce-chat-sub"></div>
+<div class="home">
+  <div class="home-container">
+
+    <!-- 頂部導航 -->
+    <nav class="home-nav">
+      <div class="home-mark">CEO <span class="accent">Brian</span></div>
+      <div class="home-status" id="ce-status">
+        <span class="home-dot locked" id="ce-status-dot"></span>
+        <span id="ce-status-text">未驗證</span>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="home-hero">
+      <div class="home-eyebrow">Tool Studio · 老闆的接案學院</div>
+      <h1 class="home-title">Brian's Toolkit</h1>
+      <div class="home-subtitle">給接案者的高價工具箱</div>
+      <div class="home-divider"></div>
+      <p class="home-tagline">
+        從找客戶、寫提案、談價格、到長期合作,<br/>
+        每個工具都用 Brian 的「顧問式接案」邏輯設計,<br/>
+        讓你每一次決策,都比上次更值錢。
+      </p>
+    </header>
+
+    <!-- 工具列表 -->
+    <section>
+      <div class="home-section-title">// AVAILABLE TOOLS</div>
+      <div class="tools-grid">
+
+        <!-- 合作探索器(可用) -->
+        <a href="#" class="tool-card" data-tool="collab" data-href="tools/collab.html">
+          <span class="tool-badge new">NEW</span>
+          <div class="tool-num">01</div>
+          <div class="tool-title">異業合作探索器</div>
+          <div class="tool-en">The Allied Map</div>
+          <div class="tool-desc">
+            告訴它你的專業與目標客群,AI 幫你畫出客戶生態圈、5 個高價值合作對象、開場話術、找人管道,
+            還有現成的 LINE / IG / Email 接觸內容包。
+          </div>
+          <div class="tool-cta">
+            <span>進入工具</span>
+            <span class="tool-cta-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 預留位 1 -->
+        <div class="tool-card coming">
+          <span class="tool-badge soon">COMING</span>
+          <div class="tool-num">02</div>
+          <div class="tool-title">高價報價產生器</div>
+          <div class="tool-en">The Price Architect</div>
+          <div class="tool-desc">
+            輸入案件條件,AI 用「商業價值」思維幫你產出可以收高價、不被殺的報價單結構,
+            告別「工時 × 時薪」的窮忙公式。
+          </div>
+          <div class="tool-cta">
+            <span>規劃中</span>
+            <span class="tool-cta-arrow">·</span>
+          </div>
         </div>
-        <button class="ce-chat-close" id="ce-chat-close" aria-label="關閉">✕</button>
-      </div>
-      <div class="ce-chat-messages" id="ce-chat-messages"></div>
-      <div class="ce-chat-suggestions" id="ce-chat-suggestions"></div>
-      <form class="ce-chat-input-area" id="ce-chat-form">
-        <textarea id="ce-chat-input" placeholder="例如:他說沒預算怎麼辦?他要分潤 50% 太多怎麼回?" rows="2"></textarea>
-        <button type="submit" class="ce-chat-send" id="ce-chat-send">送出</button>
-      </form>
-    </div>
-  </div>
 
-  <!-- API Key Modal -->
-  <div class="ce-modal-overlay" id="ce-key-modal">
-    <div class="ce-modal">
-      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
-      <div class="ce-modal-title">Connect Your Brain</div>
-      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
-      <div class="ce-modal-body">
-        這個工具用 <strong>Anthropic Claude AI</strong> 來幫你產出策略地圖。<br/>
-        為了保護你的資料和費用,你需要使用<strong>自己的 API Key</strong>。<br/><br/>
-
-        <strong>申請步驟(一次性,5 分鐘):</strong><br/>
-        1. 到 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> 註冊帳號<br/>
-        2. 左側選單 → <strong>API Keys</strong> → Create Key<br/>
-        3. 複製產生的 Key(以 sk-ant- 開頭)貼到下面<br/>
-        4. 在 Billing 充值最低 5 美金即可開始用
-      </div>
-      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
-      <div class="ce-modal-actions">
-        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
-      </div>
-      <div class="ce-modal-cost">
-        <strong>費用估算:</strong>每產一張地圖約 NT$1,深挖一次約 NT$0.5。
-        Key 只存在你瀏覽器,不會傳到任何第三方。隨時可在右上角「設定」更換。
-      </div>
-    </div>
-  </div>
-
-  <!-- Nav -->
-  <nav class="ce-nav">
-    <div class="ce-nav-brand">
-      <div class="ce-nav-mark">CEO Brian</div>
-      <div class="ce-nav-title">老闆的接案學院 · 異業合作探索器</div>
-    </div>
-    <div class="ce-nav-actions">
-      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
-      <button class="ce-nav-btn" id="ce-new-btn">+ 新地圖</button>
-    </div>
-  </nav>
-
-  <main class="ce-main">
-    <div class="ce-container">
-
-      <section class="ce-saved-section" id="ce-saved-section">
-        <div class="ce-saved-header">
-          <div class="ce-saved-title">My Saved Maps</div>
-          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        <!-- 預留位 2 -->
+        <div class="tool-card coming">
+          <span class="tool-badge soon">COMING</span>
+          <div class="tool-num">03</div>
+          <div class="tool-title">客戶異議拆解器</div>
+          <div class="tool-en">The Objection Decoder</div>
+          <div class="tool-desc">
+            把客戶的拒絕貼進來,AI 拆解他真正的擔心是什麼,給你 3 種回應劇本,
+            讓「我再考慮看看」變成「那我們什麼時候開始」。
+          </div>
+          <div class="tool-cta">
+            <span>規劃中</span>
+            <span class="tool-cta-arrow">·</span>
+          </div>
         </div>
-        <div id="ce-saved-list"></div>
-      </section>
 
-      <div id="ce-form-page">
-        <header class="ce-header">
-          <div class="ce-eyebrow">For Pros · Not Cold Calls</div>
-          <h1 class="ce-title">The Allied Map</h1>
-          <div class="ce-title-cn">異業合作地圖</div>
-          <div class="ce-divider"></div>
-          <p class="ce-subtitle">
-            告訴我你做什麼、想接誰,<br/>
-            AI 用 Brian 的「顧問式合作」邏輯,<br/>
-            幫你畫出一張「讓案源主動來」的策略地圖。
-          </p>
-        </header>
-
-        <section class="ce-form-card">
-          <form id="ce-form" class="ce-form-grid">
-            <div class="ce-field">
-              <label for="ce-trade">你的專業</label>
-              <input type="text" id="ce-trade" placeholder="例如:商業空間室內設計" required />
-              <div class="ce-helper">越具體越好,「設計」太廣,「住宅軟裝設計」更好</div>
-            </div>
-            <div class="ce-field">
-              <label for="ce-target">你的理想客戶</label>
-              <input type="text" id="ce-target" placeholder="例如:30-50 歲新成屋屋主" required />
-            </div>
-            <div class="ce-field">
-              <label for="ce-region">經營區域</label>
-              <select id="ce-region">
-                <option value="台灣全區">台灣全區</option>
-                <option value="北部">北部(雙北、桃竹)</option>
-                <option value="中部">中部(中彰投)</option>
-                <option value="南部">南部(嘉南高屏)</option>
-                <option value="東部">東部與離島</option>
-              </select>
-            </div>
-            <div class="ce-field">
-              <label for="ce-price">案件平均報價區間</label>
-              <select id="ce-price">
-                <option value="一萬以下">一萬以下</option>
-                <option value="一萬到五萬">一萬到五萬</option>
-                <option value="五萬到二十萬" selected>五萬到二十萬</option>
-                <option value="二十萬到一百萬">二十萬到一百萬</option>
-                <option value="一百萬以上">一百萬以上</option>
-              </select>
-            </div>
-            <div class="ce-field ce-full">
-              <label for="ce-strength">你的差異化優勢(可選填)</label>
-              <textarea id="ce-strength" placeholder="例如:擅長日系極簡風、會幫客戶做完整品牌規劃、交期穩定..."></textarea>
-              <div class="ce-helper">填寫這欄會讓「合作提案話術」更有殺傷力</div>
-            </div>
-            <button type="submit" class="ce-submit" id="ce-submit-btn">
-              產生合作地圖 →
-            </button>
-          </form>
-        </section>
       </div>
+    </section>
 
-      <section class="ce-results" id="ce-results"></section>
+    <!-- 頁腳 -->
+    <footer class="home-footer">
+      <div class="home-footer-mark">From Solo to System</div>
+      <div>老闆的接案學院 · Brian's Toolkit · 課程內部專屬</div>
+    </footer>
 
-      <footer class="ce-footer">
-        <div class="ce-footer-mark">From Solo to System</div>
-        <div>老闆的接案學院 · 異業合作探索器 · 課程內部工具</div>
-      </footer>
-    </div>
-  </main>
+  </div>
 </div>
 
+<!-- 密碼 Modal -->
+<div class="pw-overlay" id="pw-overlay">
+  <div class="pw-card">
+    <div class="pw-eyebrow">MEMBERS ONLY</div>
+    <div class="pw-title">Verification</div>
+    <div class="pw-cn">學員專屬,請輸入本期通行碼</div>
+    <div class="pw-desc">
+      這是老闆的接案學院的學員專屬工具。<br/>
+      請輸入本期通行碼,驗證後 7 天內不用再輸入。
+    </div>
+    <input type="password" id="pw-input" class="pw-input" placeholder="本期通行碼" autocomplete="off" autofocus />
+    <div class="pw-error" id="pw-error">通行碼不正確,請聯絡客服取得本期密碼</div>
+    <div class="pw-actions">
+      <button class="pw-btn secondary" id="pw-cancel">取消</button>
+      <button class="pw-btn primary" id="pw-submit">驗證進入</button>
+    </div>
+    <div class="pw-help">
+      還沒有通行碼?<br/>
+      請<a href="https://lin.ee/9Ba3XjY" target="_blank">加 Brian 的 LINE</a>申請學員資格。
+    </div>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
 <script>
 (function() {
-  const STORAGE_KEY_API = 'ce_anthropic_api_key';
-  const STORAGE_KEY_MAPS = 'ce_collab_maps';
-  let currentMapId = null;
+  const auth = window.BrianAuth;
+  const statusDot = document.getElementById('ce-status-dot');
+  const statusText = document.getElementById('ce-status-text');
+  const overlay = document.getElementById('pw-overlay');
+  const input = document.getElementById('pw-input');
+  const errorEl = document.getElementById('pw-error');
+  const submitBtn = document.getElementById('pw-submit');
+  const cancelBtn = document.getElementById('pw-cancel');
 
-  const form = document.getElementById('ce-form');
-  const formPage = document.getElementById('ce-form-page');
-  const resultsEl = document.getElementById('ce-results');
-  const submitBtn = document.getElementById('ce-submit-btn');
-  const savedListEl = document.getElementById('ce-saved-list');
-  const savedCountEl = document.getElementById('ce-saved-count');
-  const newBtn = document.getElementById('ce-new-btn');
-  const settingsBtn = document.getElementById('ce-settings-btn');
-  const keyModal = document.getElementById('ce-key-modal');
-  const keyInput = document.getElementById('ce-api-key');
-  const keySaveBtn = document.getElementById('ce-key-save');
+  let pendingHref = null;
 
-  // === API Key 管理 ===
-  function getApiKey() {
-    try { return localStorage.getItem(STORAGE_KEY_API) || ''; } catch (e) { return ''; }
-  }
-  function setApiKey(key) {
-    try { localStorage.setItem(STORAGE_KEY_API, key); } catch (e) {}
-  }
-  function showKeyModal() {
-    keyInput.value = getApiKey();
-    keyModal.classList.add('show');
-  }
-  function hideKeyModal() { keyModal.classList.remove('show'); }
-
-  settingsBtn.addEventListener('click', showKeyModal);
-  keySaveBtn.addEventListener('click', () => {
-    const key = keyInput.value.trim();
-    if (!key.startsWith('sk-ant-')) {
-      alert('API Key 格式不對,應該以 sk-ant- 開頭');
-      return;
-    }
-    setApiKey(key);
-    hideKeyModal();
-  });
-
-  // === 地圖儲存 (用 localStorage) ===
-  function loadAllMaps() {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY_MAPS) || '{}');
-    } catch (e) { return {}; }
-  }
-  function saveAllMaps(maps) {
-    try { localStorage.setItem(STORAGE_KEY_MAPS, JSON.stringify(maps)); } catch (e) {}
-  }
-  function saveMap(id, record) {
-    const maps = loadAllMaps();
-    maps[id] = record;
-    saveAllMaps(maps);
-  }
-  function deleteMap(id) {
-    const maps = loadAllMaps();
-    delete maps[id];
-    saveAllMaps(maps);
-    loadSavedList();
-    if (currentMapId === id) {
-      showFormPage();
-      currentMapId = null;
+  // 更新右上角狀態指示
+  function updateStatus() {
+    if (auth.isVerified()) {
+      statusDot.classList.remove('locked');
+      const days = auth.daysRemaining();
+      statusText.textContent = `已驗證 · 剩 ${days} 天`;
+    } else {
+      statusDot.classList.add('locked');
+      statusText.textContent = '未驗證';
     }
   }
-  function loadMap(id) {
-    return loadAllMaps()[id] || null;
+
+  function openPasswordModal(href) {
+    pendingHref = href;
+    input.value = '';
+    errorEl.classList.remove('show');
+    overlay.classList.add('show');
+    setTimeout(() => input.focus(), 100);
   }
 
-  function loadSavedList() {
-    const maps = loadAllMaps();
-    const records = Object.values(maps).sort((a, b) => b.createdAt - a.createdAt);
-    savedCountEl.textContent = `${records.length} STORED`;
-
-    if (records.length === 0) {
-      savedListEl.innerHTML = `<div class="ce-empty-state">尚未儲存任何合作地圖。產生第一張後會自動存在這裡。</div>`;
-      return;
-    }
-
-    savedListEl.innerHTML = `
-      <div class="ce-saved-grid">
-        ${records.map(r => `
-          <div class="ce-saved-card" data-id="${r.id}">
-            <button class="ce-saved-del" data-del="${r.id}" title="刪除">✕</button>
-            <div class="ce-saved-trade">${escapeHtml(r.input.trade)}</div>
-            <div class="ce-saved-target">→ ${escapeHtml(r.input.target)}</div>
-            <div class="ce-saved-meta">${formatDate(r.createdAt)} · ${escapeHtml(r.input.region)}</div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-
-    savedListEl.querySelectorAll('.ce-saved-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('.ce-saved-del')) return;
-        const id = card.dataset.id;
-        const record = loadMap(id);
-        if (record) { currentMapId = id; hideFormPage(); renderResults(record); }
-      });
-    });
-    savedListEl.querySelectorAll('[data-del]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (confirm('確定刪除這份合作地圖?')) deleteMap(btn.dataset.del);
-      });
-    });
+  function closeModal() {
+    overlay.classList.remove('show');
+    pendingHref = null;
   }
 
-  function formatDate(ts) {
-    const d = new Date(ts);
-    return `${d.getMonth()+1}/${d.getDate()}`;
-  }
-
-  // === 介面切換 ===
-  function showFormPage() {
-    formPage.classList.remove('ce-hidden');
-    resultsEl.innerHTML = '';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  function hideFormPage() { formPage.classList.add('ce-hidden'); }
-
-  newBtn.addEventListener('click', () => {
-    showFormPage();
-    form.reset();
-    document.getElementById('ce-price').value = '五萬到二十萬';
-    document.getElementById('ce-region').value = '台灣全區';
-    currentMapId = null;
-  });
-
-  // === 表單送出 ===
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!getApiKey()) { showKeyModal(); return; }
-
-    const input = collectInput();
-    if (!input.trade || !input.target) return;
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = '正在繪製合作地圖...';
-    showLoading();
-
-    try {
-      const data = await generateMap(input);
-      const mapId = 'map_' + Date.now();
-      const record = { id: mapId, input, data, createdAt: Date.now() };
-      saveMap(mapId, record);
-      currentMapId = mapId;
-      renderResults(record);
-      loadSavedList();
-    } catch (err) {
-      console.error(err);
-      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${escapeHtml(err.message)}<br/>如果是 401/403 錯誤,請檢查 API Key 是否正確、Anthropic 帳戶是否有餘額。</div>`;
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = '產生合作地圖 →';
-    }
-  });
-
-  function collectInput() {
-    return {
-      trade: document.getElementById('ce-trade').value.trim(),
-      target: document.getElementById('ce-target').value.trim(),
-      region: document.getElementById('ce-region').value,
-      price: document.getElementById('ce-price').value,
-      strength: document.getElementById('ce-strength').value.trim()
-    };
-  }
-
-  function showLoading() {
-    resultsEl.innerHTML = `
-      <div class="ce-loading">
-        <div class="ce-loading-text">AI 正在分析你的專業生態圈,找出合作機會...</div>
-        <div class="ce-loading-bar"></div>
-      </div>
-    `;
-  }
-
-  // === 呼叫 Anthropic API ===
-  async function generateMap(input) {
-    const prompt = buildMainPrompt(input);
-    return await callClaude(prompt, true);
-  }
-
-  async function callClaude(prompt, parseJson, maxTokens) {
-    const apiKey = getApiKey();
-    if (!apiKey) throw new Error('尚未設定 API Key');
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: maxTokens || 4000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    if (!response.ok) {
-      const errBody = await response.text();
-      throw new Error(`API ${response.status}: ${errBody.substring(0, 150)}`);
-    }
-
-    const data = await response.json();
-    let text = data.content.map(b => b.text || '').join('').trim();
-
-    if (parseJson) {
-      text = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
-      return JSON.parse(text);
-    }
-    return text;
-  }
-
-  function buildMainPrompt(input) {
-    return `你是 Brian(老闆的接案學院創辦人),一位 13 年資歷的接案教練,專門教接案者用「顧問式談單」做高價長期合作。
-
-請用你的方法論,為以下接案者繪製一張「異業合作地圖」:
-
-【接案者資料】
-- 專業:${input.trade}
-- 理想客戶:${input.target}
-- 經營區域:${input.region}
-- 案件報價區間:${input.price}
-- 差異化優勢:${input.strength || '(未填寫,請用一般通用建議)'}
-
-請輸出一個 JSON 物件,結構如下,只回傳 JSON 不要任何其他文字(不要 markdown code fence):
-
-{
-  "brian_note": "用 Brian 的口吻,寫一段 100-150 字的「策略註解」,告訴這位接案者:我為什麼這樣畫這張地圖、你應該優先看哪幾個區塊、最大的盲點是什麼。要有教練在面對面講話的感覺,不要寫成說明書。",
-  "ecosystem": {
-    "summary": "一段話描述這個專業的客戶生態圈,誰在客戶之前接觸到他、誰跟你並肩、誰在你之後",
-    "upstream": {
-      "label": "上游夥伴(客戶在找你之前會接觸的角色)",
-      "description": "為什麼他們是好的合作對象",
-      "partners": ["夥伴角色 1", "夥伴角色 2", "夥伴角色 3"]
-    },
-    "parallel": { "label": "...", "description": "...", "partners": ["...", "...", "..."] },
-    "downstream": { "label": "...", "description": "...", "partners": ["...", "...", "..."] }
-  },
-  "top_partners": [
-    {
-      "name": "具體合作對象(例如:在地獨立咖啡店、社區型房仲店長)",
-      "tier": "上游 / 平行 / 下游",
-      "why": "為什麼這是高價值合作對象,2-3 句",
-      "brian_insight": "用 Brian 的口吻,寫一句 30-50 字的「教練觀念提醒」,點出這個對象背後的接案邏輯。例如:『會找豪宅房仲不是因為他有客戶名單,而是因為他每天都在跟你的目標客群聊天,他的一句推薦勝過你 100 張名片。』",
-      "value_to_them": "你能幫他賺到什麼或省到什麼(不是你想要什麼)",
-      "value_to_you": "他能帶給你的是什麼類型的案源",
-      "pitch": "一段可以直接用的合作開場提案(口語、不油、像顧問不像業務,70-120 字)",
-      "channels": ["在哪找 1", "在哪找 2", "在哪找 3"]
-    }
-  ]
-}
-
-請給出 5 個 top_partners,至少涵蓋上游、平行、下游各一個。
-所有內容用繁體中文,使用台灣慣用的商業詞彙。
-pitch 不要寫成業務話術,要像 Brian 教的顧問式提問——先理解對方的痛點,再連結到你能提供的價值。
-channels 要寫實際的管道(例如:商會、Facebook 社團類型、產業活動、實體店家拜訪、LinkedIn),不要寫「打電話」或「買名單」。
-brian_insight 要像教練在你耳邊講悄悄話,點破核心、不講廢話。`;
-  }
-
-  // === 渲染結果 ===
-  function renderResults(record) {
-    hideFormPage();
-    const eco = record.data.ecosystem || {};
-    const partners = record.data.top_partners || [];
-    const input = record.input;
-
-    resultsEl.innerHTML = `
-      <div class="ce-result-toolbar">
-        <div class="ce-result-info"><strong>${escapeHtml(input.trade)}</strong> · 目標客戶:${escapeHtml(input.target)} · ${escapeHtml(input.region)}</div>
-        <div class="ce-result-actions">
-          <button class="ce-action-btn" id="ce-print-btn">列印 / 存 PDF</button>
-          <button class="ce-action-btn" id="ce-back-btn">+ 新地圖</button>
-        </div>
-      </div>
-      <div class="ce-note">
-        以下是 AI 根據你的條件、用顧問思維產生的合作策略地圖。<br/>
-        建議:先挑 1-2 個最容易接觸的對象,從一場面對面咖啡開始,不要一次全打。
-      </div>
-      ${record.data.brian_note ? `
-        <div class="ce-brian-note">
-          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
-          <div class="ce-brian-note-body">${escapeHtml(record.data.brian_note)}</div>
-        </div>
-      ` : ''}
-      <div class="ce-result-section">
-        <div class="ce-section-title">Your Ecosystem</div>
-        <div class="ce-section-cn">客戶生態圈總覽</div>
-        <p style="line-height: 1.9; font-size: 15px; color: var(--ink-soft); margin-bottom: 26px;">${escapeHtml(eco.summary || '')}</p>
-        <div class="ce-tier-grid">
-          ${renderTier('上游', eco.upstream)}
-          ${renderTier('平行', eco.parallel)}
-          ${renderTier('下游', eco.downstream)}
-        </div>
-      </div>
-      <div class="ce-result-section">
-        <div class="ce-section-title">Top 5 Partners</div>
-        <div class="ce-section-cn">五個最值得開發的合作對象</div>
-        ${partners.map((p, i) => renderPartner(p, i)).join('')}
-      </div>
-    `;
-
-    bindResultEvents(record);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function bindResultEvents(record) {
-    document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
-    document.getElementById('ce-back-btn').addEventListener('click', () => {
-      showFormPage(); currentMapId = null; form.reset();
-      document.getElementById('ce-price').value = '五萬到二十萬';
-      document.getElementById('ce-region').value = '台灣全區';
-    });
-
-    document.querySelectorAll('.ce-copy-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const text = btn.dataset.copy;
-        navigator.clipboard?.writeText(text).then(() => {
-          btn.textContent = '✓ 已複製';
-          btn.classList.add('copied');
-          setTimeout(() => { btn.textContent = '複製話術'; btn.classList.remove('copied'); }, 1800);
-        });
-      });
-    });
-
-    document.querySelectorAll('.ce-deep-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const partnerIdx = parseInt(btn.dataset.partner);
-        const action = btn.dataset.action;
-        const partner = record.data.top_partners[partnerIdx];
-        const resultEl = document.getElementById(`ce-deep-${partnerIdx}`);
-
-        // 對話模式 - 開啟對話面板
-        if (action === 'open-chat') {
-          openChatPanel(record, partner, partnerIdx);
-          return;
-        }
-
-        btn.disabled = true;
-        const orig = btn.textContent;
-        btn.textContent = '思考中...';
-        resultEl.classList.add('show');
-        resultEl.textContent = 'Brian 正在針對「' + partner.name + '」深入分析...';
-
-        try {
-          const result = await deepDive(record.input, partner, action);
-          resultEl.textContent = result;
-        } catch (err) {
-          resultEl.textContent = '產生失敗:' + err.message;
-        } finally {
-          btn.disabled = false;
-          btn.textContent = orig;
-        }
-      });
-    });
-  }
-
-  async function deepDive(input, partner, action) {
-    const actionPrompts = {
-      'find-them': `這是最重要的任務。請告訴接案者要「去哪找」這個合作對象,但有以下嚴格規則:
-
-【絕對禁止】
-- 不能輸出任何個人手機、私人 email、住家地址
-- 不能建議「買名單」、「電話爬蟲」、「資料庫」、「個資撈取」
-- 不能建議「群發簡訊」、「群發 email」、「亂槍打鳥式 cold call」
-- 不能建議任何需要繞過隱私設定、需要付費取得個資、或可能違反個資法的方法
-
-【只能輸出以下類型的公開合法管道】
-請依下面 6 大類分別給出實際可執行的建議,每類至少 2-3 個具體選項:
-
-【1. 產業組織】
-- 該角色所屬的公會、協會、商會的名稱(例如:中華民國不動產仲介經紀商業同業公會全國聯合會)
-- 該組織的官網 / FB 粉專名稱
-- 該組織的會員大會、年會、研討會時間(若知道)
-
-【2. 公開的產業活動 / 場合】
-- 該行業會固定出席的展覽、論壇、市集
-- 該行業的進修課程、認證培訓地點
-- 該行業會出沒的扶輪社、青商會、BNI 等商務組織
-
-【3. 公開的線上社群】
-- 相關的 Facebook 社團類型(例如:「台灣室內設計師交流」這類社團)
-- LinkedIn 上的關鍵字搜尋建議
-- IG 該追蹤的 hashtag、該觀察的帳號類型
-
-【4. 公司官網的公開資訊】
-- 該行業公司官網通常會公開的「找門市」、「找顧問」、「找加盟主」功能(列出 2-3 個具體公司網址)
-- 該行業的公開店長 / 業務名錄頁面在哪
-
-【5. 實體拜訪建議】
-- 該行業有實體店面的話,建議拜訪哪幾個區域、哪種類型的店
-- 第一次拜訪的合理理由(例如:「我想了解你們近期成交的客戶輪廓,我帶咖啡」)
-- 拜訪時機建議(平日早上 vs. 週末下午)
-
-【6. 找到對象後的接觸方式 - 詳細說明】
-找到對象之後,請建議學員用以下方式逐步接觸,每種方式都要說明「適用情境」和「正確做法」:
-
-(A) Email 開發
-- 來源:對方公司官網「聯絡我們」表單、對方公開放在官網的工作信箱、官方名片掃描的信箱
-- 正確做法:寫具體有價值的內容,主旨清楚、開頭就說來意、不超過 200 字
-- 注意:絕不能用「企業名單」買來的 email,只能用對方主動公開的
-
-(B) Facebook 私訊
-- 來源:對方公司粉專、對方個人公開帳號的 Messenger
-- 正確做法:先按讚對方幾篇貼文、留有價值的留言,建立印象後再私訊
-- 適用:對方有經營粉專或個人帳號公開的情況
-
-(C) Instagram 私訊
-- 來源:對方個人 IG 公開帳號、品牌 IG 帳號
-- 正確做法:先互動 1-2 週(留言、限動回覆),自然進入 DM
-- 適用:該行業是視覺導向、對方有經營 IG
-
-(D) LinkedIn 訊息(免費版)或 InMail(付費)
-- 適用:店長級、經理級、業界資深人物
-- 做法:先 connect 並寫 connection note(150 字內),通過後再聊合作
-
-(E) 對方公開的官方 LINE@
-- 來源:對方門市張貼的 LINE@ QR code、官網列出的客服 LINE@
-- 注意:加的是「公司官方 LINE@」(@開頭)不是個人 LINE,可以放心加
-
-(F) 簡訊開發 ⚠️ 請特別謹慎
-- 適用情境:極少數情況——對方在公開資料(名片、官網)留有手機,且你跟對方有共同朋友引介
-- 法律提醒:即使號碼是公開的,未經對方同意傳「行銷意圖」的簡訊,在台灣可能違反個資法 §20(特定目的外利用)
-- 安全做法:第一通簡訊必須先「身分自我介紹 + 共同朋友是誰 + 詢問是否方便加 LINE 詳談」,絕不直接推銷
-- 風險:對方檢舉的話,可能面臨警告或行政罰
-- 強烈建議:能用 Email/FB/IG/LinkedIn 就不要用簡訊。簡訊是最後手段。
-
-【最後加一段】
-寫一段 80-120 字的「Brian 提醒」,提醒接案者:
-1. 接觸方式的優先順序應該是「實體見面 > 線上社群互動 > Email > 訊息」
-2. 找到管道只是第一步,真正成交的關鍵是「先給價值再談合作」
-3. 不要拿到聯絡方式就 cold call,那會把品牌做爛
-4. 寧願慢、寧願少,不要快、不要多
-
-格式要清晰,用 ★ 或數字分項。所有資訊必須是繁體中文台灣地區可實際使用的。`,
-
-      'three-emails': `請針對這個合作對象,寫出三封風格不同的開場信(每封 100-150 字),分別是:
-A. 直接型——開門見山說合作,適合認識的對象
-B. 顧問型——先丟一個對方關心的市場觀察,自然帶出合作
-C. 互惠型——先給對方一個小幫助(例如分享一個免費的資源),建立信任後再提合作
-
-每封信前面標註 A/B/C 和適用情境,信件之間用空行分開。`,
-      'objection': `請預想對方最可能拒絕的 3 個理由,並針對每個理由寫出 Brian 風格的回應(不卑不亢、用顧問口吻、不硬推銷)。
-格式:
-拒絕理由 1:[對方會說什麼]
-回應方向:[該怎麼回,150 字內]
-(寫 3 組)`,
-      'long-term': `請設計一份「3 階段合作演進路徑」,從第一次見面 → 試水溫合作 → 長期分潤/年約。
-每階段寫:
-- 階段名稱
-- 期程(例如:第 1 個月)
-- 你應該做什麼
-- 對方會怎麼反應
-- 進入下一階段的訊號是什麼
-
-要實際、可執行,不要寫空話。`,
-
-      'content-pack': `請產出「整套接觸這個對象的內容包」,包含 5 個版本,每個版本前用 ━━━ 分隔線分開,並標註標題:
-
-━━━━━━━━━━━━━━━━━━
-【1. LINE 第一句訊息】
-適合場景:已經有對方 LINE,還沒聊過。
-要求:不能像業務開場、不能太冷、要讓對方願意回覆。50 字以內,2-3 個版本讓使用者選。
-
-━━━━━━━━━━━━━━━━━━
-【2. IG 私訊版本】
-適合場景:對方有經營 IG,你想用比較輕鬆的方式破冰。
-要求:可以提一下對方最近的貼文(用「假設你看到對方在分享 XXX」這種方式示範),自然帶出。80 字以內。
-
-━━━━━━━━━━━━━━━━━━
-【3. Email 完整版】
-適合場景:正式接觸、對方是公司高層或不熟識者。
-要求:有主旨、有完整段落、有具體合作建議、有明確的下一步邀約。建議 200-300 字。
-
-━━━━━━━━━━━━━━━━━━
-【4. 一頁式合作備忘錄】
-適合場景:第一次見面要遞給對方的紙本。
-要求:用條列式呈現以下五個區塊——
-   ▸ 我是誰(一句話)
-   ▸ 我服務的客群與你高度重疊
-   ▸ 合作的三種可能模式(具體列出)
-   ▸ 我能帶給你的具體價值
-   ▸ 下一步建議
-
-━━━━━━━━━━━━━━━━━━
-【5. 給接案者自己的 FB / IG 貼文】
-適合場景:讓這類對象「主動」來找你。
-要求:寫一篇 200-300 字的貼文,主題是「給 XXX(這類對象)的 N 個建議/觀察」,用價值前置的方式吸引對方留言或私訊。要有具體可分享的洞察,不要空話。
-
-所有內容用繁體中文,台灣口吻,符合 Brian 的「顧問式」品牌(不油、不業務、不卑不亢)。`
-    };
-
-    const prompt = `你是 Brian,老闆的接案學院創辦人。
-接案者背景:
-- 專業:${input.trade}
-- 客戶:${input.target}
-- 區域:${input.region}
-- 報價:${input.price}
-${input.strength ? '- 優勢:' + input.strength : ''}
-
-合作對象:
-- 名稱:${partner.name}
-- 屬性:${partner.tier}
-- 為何合作:${partner.why}
-
-任務:${actionPrompts[action]}
-
-請直接輸出內容,不要前言、不要 JSON,純文字即可。用繁體中文,台灣口吻。`;
-
-    return await callClaude(prompt, false, 4000);
-  }
-
-  function renderTier(label, tier) {
-    if (!tier) return '';
-    return `
-      <div class="ce-tier-card">
-        <div class="ce-tier-label">${label}</div>
-        <div class="ce-tier-name">${escapeHtml(tier.label || '')}</div>
-        <p class="ce-tier-desc">${escapeHtml(tier.description || '')}</p>
-        <ul class="ce-tier-list">
-          ${(tier.partners || []).map(p => `<li>${escapeHtml(p)}</li>`).join('')}
-        </ul>
-      </div>
-    `;
-  }
-
-  function renderPartner(p, idx) {
-    return `
-      <div class="ce-partner">
-        <div class="ce-partner-header">
-          <div class="ce-partner-name">${idx+1}. ${escapeHtml(p.name || '')}</div>
-          <div class="ce-partner-tag">${escapeHtml(p.tier || '')}</div>
-        </div>
-        <div class="ce-partner-body">
-          <div class="ce-partner-row"><div class="ce-partner-key">為何合作</div><div class="ce-partner-val">${escapeHtml(p.why || '')}${p.brian_insight ? `<div class="ce-insight">💡 ${escapeHtml(p.brian_insight)}</div>` : ''}</div></div>
-          <div class="ce-partner-row"><div class="ce-partner-key">他能得到</div><div class="ce-partner-val">${escapeHtml(p.value_to_them || '')}</div></div>
-          <div class="ce-partner-row"><div class="ce-partner-key">你能得到</div><div class="ce-partner-val">${escapeHtml(p.value_to_you || '')}</div></div>
-          <div class="ce-partner-row">
-            <div class="ce-partner-key">開場話術</div>
-            <div class="ce-partner-val">
-              <div class="ce-pitch-wrap">
-                <div class="ce-pitch">${escapeHtml(p.pitch || '')}</div>
-                <button class="ce-copy-btn" data-copy="${escapeHtml(p.pitch || '')}">複製話術</button>
-              </div>
-            </div>
-          </div>
-          <div class="ce-partner-row">
-            <div class="ce-partner-key">在哪找他</div>
-            <div class="ce-partner-val"><div class="ce-channels">${(p.channels || []).map(c => `<span class="ce-channel-pill">${escapeHtml(c)}</span>`).join('')}</div></div>
-          </div>
-          <div class="ce-partner-row ce-deep-row">
-            <div class="ce-partner-key">進階深挖</div>
-            <div class="ce-partner-val">
-              <div class="ce-deep-buttons">
-                <button class="ce-deep-btn" data-partner="${idx}" data-action="find-them">★ 去哪找這類人(公開合法管道)</button>
-                <button class="ce-deep-btn" data-partner="${idx}" data-action="content-pack">📦 整套接觸內容包(LINE/IG/Email/貼文)</button>
-                <button class="ce-deep-btn" data-partner="${idx}" data-action="three-emails">給我三封不同風格的開場信</button>
-                <button class="ce-deep-btn" data-partner="${idx}" data-action="objection">他可能怎麼拒絕,我怎麼接</button>
-                <button class="ce-deep-btn" data-partner="${idx}" data-action="long-term">3 階段長期合作路徑</button>
-                <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
-              </div>
-              <div class="ce-deep-result" id="ce-deep-${idx}"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  // ========================================
-  // 對話功能（隨身教練）
-  // ========================================
-  let chatState = {
-    record: null,
-    partner: null,
-    partnerIdx: -1,
-    history: []  // [{role: 'user'|'assistant', content: '...'}]
-  };
-
-  const chatOverlay = document.getElementById('ce-chat-overlay');
-  const chatTitleEl = document.getElementById('ce-chat-title');
-  const chatSubEl = document.getElementById('ce-chat-sub');
-  const chatMessagesEl = document.getElementById('ce-chat-messages');
-  const chatSuggestionsEl = document.getElementById('ce-chat-suggestions');
-  const chatForm = document.getElementById('ce-chat-form');
-  const chatInput = document.getElementById('ce-chat-input');
-  const chatSendBtn = document.getElementById('ce-chat-send');
-  const chatCloseBtn = document.getElementById('ce-chat-close');
-
-  const SUGGESTED_PROMPTS = [
-    '我約過一次他沒回怎麼辦?',
-    '他說現在沒預算',
-    '他要分潤 50% 太多',
-    '我們一起做什麼活動最有效?',
-    '怎麼讓他主動推薦我?',
-    '第一次見面要帶什麼?'
-  ];
-
-  function chatHistoryKey(mapId, partnerIdx) {
-    return `ce_chat_${mapId}_${partnerIdx}`;
-  }
-
-  function loadChatHistory(mapId, partnerIdx) {
-    try {
-      const raw = localStorage.getItem(chatHistoryKey(mapId, partnerIdx));
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) { return []; }
-  }
-
-  function saveChatHistory(mapId, partnerIdx, history) {
-    try {
-      localStorage.setItem(chatHistoryKey(mapId, partnerIdx), JSON.stringify(history));
-    } catch (e) {}
-  }
-
-  function openChatPanel(record, partner, partnerIdx) {
-    chatState.record = record;
-    chatState.partner = partner;
-    chatState.partnerIdx = partnerIdx;
-    chatState.history = loadChatHistory(record.id, partnerIdx);
-
-    chatTitleEl.textContent = `關於「${partner.name}」`;
-    chatSubEl.textContent = `Brian 已經了解你的背景與這個對象,問什麼都可以`;
-
-    renderChatMessages();
-    renderSuggestions();
-    chatOverlay.classList.add('show');
-    setTimeout(() => chatInput.focus(), 350);
-  }
-
-  function closeChatPanel() {
-    chatOverlay.classList.remove('show');
-  }
-
-  chatCloseBtn.addEventListener('click', closeChatPanel);
-  chatOverlay.addEventListener('click', (e) => {
-    if (e.target === chatOverlay) closeChatPanel();
-  });
-
-  function renderChatMessages() {
-    if (chatState.history.length === 0) {
-      chatMessagesEl.innerHTML = `
-        <div class="ce-msg ce-msg-brian">
-          <div class="ce-msg-brian-label">★ BRIAN</div>
-          欸,你想針對「${escapeHtml(chatState.partner.name)}」聊什麼?<br/><br/>
-          我已經知道你的專業是${escapeHtml(chatState.record.input.trade)}、客戶是${escapeHtml(chatState.record.input.target)},也知道我們為什麼要找這個對象。<br/><br/>
-          你可以問我:約不到、被拒絕、報價怎麼談、合作模式怎麼設計、第一次見面要做什麼...任何卡關的地方,都可以問。
-        </div>
-      `;
-      return;
-    }
-
-    chatMessagesEl.innerHTML = chatState.history.map(msg => {
-      if (msg.role === 'user') {
-        return `<div class="ce-msg ce-msg-user">${escapeHtml(msg.content)}</div>`;
+  function trySubmit() {
+    const pw = input.value.trim();
+    if (auth.verify(pw)) {
+      updateStatus();
+      if (pendingHref) {
+        window.location.href = pendingHref;
       } else {
-        return `
-          <div class="ce-msg ce-msg-brian">
-            <div class="ce-msg-brian-label">★ BRIAN</div>
-            ${escapeHtml(msg.content).replace(/\n/g, '<br/>')}
-          </div>
-        `;
+        closeModal();
       }
-    }).join('');
-
-    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+    } else {
+      errorEl.classList.add('show');
+      input.select();
+    }
   }
 
-  function renderSuggestions() {
-    if (chatState.history.length > 0) {
-      chatSuggestionsEl.innerHTML = '';
-      chatSuggestionsEl.style.display = 'none';
-      return;
-    }
-    chatSuggestionsEl.style.display = 'flex';
-    chatSuggestionsEl.innerHTML = SUGGESTED_PROMPTS.map(p =>
-      `<button class="ce-suggestion-chip" type="button" data-prompt="${escapeHtml(p)}">${escapeHtml(p)}</button>`
-    ).join('');
-    chatSuggestionsEl.querySelectorAll('.ce-suggestion-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        chatInput.value = chip.dataset.prompt;
-        chatInput.focus();
-      });
-    });
-  }
-
-  chatForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const userMsg = chatInput.value.trim();
-    if (!userMsg) return;
-
-    chatState.history.push({ role: 'user', content: userMsg });
-    chatInput.value = '';
-    chatSendBtn.disabled = true;
-    renderChatMessages();
-    renderSuggestions();
-
-    // 加 loading 訊息
-    const loadingEl = document.createElement('div');
-    loadingEl.className = 'ce-msg ce-msg-brian ce-msg-loading';
-    loadingEl.innerHTML = `<div class="ce-msg-brian-label">★ BRIAN</div>思考中...`;
-    chatMessagesEl.appendChild(loadingEl);
-    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
-
-    try {
-      const reply = await chatWithBrian();
-      chatState.history.push({ role: 'assistant', content: reply });
-      saveChatHistory(chatState.record.id, chatState.partnerIdx, chatState.history);
-      renderChatMessages();
-    } catch (err) {
-      loadingEl.innerHTML = `<div class="ce-msg-brian-label">★ BRIAN</div>抱歉,出狀況了:${escapeHtml(err.message)}`;
-    } finally {
-      chatSendBtn.disabled = false;
-      chatInput.focus();
-    }
+  submitBtn.addEventListener('click', trySubmit);
+  cancelBtn.addEventListener('click', closeModal);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') trySubmit();
+    if (e.key === 'Escape') closeModal();
+  });
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModal();
   });
 
-  chatInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  // 工具卡片點擊
+  document.querySelectorAll('.tool-card[data-tool]').forEach(card => {
+    card.addEventListener('click', (e) => {
       e.preventDefault();
-      chatForm.dispatchEvent(new Event('submit'));
-    }
+      const href = card.dataset.href;
+      if (auth.isVerified()) {
+        window.location.href = href;
+      } else {
+        openPasswordModal(href);
+      }
+    });
   });
 
-  async function chatWithBrian() {
-    const apiKey = getApiKey();
-    if (!apiKey) throw new Error('尚未設定 API Key');
-
-    const input = chatState.record.input;
-    const partner = chatState.partner;
-
-    const systemPrompt = `你是 Brian,老闆的接案學院創辦人,有 13 年接案實戰經驗。
-你正在跟一位接案學員一對一對話,給他關於「異業合作」的具體建議。
-
-【學員背景】
-- 專業:${input.trade}
-- 理想客戶:${input.target}
-- 經營區域:${input.region}
-- 案件報價:${input.price}
-${input.strength ? '- 差異化優勢:' + input.strength : ''}
-
-【目前討論的合作對象】
-- 名稱:${partner.name}
-- 屬性:${partner.tier}
-- 為何合作:${partner.why}
-- 對方能得到:${partner.value_to_them}
-- 學員能得到:${partner.value_to_you}
-
-【你的回答原則】
-1. 像教練在面對面講話,口語、有溫度,不要寫成說明書、不要用條列(除非真的需要)
-2. 用「你」稱呼學員,自稱「我」
-3. 直接、不囉嗦,不要前言後語客套(不要說「這是個好問題」這種廢話)
-4. 一次回答一個重點,不要塞太多。寫 100-200 字最剛好
-5. 如果學員的問題太模糊,可以反問他釐清狀況,不要硬給標準答案
-6. 強調「給對方價值在前、談合作在後」的核心思維
-7. 不教 cold call、買名單、騷擾式行銷
-8. 用繁體中文,台灣口吻
-
-如果學員偏題太遠(例如問人生哲理、技術問題),禮貌帶回主題。`;
-
-    // 組合 messages
-    const messages = chatState.history.map(m => ({
-      role: m.role,
-      content: m.content
-    }));
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1500,
-        system: systemPrompt,
-        messages: messages
-      })
-    });
-
-    if (!response.ok) {
-      const t = await response.text();
-      throw new Error(`API ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.content.map(b => b.text || '').join('').trim();
-  }
-
-  function escapeHtml(str) {
-    if (typeof str !== 'string') return '';
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
-
-  // === 啟動 ===
-  loadSavedList();
-  if (!getApiKey()) showKeyModal();
-
+  updateStatus();
 })();
 </script>
+
 </body>
 </html>
