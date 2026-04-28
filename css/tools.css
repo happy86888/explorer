@@ -29,10 +29,20 @@ body { background: var(--paper); font-family: 'Noto Serif TC', serif; color: var
   display: flex; justify-content: space-between; align-items: center;
   flex-wrap: wrap; gap: 16px; border-bottom: 3px solid var(--gold);
 }
-.ce-nav-brand { display: flex; align-items: baseline; gap: 12px; }
+.ce-nav-brand { display: flex; align-items: baseline; gap: 12px; transition: opacity 0.2s; }
+.ce-nav-brand:hover { opacity: 0.7; }
+.ce-nav-brand:hover .ce-nav-mark { color: var(--paper); }
 .ce-nav-mark {
-  font-family: 'Cormorant Garamond', serif; font-style: italic;
-  font-size: 22px; color: var(--gold); font-weight: 600;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 16px; color: var(--gold); font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.ce-nav-mark::after {
+  content: '·';
+  margin-left: 12px;
+  color: var(--paper);
+  opacity: 0.4;
+  font-weight: 400;
 }
 .ce-nav-title { font-size: 13px; letter-spacing: 0.15em; }
 .ce-nav-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }

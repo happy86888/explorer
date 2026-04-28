@@ -1,10 +1,10 @@
 /* ============================================================
  * Brian's Toolkit - 工具共用 JS 模組
- * 提供:API Key 管理、AI API 呼叫(Claude / Gemini)、本地儲存、HTML escape
+ * 提供:API Key 管理、AI API 呼叫(Claude / Groq)、本地儲存、HTML escape
  *
  * 預設用 Claude(學員)
- * 在 URL 加 ?gemini 切換成 Gemini 模式(管理者用)
- * 切換後會記住,下次進入仍是 Gemini,直到加 ?claude 切回
+ * 在 URL 加 ?groq 切換成 Groq 模式(管理者測試用)
+ * ?claude 切回 Claude 模式
  * ============================================================ */
 
 (function() {
@@ -13,31 +13,7 @@
   // === Storage Keys ===
   const STORAGE_KEY_PROVIDER = 'ce_ai_provider';
   const STORAGE_KEY_CLAUDE = 'ce_anthropic_api_key';
-  const STORAGE_KEY_GEMINI = 'ce_gemini_api_key';
-
-  // === URL 參數切換(只有 Brian 知道) ===
-  // ?gemini = 切到 Gemini 模式
-  // ?claude = 切回 Claude 模式
-  function checkUrlSwitch() {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      if (params.has('gemini')) {
-        localStorage.setItem(STORAGE_KEY_PROVIDER, 'gemini');
-        // 清掉 URL 參數,避免分享出去
-        const url = new URL(window.location.href);
-        url.searchParams.delete('gemini');
-        window.history.replaceState({}, '', url.toString());
-        console.log('🔧 已切換到 Gemini 模式');
-      } else if (params.has('claude')) {
-        localStorage.setItem(STORAGE_KEY_PROVIDER, 'claude');
-        const url = new URL(window.location.href);
-        url.searchParams.delete('claude');
-        window.history.replaceState({}, '', url.toString());
-        console.log('🔧 已切換到 Claude 模式');
-      }
-    } catch (e) {}
-  }
-  checkUrlSwitch();
+  const STORAGE_KEY_GROQ = 'ce_groq_api_key';
 
   // === Provider 管理 ===
   function getProvider() {
@@ -51,24 +27,24 @@
   // === API Key 管理 ===
   function getApiKey(provider) {
     provider = provider || getProvider();
-    const key = provider === 'gemini' ? STORAGE_KEY_GEMINI : STORAGE_KEY_CLAUDE;
+    const key = provider === 'groq' ? STORAGE_KEY_GROQ : STORAGE_KEY_CLAUDE;
     try { return localStorage.getItem(key) || ''; } catch (e) { return ''; }
   }
   function setApiKey(value, provider) {
     provider = provider || getProvider();
-    const key = provider === 'gemini' ? STORAGE_KEY_GEMINI : STORAGE_KEY_CLAUDE;
+    const key = provider === 'groq' ? STORAGE_KEY_GROQ : STORAGE_KEY_CLAUDE;
     try { localStorage.setItem(key, value); } catch (e) {}
   }
 
-  // === 呼叫 AI(自動切換 Claude/Gemini) ===
+  // === 呼叫 AI(自動切換 Claude/Groq) ===
   async function callClaude(prompt, options) {
     options = options || {};
     const provider = getProvider();
     const apiKey = getApiKey(provider);
     if (!apiKey) throw new Error('尚未設定 API Key');
 
-    if (provider === 'gemini') {
-      return await callGeminiInternal(prompt, options, apiKey);
+    if (provider === 'groq') {
+      return await callGroqInternal(prompt, options, apiKey);
     } else {
       return await callClaudeInternal(prompt, options, apiKey);
     }
@@ -104,48 +80,80 @@
     return parseResponse(text, options);
   }
 
-  // === Gemini API(免費版) ===
-  async function callGeminiInternal(prompt, options, apiKey) {
-    const model = 'gemini-2.0-flash';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  // === Groq API(免費版,OpenAI 相容介面) ===
+  async function callGroqInternal(prompt, options, apiKey) {
+    // Groq 免費可用模型,從強到弱依序試,遇到 rate limit 自動降級
+    const models = [
+      'llama-3.3-70b-versatile',     // 最強免費模型,中文還可以
+      'llama-3.1-8b-instant',        // 較小但快
+      'gemma2-9b-it'                 // Google Gemma,備用
+    ];
 
-    let fullPrompt = prompt;
+    const messages = [];
     if (options.system) {
-      fullPrompt = options.system + '\n\n' + prompt;
+      messages.push({ role: 'system', content: options.system });
     }
+    messages.push({ role: 'user', content: prompt });
 
-    const body = {
-      contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
-      generationConfig: {
-        maxOutputTokens: options.maxTokens || 4000,
+    let lastError = null;
+
+    for (const model of models) {
+      const body = {
+        model: model,
+        messages: messages,
+        max_tokens: options.maxTokens || 4000,
         temperature: 0.7
+      };
+
+      // Groq 支援原生 JSON 模式(部分模型)
+      if (options.parseJson) {
+        body.response_format = { type: 'json_object' };
       }
-    };
 
-    if (options.parseJson) {
-      body.generationConfig.responseMimeType = 'application/json';
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const text = (data.choices?.[0]?.message?.content || '').trim();
+
+          if (!text) {
+            throw new Error('Groq 沒有回應內容');
+          }
+
+          if (model !== models[0]) {
+            console.log(`🔧 Groq ${models[0]} 不可用,自動切換到 ${model}`);
+          }
+          return parseResponse(text, options);
+        }
+
+        // 429 / 5xx 嘗試下一個模型
+        if (response.status === 429 || response.status >= 500) {
+          console.log(`⚠️ Groq ${model} 失敗(${response.status}),試下一個...`);
+          lastError = await response.text();
+          continue;
+        }
+
+        // 其他錯誤直接丟出
+        const errText = await response.text();
+        throw new Error(`Groq API ${response.status}: ${errText.substring(0, 200)}`);
+
+      } catch (e) {
+        lastError = e.message || String(e);
+        if (!String(lastError).includes('429') && !String(lastError).includes('失敗')) {
+          throw e;
+        }
+      }
     }
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-
-    if (!response.ok) {
-      const t = await response.text();
-      throw new Error(`Gemini API ${response.status}: ${t.substring(0, 200)}`);
-    }
-
-    const data = await response.json();
-    const text = (data.candidates?.[0]?.content?.parts || [])
-      .map(p => p.text || '').join('').trim();
-
-    if (!text) {
-      throw new Error('Gemini 沒有回應內容,可能是 prompt 太長或被安全機制擋下');
-    }
-
-    return parseResponse(text, options);
+    throw new Error(`Groq 全部模型都不可用。\n\n建議:\n1. 等 1 分鐘再試\n2. 或在網址加 ?claude 切回 Claude 模式\n\n細節:${String(lastError).substring(0, 200)}`);
   }
 
   // === 統一解析回應 ===
@@ -197,7 +205,6 @@
   }
 
   // === API Key Modal helpers ===
-  // 自動根據目前 provider 顯示對應提示
   function setupApiKeyModal(modalId, inputId, saveBtnId) {
     const modal = document.getElementById(modalId);
     const input = document.getElementById(inputId);
@@ -207,30 +214,29 @@
     function refreshDisplay() {
       const provider = getProvider();
       input.value = getApiKey(provider);
-      input.placeholder = provider === 'gemini'
-        ? 'AIza...(Gemini API Key)'
+      input.placeholder = provider === 'groq'
+        ? 'gsk_...(Groq API Key)'
         : 'sk-ant-api03-xxxxxxxxxxxxxxxxx';
 
-      // 切換 modal 內文為對應 provider
+      // 切換 modal 內文
       const bodyEl = modal.querySelector('.ce-modal-body');
       const costEl = modal.querySelector('.ce-modal-cost');
 
-      if (provider === 'gemini') {
+      if (provider === 'groq') {
         if (bodyEl) {
           bodyEl.innerHTML = `
-            這個工具用 <strong>Google Gemini AI</strong>(免費版)幫你運作。<br/>
+            這個工具用 <strong>Groq AI</strong>(免費版,Llama 3.3 70B 模型)幫你運作。<br/>
             <strong>申請步驟(一次性):</strong><br/>
-            1. 到 <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a><br/>
+            1. 到 <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a><br/>
             2. 用 Google 帳號登入<br/>
-            3. 點 Create API key → 複製 AIza 開頭的 Key<br/>
+            3. 點 Create API Key → 複製 gsk_ 開頭的 Key<br/>
             4. 貼到下方輸入框
           `;
         }
         if (costEl) {
-          costEl.innerHTML = `<strong>費用:</strong>完全免費(每天 50 次、每分鐘 15 次的額度)。Key 只存在你瀏覽器。`;
+          costEl.innerHTML = `<strong>費用:</strong>完全免費(每分鐘 30 次,不用綁信用卡)。Key 只存在你瀏覽器。`;
         }
       } else {
-        // Claude 模式 - 還原成原本內文
         if (bodyEl) {
           bodyEl.innerHTML = `
             這個工具用 <strong>Anthropic Claude AI</strong> 幫你運作。<br/>
@@ -247,14 +253,14 @@
         }
       }
 
-      // 顯示 GEMINI MODE 提示(只在 Gemini 模式)
+      // GROQ MODE 提示(只在 Groq 模式)
       const indicator = modal.querySelector('.ce-provider-indicator');
-      if (provider === 'gemini') {
+      if (provider === 'groq') {
         if (!indicator) {
           const div = document.createElement('div');
           div.className = 'ce-provider-indicator';
           div.style.cssText = 'background:#4a5d3a;color:white;padding:10px 14px;margin-bottom:14px;font-family:monospace;font-size:12px;letter-spacing:0.1em;border-radius:2px;';
-          div.innerHTML = '🔧 GEMINI MODE · 管理者模式(學員看不到此提示)';
+          div.innerHTML = '🔧 GROQ MODE · 管理者模式(學員看不到此提示)';
           modal.querySelector('.ce-modal').insertBefore(div, modal.querySelector('.ce-modal-eyebrow'));
         }
       } else if (indicator) {
@@ -274,9 +280,9 @@
           alert('Claude API Key 格式不對,應該以 sk-ant- 開頭');
           return;
         }
-      } else if (provider === 'gemini') {
-        if (!key.startsWith('AIza')) {
-          alert('Gemini API Key 格式不對,應該以 AIza 開頭');
+      } else if (provider === 'groq') {
+        if (!key.startsWith('gsk_')) {
+          alert('Groq API Key 格式不對,應該以 gsk_ 開頭');
           return;
         }
       }
@@ -285,9 +291,7 @@
       hide();
     });
 
-    // 初次載入就刷新一次,讓還沒打開 modal 時也能正確顯示
     refreshDisplay();
-
     return { show, hide };
   }
 
