@@ -212,6 +212,8 @@
   .ce-deep-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   .ce-deep-btn { background: var(--paper); border: 1px solid var(--gold); color: var(--gold-deep); padding: 9px 14px; font-family: 'Noto Serif TC', serif; font-size: 13px; cursor: pointer; transition: all 0.2s; }
   .ce-deep-btn:hover:not(:disabled) { background: var(--gold); color: var(--ink); }
+  .ce-deep-btn[data-action="find-them"] { background: var(--ink); color: var(--paper); border-color: var(--ink); font-weight: 700; }
+  .ce-deep-btn[data-action="find-them"]:hover:not(:disabled) { background: var(--gold-deep); color: var(--paper); border-color: var(--gold-deep); }
   .ce-deep-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .ce-deep-result { margin-top: 16px; padding: 18px 20px; background: rgba(184, 137, 58, 0.06); border-left: 3px solid var(--gold-deep); font-size: 14.5px; line-height: 1.85; white-space: pre-wrap; display: none; }
   .ce-deep-result.show { display: block; }
@@ -533,7 +535,7 @@
     return await callClaude(prompt, true);
   }
 
-  async function callClaude(prompt, parseJson) {
+  async function callClaude(prompt, parseJson, maxTokens) {
     const apiKey = getApiKey();
     if (!apiKey) throw new Error('尚未設定 API Key');
 
@@ -547,7 +549,7 @@
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
+        max_tokens: maxTokens || 4000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -698,6 +700,46 @@ channels 要寫實際的管道(例如:商會、Facebook 社團類型、產業活
 
   async function deepDive(input, partner, action) {
     const actionPrompts = {
+      'find-them': `這是最重要的任務。請告訴接案者要「去哪找」這個合作對象,但有以下嚴格規則:
+
+【絕對禁止】
+- 不能輸出任何個人手機、私人 email、住家地址
+- 不能建議「買名單」、「電話爬蟲」、「資料庫」、「個資撈取」
+- 不能建議「打陌生電話」、「群發簡訊」、「群發 email」
+- 不能建議任何需要繞過隱私設定、需要付費取得個資、或可能違反個資法的方法
+
+【只能輸出以下類型的公開合法管道】
+請依下面 5 大類分別給出實際可執行的建議,每類至少 2-3 個具體選項:
+
+【1. 產業組織】
+- 該角色所屬的公會、協會、商會的名稱(例如:中華民國不動產仲介經紀商業同業公會全國聯合會)
+- 該組織的官網 / FB 粉專名稱
+- 該組織的會員大會、年會、研討會時間(若知道)
+
+【2. 公開的產業活動 / 場合】
+- 該行業會固定出席的展覽、論壇、市集
+- 該行業的進修課程、認證培訓地點
+- 該行業會出沒的扶輪社、青商會、BNI 等商務組織
+
+【3. 公開的線上社群】
+- 相關的 Facebook 社團類型(例如:「台灣室內設計師交流」這類社團)
+- LinkedIn 上的關鍵字搜尋建議
+- IG 該追蹤的 hashtag、該觀察的帳號類型
+
+【4. 公司官網的公開資訊】
+- 該行業公司官網通常會公開的「找門市」、「找顧問」、「找加盟主」功能(列出 2-3 個具體公司網址)
+- 該行業的公開店長 / 業務名錄頁面在哪
+
+【5. 實體拜訪建議】
+- 該行業有實體店面的話,建議拜訪哪幾個區域、哪種類型的店
+- 第一次拜訪的合理理由(例如:「我想了解你們近期成交的客戶輪廓,我帶咖啡」)
+- 拜訪時機建議(平日早上 vs. 週末下午)
+
+【最後加一段】
+寫一段 50-80 字的「Brian 提醒」,提醒接案者:找到管道只是第一步,真正成交的關鍵是「先給價值再談合作」,不要拿到聯絡方式就 cold call,那會把品牌做爛。
+
+格式要清晰,用 ★ 或數字分項。所有資訊必須是繁體中文台灣地區可實際使用的。`,
+
       'three-emails': `請針對這個合作對象,寫出三封風格不同的開場信(每封 100-150 字),分別是:
 A. 直接型——開門見山說合作,適合認識的對象
 B. 顧問型——先丟一個對方關心的市場觀察,自然帶出合作
@@ -737,7 +779,7 @@ ${input.strength ? '- 優勢:' + input.strength : ''}
 
 請直接輸出內容,不要前言、不要 JSON,純文字即可。用繁體中文,台灣口吻。`;
 
-    return await callClaude(prompt, false);
+    return await callClaude(prompt, false, 3000);
   }
 
   function renderTier(label, tier) {
@@ -782,6 +824,7 @@ ${input.strength ? '- 優勢:' + input.strength : ''}
             <div class="ce-partner-key">進階深挖</div>
             <div class="ce-partner-val">
               <div class="ce-deep-buttons">
+                <button class="ce-deep-btn" data-partner="${idx}" data-action="find-them">★ 去哪找這類人(公開合法管道)</button>
                 <button class="ce-deep-btn" data-partner="${idx}" data-action="three-emails">給我三封不同風格的開場信</button>
                 <button class="ce-deep-btn" data-partner="${idx}" data-action="objection">他可能怎麼拒絕,我怎麼接</button>
                 <button class="ce-deep-btn" data-partner="${idx}" data-action="long-term">3 階段長期合作路徑</button>
