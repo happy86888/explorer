@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>合約陷阱檢查器 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) {
+    window.location.href = '../index.html';
+  }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  /* === 合約檢查器專屬樣式 === */
+  .risk-banner {
+    padding: 24px 28px; margin-bottom: 28px;
+    display: flex; align-items: center; gap: 20px;
+    border-left: 6px solid;
+  }
+  .risk-banner.high { background: rgba(168, 68, 42, 0.08); border-color: var(--rust); }
+  .risk-banner.medium { background: rgba(184, 137, 58, 0.1); border-color: var(--gold); }
+  .risk-banner.low { background: rgba(74, 93, 58, 0.08); border-color: var(--moss); }
+
+  .risk-score {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 64px; font-weight: 600; line-height: 1;
+    flex-shrink: 0;
+  }
+  .risk-banner.high .risk-score { color: var(--rust); }
+  .risk-banner.medium .risk-score { color: var(--gold-deep); }
+  .risk-banner.low .risk-score { color: var(--moss); }
+
+  .risk-info { flex: 1; }
+  .risk-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.25em; margin-bottom: 6px; font-weight: 700;
+  }
+  .risk-banner.high .risk-label { color: var(--rust); }
+  .risk-banner.medium .risk-label { color: var(--gold-deep); }
+  .risk-banner.low .risk-label { color: var(--moss); }
+
+  .risk-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .risk-desc { font-size: 14px; color: var(--ink-soft); line-height: 1.7; }
+
+  /* 危險條款 */
+  .danger-clause {
+    background: var(--paper-card); border: 1px solid var(--line);
+    border-left: 4px solid var(--rust); margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .danger-header {
+    padding: 16px 20px; background: var(--rust); color: white;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .danger-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; background: rgba(255,255,255,0.2);
+    padding: 4px 10px; flex-shrink: 0;
+  }
+  .danger-title { font-size: 16px; font-weight: 700; flex: 1; }
+  .danger-severity {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    background: white; color: var(--rust); padding: 4px 10px;
+    letter-spacing: 0.15em;
+  }
+  .danger-body { padding: 18px 20px; }
+  .danger-row {
+    padding: 12px 0; border-bottom: 1px solid var(--line);
+  }
+  .danger-row:last-child { border-bottom: none; }
+  .danger-row-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; color: var(--gold-deep); margin-bottom: 6px;
+    font-weight: 700; text-transform: uppercase;
+  }
+  .danger-quote {
+    background: var(--paper); padding: 12px 14px;
+    border-left: 3px solid var(--ink-mute);
+    font-size: 13.5px; line-height: 1.75; color: var(--ink);
+    font-style: italic; white-space: pre-wrap;
+    margin-top: 4px;
+  }
+  .danger-suggest {
+    background: rgba(74, 93, 58, 0.08); padding: 12px 14px;
+    border-left: 3px solid var(--moss);
+    font-size: 14px; line-height: 1.75; color: var(--ink);
+    margin-top: 4px;
+  }
+
+  /* 缺漏條款 */
+  .missing-clause {
+    background: var(--paper-card); border: 1px solid var(--line);
+    border-left: 4px solid var(--gold); padding: 16px 20px; margin-bottom: 12px;
+  }
+  .missing-title {
+    font-size: 15px; font-weight: 700; margin-bottom: 8px;
+    color: var(--gold-deep);
+  }
+  .missing-why {
+    font-size: 13.5px; color: var(--ink-soft); line-height: 1.75;
+    margin-bottom: 10px;
+  }
+  .missing-suggest {
+    background: rgba(74, 93, 58, 0.06); padding: 10px 12px;
+    border-left: 2px solid var(--moss);
+    font-size: 13px; line-height: 1.7;
+  }
+
+  /* 友善度評分 */
+  .fairness-meter {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 600px) { .fairness-meter { grid-template-columns: 1fr; } }
+  .fairness-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 20px; text-align: center;
+  }
+  .fairness-num {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 48px; font-weight: 600; line-height: 1; margin-bottom: 4px;
+  }
+  .fairness-num.client { color: var(--rust); }
+  .fairness-num.you { color: var(--moss); }
+  .fairness-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; color: var(--ink-mute); margin-top: 6px;
+  }
+  .fairness-bar-wrap {
+    margin: 24px 0; height: 24px; background: var(--paper-card);
+    border: 1px solid var(--line); position: relative; overflow: hidden;
+  }
+  .fairness-bar {
+    height: 100%; background: linear-gradient(90deg, var(--rust) 0%, var(--gold) 50%, var(--moss) 100%);
+    position: relative;
+  }
+  .fairness-marker {
+    position: absolute; top: -6px; bottom: -6px;
+    width: 4px; background: var(--ink); transform: translateX(-50%);
+  }
+  .fairness-axis {
+    display: flex; justify-content: space-between; margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--ink-mute); letter-spacing: 0.1em;
+  }
+
+  /* 法律免責 */
+  .legal-disclaimer {
+    background: rgba(168, 68, 42, 0.06); border: 1px solid var(--rust);
+    padding: 16px 20px; margin-bottom: 24px;
+    font-size: 13px; line-height: 1.75; color: var(--ink-soft);
+  }
+  .legal-disclaimer strong { color: var(--rust); }
+
+  textarea#cn-contract {
+    min-height: 280px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 13px !important;
+    line-height: 1.7 !important;
+  }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <div class="ce-modal-overlay" id="ce-key-modal">
+    <div class="ce-modal">
+      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
+      <div class="ce-modal-title">Connect Your Brain</div>
+      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
+      <div class="ce-modal-body">
+        這個工具用 <strong>Anthropic Claude AI</strong> 幫你檢查合約陷阱。<br/>
+        <strong>申請步驟(一次性):</strong><br/>
+        1. 到 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> 註冊<br/>
+        2. API Keys → Create Key<br/>
+        3. 複製 sk-ant- 開頭的 Key 貼到下面<br/>
+        4. 在 Billing 充值最低 5 美金
+      </div>
+      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="ce-modal-actions">
+        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
+      </div>
+      <div class="ce-modal-cost">
+        <strong>費用估算:</strong>每次檢查約 NT$2-3(看合約長度),深挖一次約 NT$0.5。
+      </div>
+    </div>
+  </div>
+
+  <nav class="ce-nav">
+    <div class="ce-nav-brand">
+      <div class="ce-nav-mark">CEO Brian</div>
+      <div class="ce-nav-title">合約陷阱檢查器</div>
+    </div>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新檢查</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Contract Checks</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <div id="ce-form-page">
+        <header class="ce-header">
+          <div class="ce-eyebrow">Don't Sign What You Don't Understand</div>
+          <h1 class="ce-title">The Contract Sentinel</h1>
+          <div class="ce-title-cn">合約陷阱檢查器</div>
+          <div class="ce-divider"></div>
+          <p class="ce-subtitle">
+            把客戶丟給你的合約貼進來,<br/>
+            AI 用接案者的角度幫你找出對你不利的條款,<br/>
+            並建議怎麼修、怎麼跟客戶溝通。
+          </p>
+        </header>
+
+        <!-- 法律免責 -->
+        <div class="legal-disclaimer">
+          <strong>⚖️ 重要聲明</strong>:這個工具是「合約閱讀助手」,不是法律顧問。
+          AI 給的建議是常見的接案者觀點,但每份合約的法律效力都需要實際律師判斷。
+          如果是涉及金額大、複雜度高的合約,
+          <strong>強烈建議找專業律師審閱</strong>,不要只依賴 AI。
+          有疑問也可以
+          <a href="https://lin.ee/9Ba3XjY" target="_blank" style="color:var(--gold-deep);font-weight:700;">加 Brian 的 LINE</a>
+          先聊聊。
+        </div>
+
+        <section class="ce-form-card">
+          <form id="ce-form" class="ce-form-grid">
+            <div class="ce-field ce-full">
+              <label for="cn-contract">把合約全文貼進來</label>
+              <textarea id="cn-contract" placeholder="把客戶傳給你的合約完整內容貼進來。可以是 Word 複製貼上、PDF 轉文字、或律師寫的草稿。&#10;&#10;不確定該貼哪段?貼整份。AI 會挑出有問題的部分,沒問題的會略過。" required></textarea>
+              <div class="ce-helper">純文字貼上即可,不用排版。建議 5000 字內,太長可以分段檢查</div>
+            </div>
+
+            <div class="ce-field">
+              <label for="cn-trade">你的接案類型</label>
+              <select id="cn-trade">
+                <option value="design" selected>設計類(平面、UI、品牌)</option>
+                <option value="dev">開發類(網站、APP、軟體)</option>
+                <option value="content">內容類(文案、攝影、影片)</option>
+                <option value="marketing">行銷類(社群、廣告、SEO)</option>
+                <option value="consulting">顧問類(策略、教練、諮詢)</option>
+                <option value="space">空間類(室內設計、裝修)</option>
+                <option value="translation">翻譯 / 寫作類</option>
+                <option value="other">其他類型</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="cn-amount">本案金額級距</label>
+              <select id="cn-amount">
+                <option>5 萬以下</option>
+                <option selected>5 萬到 30 萬</option>
+                <option>30 萬到 100 萬</option>
+                <option>100 萬到 500 萬</option>
+                <option>500 萬以上</option>
+              </select>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="cn-concern">你最擔心的點(可選填)</label>
+              <textarea id="cn-concern" placeholder="例如:我之前被改稿改到死,想看修改條款合不合理 / 客戶說合約照他們公司格式走,我看不懂法律用語 / 對方拖款一個月了還沒結案款..."></textarea>
+              <div class="ce-helper">告訴 AI 你最在意什麼,AI 會優先檢查相關條款</div>
+            </div>
+
+            <button type="submit" class="ce-submit" id="ce-submit-btn">
+              開始檢查合約 →
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section class="ce-results" id="ce-results"></section>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 合約陷阱檢查器</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('contracts');
+  let currentId = null;
+
+  const form = document.getElementById('ce-form');
+  const formPage = document.getElementById('ce-form-page');
+  const resultsEl = document.getElementById('ce-results');
+  const submitBtn = document.getElementById('ce-submit-btn');
+  const savedListEl = document.getElementById('ce-saved-list');
+  const savedCountEl = document.getElementById('ce-saved-count');
+
+  T.setupApiKeyModal('ce-key-modal', 'ce-api-key', 'ce-key-save');
+  document.getElementById('ce-settings-btn').addEventListener('click', () => {
+    document.getElementById('ce-api-key').value = T.getApiKey();
+    document.getElementById('ce-key-modal').classList.add('show');
+  });
+  document.getElementById('ce-new-btn').addEventListener('click', () => {
+    showFormPage(); form.reset(); currentId = null;
+  });
+
+  function showFormPage() {
+    formPage.classList.remove('ce-hidden');
+    resultsEl.innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideFormPage() { formPage.classList.add('ce-hidden'); }
+
+  loadSavedList();
+  if (!T.getApiKey()) document.getElementById('ce-key-modal').classList.add('show');
+
+  function loadSavedList() {
+    const records = storage.list();
+    savedCountEl.textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      savedListEl.innerHTML = `<div class="ce-empty-state">尚未儲存任何檢查紀錄。</div>`;
+      return;
+    }
+    savedListEl.innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => {
+          const riskColor = r.data.risk_level === '高' ? 'var(--rust)' :
+                           (r.data.risk_level === '中' ? 'var(--gold-deep)' : 'var(--moss)');
+          return `
+            <div class="ce-saved-card" data-id="${r.id}">
+              <button class="ce-saved-del" data-del="${r.id}">✕</button>
+              <div class="ce-saved-trade">
+                <span style="color:${riskColor};">●</span>
+                風險:${T.escapeHtml(r.data.risk_level || '?')}
+              </div>
+              <div class="ce-saved-target">${T.escapeHtml(r.input.contract.substring(0, 60))}...</div>
+              <div class="ce-saved-meta">${T.formatDate(r.createdAt)} · ${T.escapeHtml(r.input.amount)}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    savedListEl.querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) { currentId = r.id; hideFormPage(); renderResults(r); }
+      });
+    });
+    savedListEl.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除?')) {
+          storage.delete(btn.dataset.del);
+          loadSavedList();
+          if (currentId === btn.dataset.del) { showFormPage(); currentId = null; }
+        }
+      });
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!T.getApiKey()) { document.getElementById('ce-key-modal').classList.add('show'); return; }
+
+    const input = {
+      contract: document.getElementById('cn-contract').value.trim(),
+      trade: document.getElementById('cn-trade').value,
+      amount: document.getElementById('cn-amount').value,
+      concern: document.getElementById('cn-concern').value.trim()
+    };
+    if (!input.contract) return;
+
+    if (input.contract.length < 100) {
+      if (!confirm('合約內容很短(少於 100 字),確定要送出嗎?')) return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '正在逐條拆解合約...';
+    resultsEl.innerHTML = `
+      <div class="ce-loading">
+        <div class="ce-loading-text">Brian 正在用接案者的角度幫你找地雷...</div>
+        <div class="ce-loading-bar"></div>
+      </div>
+    `;
+
+    try {
+      const data = await checkContract(input);
+      const id = 'cn_' + Date.now();
+      const record = { id, input, data, createdAt: Date.now() };
+      storage.save(id, record);
+      currentId = id;
+      renderResults(record);
+      loadSavedList();
+    } catch (err) {
+      console.error(err);
+      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${T.escapeHtml(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '開始檢查合約 →';
+    }
+  });
+
+  async function checkContract(input) {
+    const tradeLabels = {
+      design: '設計類(平面、UI、品牌)',
+      dev: '開發類(網站、APP、軟體)',
+      content: '內容類(文案、攝影、影片)',
+      marketing: '行銷類(社群、廣告、SEO)',
+      consulting: '顧問類(策略、教練、諮詢)',
+      space: '空間類(室內設計、裝修)',
+      translation: '翻譯 / 寫作類',
+      other: '其他類型'
+    };
+
+    const prompt = `你是 Brian(老闆的接案學院創辦人),13 年接案實戰經驗,看過數百份合約。
+
+你要從「接案者立場」檢查一份客戶提供的合約,找出對接案者不利的條款、缺漏的保護機制,並提出修改建議。
+
+【背景資訊】
+- 接案類型:${tradeLabels[input.trade]}
+- 案件金額:${input.amount}
+- 接案者特別擔心:${input.concern || '(未填寫,請全面檢查)'}
+
+【合約全文】
+${input.contract}
+
+【輸出 JSON,只回 JSON,不要 markdown code fence】
+
+{
+  "risk_level": "高 / 中 / 低",
+  "risk_summary": "用 1-2 句總結這份合約的整體狀況",
+  "risk_reason": "用 50-100 字解釋為什麼是這個風險等級",
+
+  "fairness": {
+    "client_score": 一個 0-100 的數字,代表合約對「客戶」的有利程度,
+    "you_score": 一個 0-100 的數字,代表合約對「接案者」的有利程度,
+    "balance_position": 一個 0-100 的數字,0=完全偏向客戶、50=平衡、100=完全偏向接案者,
+    "balance_comment": "用 50 字內說明合約的傾向"
+  },
+
+  "brian_note": "用 Brian 口吻寫一段 100-150 字的「教練筆記」,直接告訴接案者:這份合約最該注意的點是什麼、簽前一定要爭取改的是哪幾條、不改也能簽的是哪些。要有溫度、像在面對面講話。",
+
+  "danger_clauses": [
+    {
+      "title": "條款的問題標題(短,例如:無限改稿陷阱)",
+      "severity": "高 / 中 / 低",
+      "original_text": "從合約原文中複製的相關段落(逐字,不要改寫)",
+      "why_dangerous": "為什麼這對接案者不利(具體解釋,80-150 字)",
+      "real_risk": "如果不修這條,你實際會遇到什麼狀況(舉例)",
+      "suggested_fix": "建議怎麼修改這條款(寫出修改後的具體文字)"
+    }
+  ],
+
+  "missing_clauses": [
+    {
+      "title": "缺漏的條款名稱(例如:智財權歸屬)",
+      "why_needed": "為什麼這份合約應該有這條(80-120 字)",
+      "suggested_clause": "建議補上的條款文字(可直接用)"
+    }
+  ],
+
+  "next_actions": {
+    "must_fix": ["簽約前一定要改的條款 1", "條款 2", "..."],
+    "nice_to_fix": ["建議改但不一定要改的條款 1", "..."],
+    "ok_to_sign": "如果以上都沒爭取到,這份合約還能不能簽?用 50-100 字判斷"
+  }
+}
+
+【檢查重點(從接案者觀點)】
+1. 付款條件:訂金比例?尾款時機?逾期條款?
+2. 修改 / 改稿次數:有沒有上限?超過怎麼辦?
+3. 智財權:設計品/作品的著作權歸誰?
+4. 終止條款:對方可不可以隨時取消?取消後錢怎麼算?
+5. 保密條款:是否單向保密(只要你保密、對方不用)?
+6. 賠償責任:你要負無限責任嗎?有沒有上限?
+7. 競業條款:有沒有限制你接同行?
+8. 不可抗力 / 延遲:延期條款是否合理?
+9. 違約金:對你的違約金條件是否過苛?
+
+【判斷風險等級的標準】
+- 高風險:有明顯偏頗條款(例如:無上限改稿、無限賠償、智財權強制歸客戶但不付對應費用)
+- 中風險:條款大致合理但有 2-3 處該爭取的細節
+- 低風險:合約大致對等,只有小細節可微調
+
+【danger_clauses 數量原則】
+- 不是每份合約都要找出 5 條問題,有就寫、沒有就不寫
+- 一份完美合約 danger_clauses 可以是空陣列
+- 一份有問題的合約應該寫出所有有問題的條款,不要漏
+
+【嚴格要求】
+- original_text 必須從原合約中「逐字」抄出,不能改寫、簡寫、重新表達
+- 如果 original_text 找不到對應原文(例如:你判斷的是「缺少」某條),應該放在 missing_clauses 而不是 danger_clauses
+- 全部用繁體中文,法律用語可以保留(例如:不可抗力、保密義務)`;
+
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 6000 });
+  }
+
+  function renderResults(record) {
+    hideFormPage();
+    const d = record.data;
+    const riskClass = d.risk_level === '高' ? 'high' : (d.risk_level === '中' ? 'medium' : 'low');
+    const riskWord = d.risk_level === '高' ? 'HIGH RISK' : (d.risk_level === '中' ? 'MEDIUM RISK' : 'LOW RISK');
+    const fairness = d.fairness || {};
+
+    let html = `
+      <div class="ce-result-toolbar">
+        <div class="ce-result-info"><strong>合約檢查結果</strong> · ${T.escapeHtml(record.input.amount)}</div>
+        <div class="ce-result-actions">
+          <button class="ce-action-btn" id="ce-print-btn">列印 / 存 PDF</button>
+          <button class="ce-action-btn" id="ce-back-btn">+ 新檢查</button>
+        </div>
+      </div>
+
+      <!-- 法律聲明 -->
+      <div class="legal-disclaimer">
+        <strong>⚖️ 提醒:</strong>以下是 AI 從接案者觀點給的建議,不是法律意見。重要合約建議找律師最終審閱。
+        執行細節歡迎<a href="https://lin.ee/9Ba3XjY" target="_blank" style="color:var(--gold-deep);font-weight:700;">加 Brian 的 LINE</a>聊。
+      </div>
+
+      <!-- 風險總覽 -->
+      <div class="risk-banner ${riskClass}">
+        <div class="risk-score">${T.escapeHtml(d.risk_level || '?')}</div>
+        <div class="risk-info">
+          <div class="risk-label">${riskWord} · 整體風險等級</div>
+          <div class="risk-title">${T.escapeHtml(d.risk_summary || '')}</div>
+          <div class="risk-desc">${T.escapeHtml(d.risk_reason || '')}</div>
+        </div>
+      </div>
+
+      ${d.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${T.escapeHtml(d.brian_note)}</div>
+        </div>
+      ` : ''}
+
+      <!-- 友善度評分 -->
+      <div class="ce-result-section">
+        <div class="ce-section-title">Fairness Meter</div>
+        <div class="ce-section-cn">合約友善度評分</div>
+
+        <div class="fairness-meter">
+          <div class="fairness-card">
+            <div class="fairness-num client">${fairness.client_score || 0}</div>
+            <div style="font-size:14px;color:var(--ink-soft);">對客戶有利程度</div>
+            <div class="fairness-label">CLIENT</div>
+          </div>
+          <div class="fairness-card">
+            <div class="fairness-num you">${fairness.you_score || 0}</div>
+            <div style="font-size:14px;color:var(--ink-soft);">對你有利程度</div>
+            <div class="fairness-label">YOU</div>
+          </div>
+        </div>
+
+        <div style="background:var(--paper-card);padding:20px;border:1px solid var(--line);">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.15em;color:var(--gold-deep);margin-bottom:12px;">合約傾向</div>
+          <div class="fairness-bar-wrap">
+            <div class="fairness-bar"></div>
+            <div class="fairness-marker" style="left:${fairness.balance_position || 50}%;"></div>
+          </div>
+          <div class="fairness-axis">
+            <span>← 完全偏客戶</span>
+            <span>平衡</span>
+            <span>完全偏你 →</span>
+          </div>
+          <div style="margin-top:14px;font-size:14px;color:var(--ink-soft);line-height:1.7;">
+            ${T.escapeHtml(fairness.balance_comment || '')}
+          </div>
+        </div>
+      </div>
+
+      <!-- 危險條款 -->
+      ${(d.danger_clauses && d.danger_clauses.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Danger Clauses</div>
+          <div class="ce-section-cn">需要警戒的條款 (${d.danger_clauses.length} 條)</div>
+          ${d.danger_clauses.map((c, i) => renderDangerClause(c, i)).join('')}
+        </div>
+      ` : `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Danger Clauses</div>
+          <div class="ce-section-cn">需要警戒的條款</div>
+          <div style="background:rgba(74, 93, 58, 0.08);padding:20px;border-left:4px solid var(--moss);font-size:14px;color:var(--ink-soft);">
+            ✓ 沒找到明顯的地雷條款。但仍建議檢查下方的「缺漏條款」與「下一步建議」。
+          </div>
+        </div>
+      `}
+
+      <!-- 缺漏條款 -->
+      ${(d.missing_clauses && d.missing_clauses.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Missing Clauses</div>
+          <div class="ce-section-cn">這份合約應該補上的 (${d.missing_clauses.length} 條)</div>
+          ${d.missing_clauses.map(m => `
+            <div class="missing-clause">
+              <div class="missing-title">⊕ ${T.escapeHtml(m.title || '')}</div>
+              <div class="missing-why">${T.escapeHtml(m.why_needed || '')}</div>
+              <div class="missing-suggest">
+                <strong>建議補上:</strong><br/>
+                ${T.escapeHtml(m.suggested_clause || '')}
+                <button class="ce-copy-btn" data-copy="${T.escapeHtml(m.suggested_clause || '')}" style="margin-top:8px;">複製條款</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <!-- 下一步建議 -->
+      ${d.next_actions ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Next Actions</div>
+          <div class="ce-section-cn">下一步該怎麼做</div>
+          <div class="ce-block">
+            <div class="ce-block-body">
+              ${(d.next_actions.must_fix && d.next_actions.must_fix.length) ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key" style="color:var(--rust);">必改</div>
+                  <div class="ce-block-val">
+                    <ul style="list-style:none;padding:0;">
+                      ${d.next_actions.must_fix.map(item => `<li style="padding:5px 0 5px 18px;position:relative;"><span style="position:absolute;left:0;color:var(--rust);">●</span> ${T.escapeHtml(item)}</li>`).join('')}
+                    </ul>
+                  </div>
+                </div>
+              ` : ''}
+              ${(d.next_actions.nice_to_fix && d.next_actions.nice_to_fix.length) ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key" style="color:var(--gold-deep);">建議改</div>
+                  <div class="ce-block-val">
+                    <ul style="list-style:none;padding:0;">
+                      ${d.next_actions.nice_to_fix.map(item => `<li style="padding:5px 0 5px 18px;position:relative;"><span style="position:absolute;left:0;color:var(--gold-deep);">○</span> ${T.escapeHtml(item)}</li>`).join('')}
+                    </ul>
+                  </div>
+                </div>
+              ` : ''}
+              ${d.next_actions.ok_to_sign ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key" style="color:var(--moss);">能簽嗎</div>
+                  <div class="ce-block-val">${T.escapeHtml(d.next_actions.ok_to_sign)}</div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- 進階深挖 -->
+      <div class="ce-result-section">
+        <div class="ce-block">
+          <div class="ce-block-header">
+            <div class="ce-block-title">進階深挖</div>
+          </div>
+          <div class="ce-block-body">
+            <div class="ce-deep-buttons">
+              <button class="ce-deep-btn btn-primary" data-action="negotiation-email">📩 寫一封跟客戶要求修改的 Email</button>
+              <button class="ce-deep-btn btn-rust" data-action="rewrite">🔄 幫我整份重寫成「公平版」</button>
+              <button class="ce-deep-btn" data-action="meeting-prep">面對面開會時怎麼開口</button>
+              <button class="ce-deep-btn" data-action="walk-away">如果客戶堅持不改,該不該走</button>
+              <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
+            </div>
+            <div class="ce-deep-result" id="ce-deep-result"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    resultsEl.innerHTML = html;
+    bindResultEvents(record);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderDangerClause(c, i) {
+    const sevColor = c.severity === '高' ? 'var(--rust)' : (c.severity === '中' ? 'var(--gold-deep)' : 'var(--ink-mute)');
+    return `
+      <div class="danger-clause">
+        <div class="danger-header">
+          <div class="danger-num">DANGER ${String(i+1).padStart(2, '0')}</div>
+          <div class="danger-title">${T.escapeHtml(c.title || '')}</div>
+          <div class="danger-severity">嚴重度: ${T.escapeHtml(c.severity || '?')}</div>
+        </div>
+        <div class="danger-body">
+          <div class="danger-row">
+            <div class="danger-row-label">合約原文</div>
+            <div class="danger-quote">"${T.escapeHtml(c.original_text || '')}"</div>
+          </div>
+          <div class="danger-row">
+            <div class="danger-row-label">為什麼危險</div>
+            <div style="font-size:14px;line-height:1.85;">${T.escapeHtml(c.why_dangerous || '')}</div>
+          </div>
+          ${c.real_risk ? `
+            <div class="danger-row">
+              <div class="danger-row-label">實際會發生什麼</div>
+              <div style="font-size:14px;line-height:1.85;color:var(--ink-soft);font-style:italic;">${T.escapeHtml(c.real_risk)}</div>
+            </div>
+          ` : ''}
+          <div class="danger-row">
+            <div class="danger-row-label">建議怎麼修</div>
+            <div class="danger-suggest">${T.escapeHtml(c.suggested_fix || '')}</div>
+            <button class="ce-copy-btn" data-copy="${T.escapeHtml(c.suggested_fix || '')}" style="margin-top:8px;">複製建議</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function bindResultEvents(record) {
+    document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
+    document.getElementById('ce-back-btn').addEventListener('click', () => {
+      showFormPage(); currentId = null; form.reset();
+    });
+
+    document.querySelectorAll('.ce-copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard?.writeText(btn.dataset.copy).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = '✓ 已複製';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+        });
+      });
+    });
+
+    document.querySelectorAll('.ce-deep-btn[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const action = btn.dataset.action;
+        const resultEl = document.getElementById('ce-deep-result');
+        btn.disabled = true;
+        const orig = btn.textContent;
+        btn.textContent = '思考中...';
+        resultEl.classList.add('show');
+        resultEl.textContent = 'Brian 正在分析...';
+
+        try {
+          const result = await deepDive(record, action);
+          resultEl.textContent = result;
+        } catch (err) {
+          resultEl.textContent = '產生失敗:' + err.message;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = orig;
+        }
+      });
+    });
+  }
+
+  async function deepDive(record, action) {
+    const dangerSummary = (record.data.danger_clauses || []).map((c, i) => `${i+1}. ${c.title}`).join('\n');
+    const missingSummary = (record.data.missing_clauses || []).map((m, i) => `${i+1}. ${m.title}`).join('\n');
+
+    const prompts = {
+      'negotiation-email': `請寫一封 Email,寄給客戶,要求修改合約。
+
+要求:
+- 主旨明確、不超過 25 字
+- 開頭客氣感謝,不要一開場就指責
+- 中段條列說明「希望調整」的條款,每條附「為什麼希望這樣調整」(用對方能接受的理由,不要說「對我不公平」,要說「對我們雙方更好」或「降低後續糾紛」)
+- 結尾邀請對方一起 review、給時間壓力但不強硬
+- 全文 250-400 字
+- 口吻:專業、禮貌、有底氣,不卑不亢
+
+要修改的條款摘要:
+${dangerSummary || '(沒有找到危險條款)'}
+
+要補上的條款摘要:
+${missingSummary || '(沒有需要補的)'}`,
+
+      'rewrite': `請整理一份「公平版」的合約建議,結構是:
+
+【公平版合約結構建議】
+列出這份合約應該包含的條款,每個條款給出建議文字。
+
+至少包含:
+1. 服務範圍(寫清楚做什麼、不做什麼)
+2. 時程與交付物
+3. 付款條件(訂金比例、尾款時機、逾期罰則)
+4. 修改條款(初稿/大改/小修各幾次,超過怎麼算)
+5. 智財權歸屬(明確寫客戶取得什麼權利)
+6. 保密義務(必須是雙向)
+7. 終止條款(各自可以怎麼終止、終止後錢怎麼算)
+8. 不可抗力
+9. 賠償責任上限(避免無限責任)
+10. 爭議解決方式
+
+每條用「建議文字:」開頭,寫出可直接用的條款內容。
+全部繁體中文,符合台灣商業習慣。
+
+⚠️ 結尾加上:這份建議是接案者觀點的範本,正式使用前請給律師看過。`,
+
+      'meeting-prep': `客戶約你開會討論合約,你要去爭取修改條款。
+請給我一份「會前準備清單」:
+
+1. 開會前要準備的 3 件事(具體可做)
+2. 開場破冰怎麼說(50 字內,化解對抗感)
+3. 切入合約討論的話術(從哪一條開始談最不會引起對方防衛)
+4. 對方說「我們公司合約一律不能改」時的應對(給 3 種回應)
+5. 對方說「相信我啦,不會發生那種狀況」時的應對
+6. 結尾如果還沒談攏,怎麼漂亮收尾保留下次空間
+
+不要寫成說明書,寫成像 Brian 在 coaching 你的口吻。`,
+
+      'walk-away': `如果跟客戶談了合約修改,對方堅持不改,該怎麼判斷要不要走?
+
+請給:
+
+1. 「絕對不能簽」的 3 個訊號(看到這些就走)
+2. 「可以妥協簽」的條件(什麼情況下,即使合約偏頗你還是該簽)
+3. 漂亮拒絕的話術(150 字內,保留未來合作可能)
+4. 拒絕後如何把這次經驗變成業務累積(轉介紹、口碑、學費)
+
+⚠️ 提醒:走人比簽爛合約更值錢。一份爛合約浪費的是你 6 個月的時間。`
+    };
+
+    const prompt = `你是 Brian,接案教練。
+
+合約類型:${record.input.trade}
+案件金額:${record.input.amount}
+合約風險等級:${record.data.risk_level}
+合約整體狀況:${record.data.risk_summary}
+
+任務:${prompts[action]}
+
+繁體中文,台灣口吻,直接輸出內容,不要前言。`;
+
+    return await T.callClaude(prompt, { maxTokens: 3000 });
+  }
+})();
+</script>
+</body>
+</html>
