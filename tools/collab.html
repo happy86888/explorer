@@ -513,15 +513,19 @@
         </header>
 
         <section class="ce-form-card">
+          <div style="display:flex;gap:10px;align-items:flex-start;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px;font-size:13px;line-height:1.7;color:var(--ink-soft);">
+            <span style="font-size:16px;flex-shrink:0;">☕</span>
+            <span>AI 給的是策略起點,不是最終答案。執行前歡迎<a href="https://lin.ee/9Ba3XjY" target="_blank" style="color:var(--gold-deep);text-decoration:underline;font-weight:700;">加 Brian 的 LINE</a>聊聊。</span>
+          </div>
           <form id="ce-form" class="ce-form-grid">
             <div class="ce-field">
               <label for="ce-trade">你的專業</label>
-              <input type="text" id="ce-trade" placeholder="例如:商業空間室內設計" required />
-              <div class="ce-helper">越具體越好,「設計」太廣,「住宅軟裝設計」更好</div>
+              <input type="text" id="ce-trade" placeholder="例如:商業攝影 / 室內設計 / 品牌設計 / 影片剪輯 / 社群行銷 / 文案撰寫 / 顧問諮詢..." required />
+              <div class="ce-helper">越具體越好,「設計」太廣 →「住宅軟裝設計」;「攝影」太廣 →「餐廳菜單攝影」</div>
             </div>
             <div class="ce-field">
               <label for="ce-target">你的理想客戶</label>
-              <input type="text" id="ce-target" placeholder="例如:30-50 歲新成屋屋主" required />
+              <input type="text" id="ce-target" placeholder="例如:30-50 歲新成屋屋主 / 開店中的餐飲老闆 / 月營收 50-200 萬的電商 / 想拍個人品牌的講師..." required />
             </div>
             <div class="ce-field">
               <label for="ce-region">經營區域</label>
@@ -545,7 +549,7 @@
             </div>
             <div class="ce-field ce-full">
               <label for="ce-strength">你的差異化優勢(可選填)</label>
-              <textarea id="ce-strength" placeholder="例如:擅長日系極簡風、會幫客戶做完整品牌規劃、交期穩定..."></textarea>
+              <textarea id="ce-strength" placeholder="例如:擅長日系極簡風 / 會幫客戶做完整品牌規劃 / 拍過 20+ 家米其林餐廳 / 交期穩定不放鳥 / 業界 5 年以上資歷 / 有得獎作品..."></textarea>
               <div class="ce-helper">填寫這欄會讓「合作提案話術」更有殺傷力</div>
             </div>
             <button type="submit" class="ce-submit" id="ce-submit-btn">

@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>新手接案起步指南 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) {
+    window.location.href = '../index.html';
+  }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  /* === 新手指南專屬樣式 === */
+  .platform-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 22px; margin-bottom: 14px; transition: all 0.2s;
+  }
+  .platform-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.05); }
+  .platform-card.recommended {
+    border-color: var(--gold); border-width: 2px;
+    background: linear-gradient(135deg, rgba(184, 137, 58, 0.05) 0%, var(--paper-card) 100%);
+  }
+  .platform-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 10px; margin-bottom: 12px;
+  }
+  .platform-name {
+    font-size: 19px; font-weight: 700; display: flex; align-items: center; gap: 10px;
+  }
+  .platform-region {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    background: var(--ink); color: var(--paper); padding: 3px 8px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .platform-region.tw { background: var(--rust); }
+  .platform-region.intl { background: var(--moss); }
+  .platform-region.cn { background: var(--gold-deep); }
+  .platform-link {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--gold-deep); text-decoration: none; padding: 4px 10px;
+    border: 1px solid var(--gold); transition: all 0.15s;
+  }
+  .platform-link:hover { background: var(--gold); color: var(--ink); }
+  .platform-tagline {
+    font-size: 13px; color: var(--ink-mute); font-style: italic;
+    margin-bottom: 14px;
+  }
+  .platform-attrs {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px; margin-bottom: 14px;
+  }
+  .platform-attr {
+    background: var(--paper); padding: 8px 12px;
+    font-size: 12.5px; line-height: 1.6;
+  }
+  .platform-attr-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 0.15em; color: var(--gold-deep); margin-bottom: 2px;
+    text-transform: uppercase; font-weight: 700;
+  }
+  .platform-pros-cons {
+    display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px;
+  }
+  @media (min-width: 600px) { .platform-pros-cons { grid-template-columns: 1fr 1fr; } }
+  .platform-pro, .platform-con {
+    background: var(--paper); padding: 10px 12px; font-size: 13px; line-height: 1.7;
+  }
+  .platform-pro { border-left: 2px solid var(--moss); }
+  .platform-con { border-left: 2px solid var(--rust); }
+  .platform-pro-label { font-weight: 700; color: var(--moss); margin-bottom: 4px; font-size: 11px; letter-spacing: 0.1em; }
+  .platform-con-label { font-weight: 700; color: var(--rust); margin-bottom: 4px; font-size: 11px; letter-spacing: 0.1em; }
+
+  .platform-first-step {
+    margin-top: 14px; padding: 12px 14px;
+    background: var(--ink); color: var(--paper);
+    font-size: 13px; line-height: 1.7;
+  }
+  .platform-first-step-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--gold); letter-spacing: 0.15em; margin-bottom: 6px; font-weight: 700;
+  }
+
+  /* === Day Plan 7 天行動清單 === */
+  .day-plan {
+    display: grid; grid-template-columns: 80px 1fr; gap: 0;
+    background: var(--paper-card); border: 1px solid var(--line);
+    margin-bottom: 12px;
+  }
+  .day-num {
+    background: var(--ink); color: var(--paper);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .day-num-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 0.2em; color: var(--gold); margin-bottom: 4px;
+  }
+  .day-num-big {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 32px; font-weight: 600; line-height: 1;
+  }
+  .day-content { padding: 16px 20px; }
+  .day-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .day-tasks { font-size: 13.5px; line-height: 1.85; color: var(--ink-soft); }
+
+  /* === 教學區 === */
+  .lesson-grid {
+    display: grid; grid-template-columns: 1fr; gap: 14px;
+  }
+  @media (min-width: 720px) { .lesson-grid { grid-template-columns: 1fr 1fr; } }
+  .lesson-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 20px; cursor: pointer; transition: all 0.2s;
+  }
+  .lesson-card:hover {
+    border-color: var(--gold); transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  }
+  .lesson-card-icon {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 32px; color: var(--gold); line-height: 1; margin-bottom: 10px; opacity: 0.6;
+  }
+  .lesson-card-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .lesson-card-desc { font-size: 13px; color: var(--ink-mute); line-height: 1.65; }
+  .lesson-card-cta {
+    margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em;
+    color: var(--gold-deep); text-transform: uppercase;
+  }
+
+  /* === 篩選 Pills === */
+  .filter-pills {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px;
+  }
+  .filter-pill {
+    background: var(--paper); border: 1px solid var(--line);
+    padding: 6px 14px; font-size: 12.5px; cursor: pointer;
+    font-family: 'Noto Serif TC', serif; transition: all 0.15s;
+  }
+  .filter-pill.active {
+    background: var(--ink); color: var(--paper); border-color: var(--ink);
+  }
+  .filter-pill:hover:not(.active) { border-color: var(--gold); color: var(--gold-deep); }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <!-- API Key Modal -->
+  <div class="ce-modal-overlay" id="ce-key-modal">
+    <div class="ce-modal">
+      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
+      <div class="ce-modal-title">Connect Your Brain</div>
+      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
+      <div class="ce-modal-body">
+        這個工具用 <strong>Anthropic Claude AI</strong> 幫你產生客製化的接案路徑。<br/>
+        <strong>申請步驟(一次性):</strong><br/>
+        1. 到 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> 註冊<br/>
+        2. API Keys → Create Key<br/>
+        3. 複製 sk-ant- 開頭的 Key 貼到下面<br/>
+        4. 在 Billing 充值最低 5 美金
+      </div>
+      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="ce-modal-actions">
+        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
+      </div>
+      <div class="ce-modal-cost">
+        <strong>費用估算:</strong>每次產生客製建議約 NT$1。
+      </div>
+    </div>
+  </div>
+
+  <nav class="ce-nav">
+    <div class="ce-nav-brand">
+      <div class="ce-nav-mark">CEO Brian</div>
+      <div class="ce-nav-title">新手接案起步指南</div>
+    </div>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <header class="ce-header">
+        <div class="ce-eyebrow">For First-Time Freelancers</div>
+        <h1 class="ce-title">Where to Start</h1>
+        <div class="ce-title-cn">新手接案起步指南</div>
+        <div class="ce-divider"></div>
+        <p class="ce-subtitle">
+          完全沒接過案?不知道從哪開始?<br/>
+          告訴我你會什麼、想接什麼,<br/>
+          Brian 幫你從 30+ 個接案平台中挑出最適合你的,<br/>
+          再給你一份「第一週要做什麼」的行動清單。
+        </p>
+      </header>
+
+      <!-- 警語 -->
+      <div style="display:flex;gap:10px;align-items:flex-start;padding:14px 18px;background:rgba(184, 137, 58, 0.08);border-left:3px solid var(--gold);margin-bottom:24px;font-size:13px;line-height:1.7;color:var(--ink-soft);">
+        <span style="font-size:16px;flex-shrink:0;">☕</span>
+        <span>接案網推薦清單是 Brian 整理的,連結直接能開。AI 給的「客製化建議」是你的起點,實際執行有疑問<a href="https://lin.ee/9Ba3XjY" target="_blank" style="color:var(--gold-deep);text-decoration:underline;font-weight:700;">加 Brian 的 LINE</a>聊聊。</span>
+      </div>
+
+      <!-- 步驟 1:診斷表單 -->
+      <div id="ce-form-page">
+        <section class="ce-form-card">
+          <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:26px;margin-bottom:6px;">Step 1 · Tell me about you</h2>
+          <p style="font-size:14px;color:var(--ink-mute);margin-bottom:24px;">花 30 秒回答 4 題,我幫你打造專屬路徑。</p>
+
+          <form id="ce-form" class="ce-form-grid">
+            <div class="ce-field ce-full">
+              <label for="nb-skill">你會什麼 / 想接什麼類型的案子</label>
+              <input type="text" id="nb-skill" placeholder="例如:平面設計 / 寫網站前端 / 拍商業照片 / 寫文案 / 剪 YT 影片 / 做 PPT / 翻譯 / 程式接案..." required />
+              <div class="ce-helper">越具體越好。如果有多個技能,寫主要那個就好</div>
+            </div>
+
+            <div class="ce-field">
+              <label for="nb-level">經驗程度</label>
+              <select id="nb-level">
+                <option value="zero" selected>完全新手 - 沒做過案子,但有相關技能</option>
+                <option value="hobby">業餘玩家 - 自己做過,沒收過錢</option>
+                <option value="some">少量經驗 - 接過 1-3 個朋友案</option>
+                <option value="emerging">起步中 - 已經有零星案,但不穩定</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="nb-mode">想全職還是兼職</label>
+              <select id="nb-mode">
+                <option value="side" selected>下班/課餘兼職(每週 5-15 小時)</option>
+                <option value="bridge">轉職過渡(下班接,目標半年內全職)</option>
+                <option value="full">全職接案(已經沒在上班)</option>
+                <option value="explore">先試試看,還在猶豫</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="nb-lang">語言能力</label>
+              <select id="nb-lang">
+                <option value="zh" selected>中文為主</option>
+                <option value="zh-en-read">中文為主,英文勉強看得懂</option>
+                <option value="zh-en">中英都可以</option>
+                <option value="en-better">英文比中文順</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="nb-goal">目標收入 / 階段目標</label>
+              <select id="nb-goal">
+                <option>每月加 5 千-1 萬 零花錢</option>
+                <option selected>每月加 1-3 萬副業收入</option>
+                <option>每月加 3-8 萬,逐步累積實力</option>
+                <option>準備轉全職,目標月入 5 萬+</option>
+                <option>已經全職,想做到月入 10 萬+</option>
+                <option>長期想做品牌,不只是賺現金</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="nb-time">想多快接到第一個案?</label>
+              <select id="nb-time">
+                <option value="urgent">越快越好(這週/這個月)</option>
+                <option value="month" selected>1 個月內</option>
+                <option value="quarter">3 個月內</option>
+                <option value="careful">慢慢來,先建立作品</option>
+              </select>
+            </div>
+
+            <button type="submit" class="ce-submit" id="ce-submit-btn">
+              產生我的接案地圖 →
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section class="ce-results" id="ce-results"></section>
+
+      <!-- Step 2:接案網清單 -->
+      <section style="margin-top:60px;" id="ce-platforms-section">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:32px;font-weight:600;">All Platforms</h2>
+            <div style="font-size:16px;font-weight:700;border-bottom:2px solid var(--ink);display:inline-block;padding-bottom:8px;margin-top:4px;">30+ 接案網完整清單</div>
+          </div>
+          <div style="font-family:'JetBrains Mono', monospace;font-size:11px;color:var(--ink-mute);letter-spacing:0.15em;" id="ce-platform-count">LOADING...</div>
+        </div>
+
+        <p style="font-size:14px;color:var(--ink-soft);line-height:1.85;margin:18px 0;">
+          這是 Brian 整理的全球主流接案平台,涵蓋台灣本土、英文國際、亞洲華文、垂直領域。
+          按下面的標籤可以篩選地區。
+        </p>
+
+        <div class="filter-pills" id="ce-filter-pills">
+          <button class="filter-pill active" data-filter="all">全部顯示</button>
+          <button class="filter-pill" data-filter="tw">台灣本土</button>
+          <button class="filter-pill" data-filter="intl">英文國際</button>
+          <button class="filter-pill" data-filter="cn">中港 / 亞洲</button>
+          <button class="filter-pill" data-filter="vertical">垂直領域</button>
+        </div>
+
+        <div id="ce-platforms-list"></div>
+      </section>
+
+      <!-- Step 3:基礎教學 -->
+      <section style="margin-top:60px;">
+        <div style="margin-bottom:24px;">
+          <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:32px;font-weight:600;">Before You Start</h2>
+          <div style="font-size:16px;font-weight:700;border-bottom:2px solid var(--ink);display:inline-block;padding-bottom:8px;margin-top:4px;">接案前你該知道的事</div>
+        </div>
+
+        <p style="font-size:14px;color:var(--ink-soft);line-height:1.85;margin-bottom:18px;">
+          接案的失敗,90% 不是技術問題,是觀念問題。點下面的卡片,Brian 會幫你開示。
+        </p>
+
+        <div class="lesson-grid">
+          <div class="lesson-card" data-lesson="pricing">
+            <div class="lesson-card-icon">$</div>
+            <div class="lesson-card-title">第一個案要收多少錢?</div>
+            <div class="lesson-card-desc">怕報太貴沒人接、怕報太便宜被當廉價勞工。Brian 教你新手期的合理定價邏輯。</div>
+            <div class="lesson-card-cta">點開來看 →</div>
+          </div>
+          <div class="lesson-card" data-lesson="portfolio">
+            <div class="lesson-card-icon">◆</div>
+            <div class="lesson-card-title">沒作品集怎麼接到案?</div>
+            <div class="lesson-card-desc">「客戶要看作品集,可是我沒有」破解這個雞生蛋蛋生雞的死結。</div>
+            <div class="lesson-card-cta">點開來看 →</div>
+          </div>
+          <div class="lesson-card" data-lesson="trap">
+            <div class="lesson-card-icon">⚠</div>
+            <div class="lesson-card-title">新手最常踩的 5 個坑</div>
+            <div class="lesson-card-desc">先收訂金、合約、改稿次數、智財權、客戶失蹤——避開這 5 個坑,你就贏一半人。</div>
+            <div class="lesson-card-cta">點開來看 →</div>
+          </div>
+          <div class="lesson-card" data-lesson="mindset">
+            <div class="lesson-card-icon">▲</div>
+            <div class="lesson-card-title">接案 vs. 上班,心態差在哪?</div>
+            <div class="lesson-card-desc">為什麼很多人接了幾個案就回去上班?因為心態沒轉過來。Brian 給你 5 個觀念建設。</div>
+            <div class="lesson-card-cta">點開來看 →</div>
+          </div>
+          <div class="lesson-card" data-lesson="proposal">
+            <div class="lesson-card-icon">✉</div>
+            <div class="lesson-card-title">第一封投標信怎麼寫?</div>
+            <div class="lesson-card-desc">為什麼你投了 30 個案沒人回?問題不在你的技術,在這封信。</div>
+            <div class="lesson-card-cta">點開來看 →</div>
+          </div>
+          <div class="lesson-card" data-lesson="grow">
+            <div class="lesson-card-icon">↗</div>
+            <div class="lesson-card-title">從 0 到月入 5 萬的路徑</div>
+            <div class="lesson-card-desc">不是看運氣,是有節奏的。Brian 拆解這條路的 4 個階段。</div>
+            <div class="lesson-card-cta">點開來看 →</div>
+          </div>
+        </div>
+
+        <div id="ce-lesson-result" style="margin-top:24px;"></div>
+      </section>
+
+      <footer style="text-align:center;margin-top:80px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 新手接案起步指南</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+
+  // ========================================
+  // 接案平台資料庫(Brian 整理)
+  // ========================================
+  const PLATFORMS = [
+    // === 台灣本土 ===
+    { name: '104 外包網', url: 'https://case.104.com.tw', region: 'tw', tagline: '台灣最大宗的外包平台,各類型案件都有',
+      good_for: '入門新手、想接中小企業案、各種類型專案',
+      level: '完全新手到中階',
+      pros: '案件量大、台灣客戶溝通沒語言隔閡、平台知名度高',
+      cons: '殺價嚴重、競爭激烈、低價案多',
+      first_step: '先註冊→完整填寫個人簡介→放 3-5 個作品→挑「預算明確、需求清楚」的案投標,不要碰那種「預算面議+簡介一句話」的雷案' },
+
+    { name: '518 外包網', url: 'https://case.518.com.tw', region: 'tw', tagline: '518 旗下的外包子站,案件結構類似 104',
+      good_for: '行銷、設計、IT 類接案者',
+      level: '完全新手到中階',
+      pros: '介面比 104 簡潔、案件分類細',
+      cons: '案件量比 104 少、客戶議價也兇',
+      first_step: '跟 104 一起註冊使用,案件不要重複投太多家,挑一兩個重點經營' },
+
+    { name: 'Tasker 出任務', url: 'https://www.tasker.com.tw', region: 'tw', tagline: '在地化任務媒合,從家事到專業服務都有',
+      good_for: '在地服務、雜項任務、實體類接案',
+      level: '完全新手',
+      pros: '小任務多、適合練習接單流程',
+      cons: '單價低、適合做初期練手不適合主力',
+      first_step: '挑離家近、單價合理的小任務,先累積評價分數' },
+
+    { name: 'Pro360 達人網', url: 'https://www.pro360.com.tw', region: 'tw', tagline: '專業服務媒合,客戶主動發案找你',
+      good_for: '專業類服務(設計、攝影、家教、顧問)',
+      level: '完全新手到中階',
+      pros: '反向媒合(客戶找你)、不用主動投標、客單價較高',
+      cons: '需要付費抽客戶聯絡方式、要排隊等案',
+      first_step: '設定好「服務類別」、放充足作品集、設定服務地區,然後耐心等案件通知' },
+
+    { name: 'TalentX', url: 'https://www.talentx.com.tw', region: 'tw', tagline: '台灣設計師、創作者媒合平台',
+      good_for: '設計師、插畫家、影像工作者',
+      level: '中階以上',
+      pros: '客戶素質較高、案件較精緻',
+      cons: '門檻較高、新手接案機會較少',
+      first_step: '把作品集做精緻、寫清楚自己擅長的風格,平台會主動推薦給適合的客戶' },
+
+    { name: '魔法雲設計', url: 'https://www.magicx.com.tw', region: 'tw', tagline: '專注於設計類接案媒合',
+      good_for: '平面設計、品牌設計、包裝設計',
+      level: '完全新手到中階',
+      pros: '設計案件集中、容易曝光',
+      cons: '殺價問題、競爭激烈',
+      first_step: '先填好個人簡介、放代表作 5-10 件、留意每天新案' },
+
+    { name: 'CakeResume 接案', url: 'https://www.cakeresume.com/jobs/freelance', region: 'tw', tagline: 'CakeResume 求職平台的接案版',
+      good_for: '工程師、設計師、產品經理',
+      level: '中階以上',
+      pros: '客戶多為新創/科技公司、案件素質高、薪資透明',
+      cons: '案件量比正職少、競爭激烈',
+      first_step: '把履歷打好(CakeResume 本身就是履歷工具)、加上接案標籤、定期主動投件' },
+
+    { name: 'Yourator 接案', url: 'https://www.yourator.co/freelance', region: 'tw', tagline: '新創圈的接案媒合',
+      good_for: '想接新創公司案、數位產品開發者',
+      level: '中階以上',
+      pros: '新創客戶 mindset 開放、長期合作機會多',
+      cons: '案量少、要求專業度高',
+      first_step: '完整填寫個人經歷、表明擅長協助什麼類型新創' },
+
+    // === 國際英文 ===
+    { name: 'Upwork', url: 'https://www.upwork.com', region: 'intl', tagline: '全球最大英文接案平台',
+      good_for: '英文 OK、想接國際客戶、各類型專業',
+      level: '中階以上(英文要能溝通)',
+      pros: '案件量超大、國際客單價高、可長期合作',
+      cons: '競爭來自全球(印度、菲律賓低價競爭)、平台抽成 10%',
+      first_step: '把個人檔案 100% 完成、英文寫清楚、剛開始接低價案累積 5-star 評價,後面才能接到高價案' },
+
+    { name: 'Fiverr', url: 'https://www.fiverr.com', region: 'intl', tagline: '從 5 美金起跳的服務商城',
+      good_for: '想用「商品化」方式賣服務、打包套裝',
+      level: '完全新手到中階',
+      pros: '不用主動投標、把服務上架等客人來、適合 SOHO',
+      cons: '低價內捲嚴重、平台抽成 20%',
+      first_step: '不要從 5 美金開始,設計 3 階段套餐(Basic/Standard/Premium),包裝清楚的交付物' },
+
+    { name: 'Freelancer.com', url: 'https://www.freelancer.com', region: 'intl', tagline: '老牌全球接案平台',
+      good_for: '工程、設計、寫作、行銷各種類別',
+      level: '中階以上',
+      pros: '案件量大、有競標模式',
+      cons: '低價競爭兇、品質參差不齊',
+      first_step: '挑「verified payment」的案件投標,避免被騙稿' },
+
+    { name: 'Toptal', url: 'https://www.toptal.com', region: 'intl', tagline: '頂尖人才平台,只收前 3% 申請者',
+      good_for: '資深工程師、設計師、PM、財務顧問',
+      level: '資深(5 年以上經驗)',
+      pros: '客單價超高(時薪 60-200 美金)、客戶都是矽谷大公司',
+      cons: '入會試煉嚴格(篩選率低)、要全英文應答',
+      first_step: '英文 CV 準備好,接受 Toptal 的多輪測試(技術測+專案測+面試),通過後就能接到頂級案' },
+
+    { name: '99designs', url: 'https://99designs.com', region: 'intl', tagline: '專注設計類的競標平台',
+      good_for: '平面設計、Logo、包裝、網頁視覺',
+      level: '中階以上',
+      pros: '案件素質好、國際客戶為主',
+      cons: '競標模式(沒中就白做)、新手難勝出',
+      first_step: '先看別人得獎作品學風格,選自己擅長的類型,從小型 Logo 案開始磨' },
+
+    { name: 'Behance Hire', url: 'https://www.behance.net/hire', region: 'intl', tagline: 'Adobe 旗下,設計師作品集平台兼接案',
+      good_for: '設計師、插畫家、攝影師',
+      level: '中階以上',
+      pros: '本來就是放作品集的地方、被動曝光、客戶主動找上門',
+      cons: '不能主動投標、要等客戶找你',
+      first_step: '把 Behance 個人檔案做漂亮、開啟「Available for Hire」標記' },
+
+    { name: 'Dribbble', url: 'https://dribbble.com', region: 'intl', tagline: '設計師的作品社群,也能接案',
+      good_for: 'UI/UX、視覺設計師',
+      level: '中階以上',
+      pros: '社群文化好、容易被同行/獵頭看到',
+      cons: '邀請制(要有人邀請才能 Pro)、設計風格偏特定 aesthetic',
+      first_step: '先當 follower 看別人作品,等被邀請後再升級 Pro 開接案' },
+
+    { name: 'Contra', url: 'https://contra.com', region: 'intl', tagline: '無傭金的獨立工作者平台',
+      good_for: '創意類、行銷、產品設計',
+      level: '中階以上',
+      pros: '0% 抽成(全部給你)、品牌調性好、適合做個人品牌',
+      cons: '案件量還在成長中、客戶以美國新創為主',
+      first_step: '建立 Contra 個人頁(像 portfolio),分享自己作品,接案直接走平台合約' },
+
+    { name: 'PeoplePerHour', url: 'https://www.peopleperhour.com', region: 'intl', tagline: '英國起家的接案平台',
+      good_for: '設計、寫作、行銷、開發',
+      level: '完全新手到中階',
+      pros: '歐洲客戶為主、競爭比 Upwork 少',
+      cons: '抽成高、案件量比 Upwork 少',
+      first_step: '上架自己的「Hourlies」(預先打包的服務),設定明確交付時程' },
+
+    { name: 'Guru.com', url: 'https://www.guru.com', region: 'intl', tagline: '老牌接案平台,適合長期合作',
+      good_for: '工程、IT、設計類',
+      level: '中階以上',
+      pros: 'SafePay 託管制度、保護接案者',
+      cons: '介面老派、案件量普通',
+      first_step: '完整填寫個人簡介、設定 5 個 portfolio 項目' },
+
+    { name: 'Workana', url: 'https://www.workana.com', region: 'intl', tagline: '拉美最大接案平台,西語英語都通',
+      good_for: '想接拉美/西語客戶',
+      level: '中階以上',
+      pros: '競爭比北美小、客戶單價合理',
+      cons: '需要西語或英語、付款流程稍複雜',
+      first_step: '註冊填西語/英語介紹、挑 fixed-price 案開始' },
+
+    { name: 'We Work Remotely', url: 'https://weworkremotely.com', region: 'intl', tagline: '遠端工作職缺板,有不少 freelance',
+      good_for: '工程師、設計師、行銷、寫作',
+      level: '中階以上',
+      pros: '都是真實國際公司、薪資透明',
+      cons: '比較像找正職、freelance 佔比較低',
+      first_step: '訂閱每日 email,看到適合的 freelance 案就直接寄履歷給對方' },
+
+    // === 中港 / 亞洲 ===
+    { name: '豬八戒網', url: 'https://www.zbj.com', region: 'cn', tagline: '中國最大接案平台',
+      good_for: '中文母語、想接中國案',
+      level: '完全新手到中階',
+      pros: '案件量爆大、品類齊全',
+      cons: '殺價兇、付款風險、需處理跨境匯款',
+      first_step: '先觀察 1 週看市場行情,挑「擔保交易」的案件,絕對不接「先做後付」' },
+
+    { name: '一品威客', url: 'https://www.epwk.com', region: 'cn', tagline: '中國綜合接案網',
+      good_for: '設計、開發、行銷',
+      level: '中階以上',
+      pros: '設計類案件多',
+      cons: '競爭兇、匯款慢',
+      first_step: '完整填寫資料、放高品質作品 10 件以上' },
+
+    { name: 'HelloToby (HK)', url: 'https://www.hellotoby.com', region: 'cn', tagline: '香港最大專業服務媒合',
+      good_for: '想接香港客戶、實體服務類',
+      level: '完全新手',
+      pros: '反向媒合、客戶主動聯絡',
+      cons: '需要香港身分或註冊',
+      first_step: '註冊→上架服務→等客戶詢問' },
+
+    { name: 'Coding Pickle', url: 'https://www.codingpickle.com', region: 'cn', tagline: '亞洲開發者媒合平台',
+      good_for: '工程師、技術人才',
+      level: '中階以上',
+      pros: '亞洲新創客戶多、案件品質好',
+      cons: '只限技術類',
+      first_step: '註冊填技術棧、等媒合' },
+
+    // === 垂直領域 ===
+    { name: 'Awwwards Jobs', url: 'https://www.awwwards.com/jobs', region: 'vertical', tagline: '頂尖網頁設計師的接案板',
+      good_for: '高端網頁設計師、UI/UX',
+      level: '資深',
+      pros: '客戶都是看重設計品質的、品牌好',
+      cons: '門檻很高',
+      first_step: '先把作品集做到 Awwwards 等級再來' },
+
+    { name: 'Stack Overflow Jobs', url: 'https://stackoverflow.com/jobs', region: 'vertical', tagline: '工程師專屬職缺板',
+      good_for: '工程師、技術人才',
+      level: '中階以上',
+      pros: '都是真實技術公司、薪資好',
+      cons: '正職為主、freelance 較少',
+      first_step: '完整填寫 Stack Overflow Developer Story 個人檔案' },
+
+    { name: 'Working Not Working', url: 'https://workingnotworking.com', region: 'vertical', tagline: '創意人專屬媒合平台',
+      good_for: '頂尖創意人、廣告人、設計師',
+      level: '資深',
+      pros: '客戶都是國際大品牌',
+      cons: '邀請制、入會難',
+      first_step: '先累積得獎作品再來申請' },
+
+    { name: 'Notion Template Marketplace', url: 'https://www.notion.so/templates', region: 'vertical', tagline: '販售 Notion 模板',
+      good_for: '會做 Notion 系統的人',
+      level: '完全新手',
+      pros: '一次做、永遠賣、被動收入',
+      cons: '前期銷售要靠社群推廣',
+      first_step: '做一個自己用得最順的 Notion 模板,上架時寫清楚使用情境' },
+
+    { name: 'Gumroad', url: 'https://gumroad.com', region: 'vertical', tagline: '販售數位商品(模板、教材、工具)',
+      good_for: '想做被動收入的創作者',
+      level: '完全新手',
+      pros: '上架超簡單、適合做數位產品',
+      cons: '完全靠自己引流、不會有人主動找你',
+      first_step: '做一個小東西(範本/教材/PDF/icon set)上架,搭配 IG/Twitter 推廣' },
+
+    { name: 'Creative Market', url: 'https://creativemarket.com', region: 'vertical', tagline: '販售設計素材(字體、圖庫、模板)',
+      good_for: '設計師做被動收入',
+      level: '中階以上',
+      pros: '平台流量大、適合做設計素材生意',
+      cons: '抽成 30-40%、需持續上架新品',
+      first_step: '挑一個品類(例如:婚禮邀請卡模板)做 10 個以上上架' }
+  ];
+
+  const REGION_LABELS = { tw: '台灣本土', intl: '英文國際', cn: '中港 / 亞洲', vertical: '垂直領域' };
+
+  // ========================================
+  // 教學內容
+  // ========================================
+  const LESSONS = {
+    pricing: {
+      title: '第一個案要收多少錢?',
+      content: `Brian 教練說:
+
+新手最常見的兩個錯誤——
+「報太貴怕沒人要」→ 結果接的都是低價爛案,做到死還賺不到錢
+「報太便宜想累積經驗」→ 結果客戶把你當廉價勞工,做完還叫你下次再便宜點
+
+【新手定價的三個原則】
+
+1. 「練手期」用接近成本價,但要有期限
+   接案前 3-5 個案,可以收市場行情的 50-70%。
+   但你心裡要清楚這是「練手投資」,不是常態。
+   做完每個案都要更新作品集、收評價、然後下個案漲價。
+
+2. 不要報「時薪」,報「成果價」
+   新手報時薪會被質疑「你才剛入行,憑什麼一小時 1000 元?」
+   報成果價(例如:一個 Logo 設計 8000 元),客戶就不會去算你做幾小時。
+
+3. 報價時加上「為什麼」
+   不要說「這個案 1.5 萬」就停。
+   要說「這個案 1.5 萬,包含:3 個初稿讓你選、修改 2 次、含原始檔交付」。
+   客戶不殺有結構的報價。
+
+【新手期合理區間參考】(以台灣市場)
+- 平面設計類:Logo 5000-1.5 萬、傳單 3000-8000、品牌規劃 3-8 萬
+- 攝影類:商業攝影半天 8000-1.5 萬、人像 5000-1 萬
+- 影片類:1 分鐘短片 1-3 萬、企業形象片 5-15 萬
+- 文案類:文章 1500-5000/篇、品牌標語 1-3 萬
+- 程式類:小工具 1-3 萬、企業官網 3-15 萬
+- 翻譯類:0.5-3 元/字(看語言對和專業度)
+
+實際還是要看你的作品品質和客戶類型,以上只是地板價參考。
+
+★ 真實狀況歡迎加 LINE 跟 Brian 聊聊。`
+    },
+    portfolio: {
+      title: '沒作品集怎麼接到案?',
+      content: `Brian 教練說:
+
+「我沒作品所以接不到案,接不到案所以沒作品」——這是新手最常卡住的死循環。
+
+破解方法:不要等別人發案,你主動「自造作品」。
+
+【自造作品的 4 個方法】
+
+1. 重新設計知名品牌(Redesign Project)
+   選 3-5 個你欣賞的品牌(例如:鼎泰豐、誠品、星巴克),幫他們做一個你版本的設計。
+   注意:作品標題要寫「個人練習作品 / Personal Project / Concept」,不要假裝是真實合作。
+   這種作品反而比真實案更能展現你的審美和能力。
+
+2. 為虛構品牌做完整提案
+   自己捏一個品牌名(例如:「山與海咖啡」),從 Logo、名片、菜單、IG 視覺一次做完整。
+   完整度勝過數量。
+
+3. 接朋友/家人的真實小案(免費或半價)
+   注意:免費接案前說好「換條件」——例如「我免費做,但你要在 IG 推薦我、給我具名見證」。
+   不能只做白工。
+
+4. 加入「設計挑戰」或「黑客松」
+   像 Daily UI Challenge、台灣前端設計挑戰、各種 Hackathon。
+   這些活動的產出可以直接放作品集,還能認識同行。
+
+【作品集的 5 個重點】
+- 寧少不雜:5 個精選好作品 > 30 個普通作品
+- 寫清楚「我做了什麼」(不要只放圖)
+- 標明「設計理念 / 解決什麼問題」
+- 放「過程稿」(草圖、修改版本) 證明專業
+- 用 Behance / Notion / 自架網站,不要只放雲端硬碟
+
+★ 不確定作品集怎麼包裝歡迎加 LINE 跟 Brian 聊聊。`
+    },
+    trap: {
+      title: '新手最常踩的 5 個坑',
+      content: `Brian 教練說:
+
+接案前想清楚這 5 件事,你就比 80% 的同行少踩雷。
+
+【坑 1:沒收訂金就開工】
+「先做做看,你滿意再付」——聽起來好像對方很大方,實際上你要承擔所有風險。
+正確做法:訂金至少 30-50%(收到才開工),尾款交付前付清。
+小案可以收 100% 才動工,別怕得罪人,專業的客戶會理解。
+
+【坑 2:沒簽合約就答應】
+口頭講好的「不會超過 3 次修改」,做到第 5 次客戶說「我記得是 5 次啊」。
+怎麼辦?寫下來。
+不用真的請律師,一頁紙的「合作備忘錄」就能保護你 90% 的麻煩。
+應該寫的:服務範圍、修改次數、付款條件、智財權歸屬、交期、終止條款。
+
+【坑 3:不限改稿次數】
+「修到滿意為止」——這句話會把你做死。
+標準寫法:「初稿 1 次、大改 1 次、小修 2 次,超過部分另計」。
+什麼是大改 vs 小修?也要寫清楚,不然客戶會說「我這個叫小修啦」。
+
+【坑 4:智財權沒講清楚】
+你做完一個 Logo,客戶用了。
+半年後客戶說:「我也想拿你做的這個,把它改一下用在新公司。」
+你說:「不行,版權是我的。」
+客戶說:「我付錢買的,當然是我的。」——誰對?
+合約沒寫的話,通常法律上版權歸你(著作權法),但你會跟客戶撕破臉。
+正確做法:合約直接寫清楚——「客戶取得使用權 / 修改權 / 完整著作權」並標明範圍。
+
+【坑 5:客戶失蹤】
+你做到一半,客戶不回訊息了,3 個月後突然出現:「欸我們繼續吧,還有那個尾款喔...」
+合約裡一定要有「逾期條款」:超過 X 天無回應視為終止合作,訂金不退、尾款照算。
+
+★ 合約要怎麼寫歡迎加 LINE 跟 Brian 聊聊,我有現成範本。`
+    },
+    mindset: {
+      title: '接案 vs. 上班,心態差在哪?',
+      content: `Brian 教練說:
+
+很多人接了幾個案後又回去上班,不是因為錢少,是因為心態沒轉過來。
+
+【觀念 1:你不是員工,是老闆】
+上班時做不好被罵,接案做不好客戶不付錢、不再合作、還跟同行說你壞話。
+你要為「整個案的成果」負責,不是「我寫好我那段就好」。
+這意味著:溝通、專案管理、品質把關、後續服務,全部是你的事。
+
+【觀念 2:會做不等於會賣】
+你的技術可能比上班的同事強 80%,但如果你不會包裝、不會寫提案、不會談判,
+你的收入會輸給那個技術沒你好但很會講的人。
+這也是為什麼 Brian 一直強調「顧問式接案」——你的價值不是手藝,是解決問題的能力。
+
+【觀念 3:沒人幫你保證收入】
+上班月薪固定,接案是這個月接 5 案、下個月可能 0 案。
+重點不是運氣,是你有沒有「案源系統」。
+新手期一定會起伏,要心理準備至少 6 個月才會穩定。
+不要因為一兩個月慘就放棄。
+
+【觀念 4:時間是你的成本】
+上班一小時就一小時的薪水,接案一小時可能換來 0 元(你在跟廠商議價、修改、追款)。
+你要學會分配時間:多少時間做案、多少時間找新客、多少時間學新技能、多少時間休息。
+不會分配時間的接案者最後都會 burnout。
+
+【觀念 5:你的對手不是同行,是「客戶選擇不做」】
+新手以為「我跟同行 PK」,所以一直比價、比技術。
+其實客戶最常做的決定是「再考慮看看 / 不要做了」。
+你要打敗的是這個「不行動」,不是隔壁那個設計師。
+方法:幫客戶看到「不做的損失」比「做的成本」大很多。
+
+★ 心態建立的細節歡迎加 LINE 跟 Brian 一對一聊。`
+    },
+    proposal: {
+      title: '第一封投標信怎麼寫?',
+      content: `Brian 教練說:
+
+新手投了 30 個案沒人回,通常不是技術問題,是這封信寫錯了。
+
+【90% 的新手會這樣寫(錯誤示範)】
+
+「您好,我是 XX,有 3 年設計經驗,擅長 Logo 設計、品牌設計、UI 設計。
+我的作品集在這裡:[連結]
+報價可以聊,謝謝。」
+
+問題在哪?
+- 對方完全不知道「為什麼是你」
+- 沒有針對他的需求做任何回應
+- 看起來像群發信
+- 完全沒有「下一步」
+
+【Brian 風格的投標信(正確示範)】
+
+主旨:關於您的「品牌 Logo + 名片」案,有一個建議想跟您聊
+
+「OO 您好,
+
+我看到您在徵 Logo 設計+名片,您寫到希望「年輕、專業、有溫度」。
+
+我先快速分享一個觀察:很多新創想要「年輕專業」,但常常做出來偏「網路流行風」,
+3 年後品牌就過時了。我之前有一個客戶就是這樣,做完半年就後悔重做。
+
+如果你願意,我可以先免費花 30 分鐘跟你聊聊:
+- 你的目標客戶輪廓是?
+- 你希望品牌 5 年後給人什麼感覺?
+
+聊完我可以給你一個有依據的提案,而不是憑空亂猜。
+
+我的作品在這裡:[Behance 連結]
+報價:Logo + 名片設計約 1.5-3 萬,看複雜度。
+時程:聊完後 2-3 週交付。
+
+方便這週四前回覆嗎?如果你還在比較其他人,告訴我大概時間線即可。
+
+XX」
+
+【拆解這封信為什麼有效】
+1. 主旨不是「應徵 / 報價」,是「我有個建議」——勾起好奇
+2. 開頭立刻引用對方需求,證明我看了
+3. 給一個對方關心的「市場觀察」,展現專業
+4. 邀請「30 分鐘免費對談」,降低決策門檻
+5. 報價有區間+理由,不是死板數字
+6. 結尾給「明確但低壓」的下一步
+
+★ 投標信要針對你的領域客製化,歡迎加 LINE 跟 Brian 聊。`
+    },
+    grow: {
+      title: '從 0 到月入 5 萬的路徑',
+      content: `Brian 教練說:
+
+很多人以為從 0 到月入 5 萬要靠運氣,其實是有節奏的。
+我把這條路拆成 4 個階段,每個階段平均 2-3 個月。
+
+【Stage 1:練手期(月收入 0-1 萬)】
+目標:接到 5 個案、累積 5 個作品、收 5 個客戶見證。
+
+要做的事:
+- 自造 3 個練習作品(Redesign Project)
+- 主動找朋友/前同事的小案,半價或免費接(換見證)
+- 把作品集做到「拿出去不丟臉」的程度
+- 註冊 1-2 個接案網,每天投 3-5 個案
+
+不要做的事:
+- 一次註冊 10 個平台分散精力
+- 接超出能力的大案
+- 為了 5000 元案吵 3 天合約
+
+【Stage 2:啟動期(月收入 1-3 萬)】
+目標:接案網開始有人主動找你、第一個複購客戶出現。
+
+要做的事:
+- 每週固定花 5 小時更新作品集 + 寫 1 篇案例
+- 在 IG/FB/LinkedIn 分享你做案的過程,建立個人品牌
+- 收每個客戶的「具名見證」放網站
+- 開始挑案(拒絕不適合的低價案)
+
+不要做的事:
+- 接太多案做不完、品質下降
+- 急著漲價(資歷還不夠)
+
+【Stage 3:成長期(月收入 3-5 萬)】
+目標:案源穩定、不用每天投標、開始有口碑轉介紹。
+
+要做的事:
+- 把單價往上調 30-50%,過濾客戶
+- 開始做「異業合作」(用 Brian 的工具)
+- 嘗試訂閱制 / 月顧問費等長期模式
+- 把好的客戶變成 case study 大宣傳
+
+不要做的事:
+- 還在跑接案網接低價案
+- 害怕漲價失去客戶(你會失去的是不對的客戶)
+
+【Stage 4:穩定期(月收入 5-10 萬+)】
+目標:有 3-5 個長期合作、不再焦慮下個月案源。
+
+要做的事:
+- 開始拒絕「一次性」案,只接「能變長期」的
+- 接觸更高層級客戶(品牌主、創辦人)
+- 升級服務模式:從「執行者」變「顧問」
+- 考慮開始帶團隊、外包部分工作
+
+★ 這條路 Brian 走過,中間有很多細節歡迎加 LINE 詳聊。`
+    }
+  };
+
+  // ========================================
+  // DOM
+  // ========================================
+  const form = document.getElementById('ce-form');
+  const formPage = document.getElementById('ce-form-page');
+  const resultsEl = document.getElementById('ce-results');
+  const submitBtn = document.getElementById('ce-submit-btn');
+  const platformsList = document.getElementById('ce-platforms-list');
+  const platformCount = document.getElementById('ce-platform-count');
+  const filterPills = document.getElementById('ce-filter-pills');
+  const lessonResultEl = document.getElementById('ce-lesson-result');
+
+  T.setupApiKeyModal('ce-key-modal', 'ce-api-key', 'ce-key-save');
+  document.getElementById('ce-settings-btn').addEventListener('click', () => {
+    document.getElementById('ce-api-key').value = T.getApiKey();
+    document.getElementById('ce-key-modal').classList.add('show');
+  });
+
+  // ========================================
+  // 渲染平台清單
+  // ========================================
+  let currentFilter = 'all';
+
+  function renderPlatforms() {
+    const filtered = currentFilter === 'all'
+      ? PLATFORMS
+      : PLATFORMS.filter(p => p.region === currentFilter);
+
+    platformCount.textContent = `${filtered.length} / ${PLATFORMS.length} PLATFORMS`;
+
+    platformsList.innerHTML = filtered.map(p => `
+      <div class="platform-card">
+        <div class="platform-header">
+          <div class="platform-name">
+            ${T.escapeHtml(p.name)}
+            <span class="platform-region ${p.region}">${REGION_LABELS[p.region]}</span>
+          </div>
+          <a href="${T.escapeHtml(p.url)}" target="_blank" rel="noopener" class="platform-link">前往 →</a>
+        </div>
+        <div class="platform-tagline">${T.escapeHtml(p.tagline)}</div>
+        <div class="platform-attrs">
+          <div class="platform-attr">
+            <div class="platform-attr-label">適合誰</div>
+            ${T.escapeHtml(p.good_for)}
+          </div>
+          <div class="platform-attr">
+            <div class="platform-attr-label">難度</div>
+            ${T.escapeHtml(p.level)}
+          </div>
+        </div>
+        <div class="platform-pros-cons">
+          <div class="platform-pro">
+            <div class="platform-pro-label">★ 優點</div>
+            ${T.escapeHtml(p.pros)}
+          </div>
+          <div class="platform-con">
+            <div class="platform-con-label">⚠ 缺點 / 注意</div>
+            ${T.escapeHtml(p.cons)}
+          </div>
+        </div>
+        <div class="platform-first-step">
+          <div class="platform-first-step-label">★ BRIAN 的第一步建議</div>
+          ${T.escapeHtml(p.first_step)}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  filterPills.querySelectorAll('.filter-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      filterPills.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentFilter = pill.dataset.filter;
+      renderPlatforms();
+    });
+  });
+
+  renderPlatforms();
+
+  // ========================================
+  // 教學區
+  // ========================================
+  document.querySelectorAll('.lesson-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const key = card.dataset.lesson;
+      const lesson = LESSONS[key];
+      if (!lesson) return;
+
+      lessonResultEl.innerHTML = `
+        <div class="ce-block">
+          <div class="ce-block-header">
+            <div class="ce-block-title">${T.escapeHtml(lesson.title)}</div>
+            <button class="ce-action-btn" id="ce-close-lesson" style="background:transparent;border-color:var(--paper);color:var(--paper);">關閉</button>
+          </div>
+          <div class="ce-block-body">
+            <div style="white-space:pre-wrap;font-size:14.5px;line-height:1.95;color:var(--ink-soft);">${T.escapeHtml(lesson.content)}</div>
+          </div>
+        </div>
+      `;
+      document.getElementById('ce-close-lesson').addEventListener('click', () => {
+        lessonResultEl.innerHTML = '';
+      });
+      lessonResultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // ========================================
+  // AI 客製化建議
+  // ========================================
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!T.getApiKey()) { document.getElementById('ce-key-modal').classList.add('show'); return; }
+
+    const input = {
+      skill: document.getElementById('nb-skill').value.trim(),
+      level: document.getElementById('nb-level').value,
+      mode: document.getElementById('nb-mode').value,
+      lang: document.getElementById('nb-lang').value,
+      goal: document.getElementById('nb-goal').value,
+      time: document.getElementById('nb-time').value
+    };
+    if (!input.skill) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '正在為你規劃...';
+    resultsEl.innerHTML = `
+      <div class="ce-loading">
+        <div class="ce-loading-text">Brian 正在從 30+ 平台中,為你挑出最適合的入口...</div>
+        <div class="ce-loading-bar"></div>
+      </div>
+    `;
+
+    try {
+      const data = await generatePath(input);
+      renderPath(data, input);
+    } catch (err) {
+      console.error(err);
+      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${T.escapeHtml(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '產生我的接案地圖 →';
+    }
+  });
+
+  async function generatePath(input) {
+    const platformList = PLATFORMS.map(p => `${p.name}(${REGION_LABELS[p.region]})`).join('、');
+
+    const levelLabel = {
+      zero: '完全新手 - 沒做過案子',
+      hobby: '業餘玩家 - 沒收過錢',
+      some: '少量經驗 - 接過 1-3 個朋友案',
+      emerging: '起步中 - 已有零星案'
+    }[input.level];
+
+    const modeLabel = {
+      side: '下班/課餘兼職',
+      bridge: '轉職過渡',
+      full: '全職接案',
+      explore: '先試試看'
+    }[input.mode];
+
+    const langLabel = {
+      'zh': '中文為主',
+      'zh-en-read': '中文為主,英文勉強看懂',
+      'zh-en': '中英都可',
+      'en-better': '英文比中文順'
+    }[input.lang];
+
+    const timeLabel = {
+      'urgent': '越快越好(這週/這個月)',
+      'month': '1 個月內',
+      'quarter': '3 個月內',
+      'careful': '慢慢來,先建立作品'
+    }[input.time];
+
+    const prompt = `你是 Brian(老闆的接案學院創辦人)。一位完全新手的學員填了問卷,想開始接案。請為他規劃接下來的路。
+
+【學員資料】
+- 想接的類型:${input.skill}
+- 經驗程度:${levelLabel}
+- 接案模式:${modeLabel}
+- 語言能力:${langLabel}
+- 目標:${input.goal}
+- 期望時間:${timeLabel}
+
+【可選的接案平台】(只能從這份清單推薦,不要自己創造平台名稱)
+${platformList}
+
+請輸出 JSON,只回 JSON 不要 markdown code fence:
+
+{
+  "brian_note": "用 Brian 口吻寫一段 100-150 字的「教練筆記」,直接告訴這位學員:你最大的優勢是什麼、最該避免的陷阱是什麼、第一個月該專注做什麼。要有溫度,像在面對面講話。",
+
+  "recommended_platforms": [
+    {
+      "name": "平台名稱(必須是上面清單中的)",
+      "why": "為什麼推薦給他(50-80 字,結合他的條件)",
+      "priority": "PRIMARY / SECONDARY / EXPLORE"
+    }
+  ],
+
+  "seven_day_plan": [
+    {
+      "day": 1,
+      "title": "今天要做什麼(短)",
+      "tasks": "具體任務列表(可用換行分隔多個任務,每個任務具體可執行)"
+    }
+  ],
+
+  "key_warnings": [
+    "針對他狀況最重要的 3 個提醒"
+  ]
+}
+
+要求:
+- recommended_platforms 給 4-6 個,至少 1 個 PRIMARY、2 個 SECONDARY、1 個 EXPLORE
+- 推薦邏輯:配合學員的語言能力、經驗、時間期望、技能類型
+- seven_day_plan 必須是 7 天,每天具體任務,要實際可做(不要寫「思考你的方向」這種廢話)
+- 全部繁體中文,台灣口吻`;
+
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 4000 });
+  }
+
+  function renderPath(data, input) {
+    const html = `
+      <div class="ce-result-toolbar" style="margin-top:32px;">
+        <div class="ce-result-info"><strong>${T.escapeHtml(input.skill)}</strong> · 你的客製化接案地圖</div>
+        <div class="ce-result-actions">
+          <button class="ce-action-btn" id="ce-print-btn">列印 / 存 PDF</button>
+        </div>
+      </div>
+
+      ${data.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${T.escapeHtml(data.brian_note)}</div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Your Platforms</div>
+        <div class="ce-section-cn">為你挑的接案平台</div>
+        ${(data.recommended_platforms || []).map(rp => {
+          const platform = PLATFORMS.find(p => p.name === rp.name);
+          if (!platform) return '';
+          const tagColor = rp.priority === 'PRIMARY' ? 'var(--rust)' :
+                          (rp.priority === 'SECONDARY' ? 'var(--gold)' : 'var(--moss)');
+          const tagText = rp.priority === 'PRIMARY' ? '優先深耕' :
+                         (rp.priority === 'SECONDARY' ? '次要嘗試' : '長期探索');
+          return `
+            <div class="platform-card recommended">
+              <div class="platform-header">
+                <div class="platform-name">
+                  ${T.escapeHtml(platform.name)}
+                  <span class="platform-region" style="background:${tagColor};color:white;">${tagText}</span>
+                </div>
+                <a href="${T.escapeHtml(platform.url)}" target="_blank" rel="noopener" class="platform-link">前往 →</a>
+              </div>
+              <div style="background:var(--ink);color:var(--paper);padding:12px 14px;font-size:13.5px;line-height:1.75;margin-bottom:14px;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:0.15em;margin-bottom:6px;">★ 為你推薦的理由</div>
+                ${T.escapeHtml(rp.why)}
+              </div>
+              <div class="platform-first-step">
+                <div class="platform-first-step-label">★ 第一步</div>
+                ${T.escapeHtml(platform.first_step)}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Your 7-Day Plan</div>
+        <div class="ce-section-cn">7 天起步行動清單</div>
+        ${(data.seven_day_plan || []).map(d => `
+          <div class="day-plan">
+            <div class="day-num">
+              <div class="day-num-label">DAY</div>
+              <div class="day-num-big">${d.day}</div>
+            </div>
+            <div class="day-content">
+              <div class="day-title">${T.escapeHtml(d.title || '')}</div>
+              <div class="day-tasks">${T.escapeHtml(d.tasks || '').replace(/\n/g, '<br/>')}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      ${(data.key_warnings && data.key_warnings.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Key Warnings</div>
+          <div class="ce-section-cn">給你的 3 個重要提醒</div>
+          <div class="ce-block">
+            <div class="ce-block-body">
+              ${data.key_warnings.map((w, i) => `
+                <div class="ce-block-row">
+                  <div class="ce-block-key" style="color:var(--rust);">⚠ ${i+1}</div>
+                  <div class="ce-block-val">${T.escapeHtml(w)}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      <div style="margin-top:24px;text-align:center;padding:24px;background:rgba(74, 93, 58, 0.08);border:1px dashed var(--moss);">
+        <div style="font-size:15px;color:var(--ink-soft);margin-bottom:12px;line-height:1.7;">
+          有具體執行上的問題嗎?第一次接觸客戶不知道怎麼開口?
+        </div>
+        <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" style="display:inline-block;background:#06C755;color:white;padding:12px 28px;text-decoration:none;font-weight:700;letter-spacing:0.1em;">
+          💬 加 Brian 的 LINE 一對一聊
+        </a>
+      </div>
+    `;
+
+    resultsEl.innerHTML = html;
+    document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
+    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // 啟動
+  if (!T.getApiKey()) document.getElementById('ce-key-modal').classList.add('show');
+
+})();
+</script>
+</body>
+</html>

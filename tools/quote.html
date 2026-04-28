@@ -82,15 +82,19 @@
         </header>
 
         <section class="ce-form-card">
+          <div class="ce-tool-disclaimer" style="margin-bottom:0;margin-top:0;border-left:none;background:transparent;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px;">
+            <span class="ce-tool-disclaimer-icon">☕</span>
+            <span>AI 給的是策略起點,不是最終答案。執行前歡迎<a href="https://lin.ee/9Ba3XjY" target="_blank">加 Brian 的 LINE</a>聊聊。</span>
+          </div>
           <form id="ce-form" class="ce-form-grid">
             <div class="ce-field ce-full">
               <label for="qt-trade">你的專業</label>
-              <input type="text" id="qt-trade" placeholder="例如:商業空間室內設計" required />
+              <input type="text" id="qt-trade" placeholder="例如:社群行銷顧問 / 商業攝影 / 室內設計 / 品牌設計 / 影片剪輯 / 文案撰寫 / 網站開發..." required />
             </div>
 
             <div class="ce-field ce-full">
               <label for="qt-project">本次案件描述</label>
-              <textarea id="qt-project" placeholder="例如:餐飲品牌想開第二家分店,40 坪,需要從風格定調、平面規劃到完工督工。客戶之前一家店是自己找師傅做的,但裝修期拖了 5 個月、裝完客人覺得不夠特別。" required></textarea>
+              <textarea id="qt-project" placeholder="範例 1:有機保養品牌想做 IG 月經營,目前每月成交 30 萬左右,老闆覺得自己拍照很弱,想找人幫忙穩定產出內容並提升轉換率。&#10;&#10;範例 2:餐飲品牌想開第二家分店,40 坪,需要從風格定調、平面規劃到完工督工。第一家是自己找師傅做的,裝修拖了 5 個月、客人覺得不夠特別。&#10;&#10;範例 3:傳統製造業老闆想做品牌官網,公司 30 年歷史,接班的二代覺得網站太老氣,影響接國外大單。" required></textarea>
               <div class="ce-helper">越具體越好。AI 會用這段話判斷客戶痛點,推算合理的高價策略</div>
             </div>
 
@@ -98,12 +102,19 @@
               <label for="qt-client">客戶類型</label>
               <select id="qt-client">
                 <option>個人(屋主、家庭)</option>
+                <option>創業者 / SOHO 工作室</option>
                 <option>小型企業(年營收 1000 萬以下)</option>
                 <option selected>中小型企業(年營收 1000 萬到 1 億)</option>
-                <option>大型企業</option>
+                <option>中型企業(年營收 1 億到 10 億)</option>
+                <option>大型企業(年營收 10 億以上)</option>
                 <option>連鎖品牌 / 集團</option>
+                <option>跨國公司 / 上市櫃公司</option>
                 <option>政府單位 / 學校</option>
-                <option>非營利組織</option>
+                <option>非營利組織 / 基金會</option>
+                <option>網紅 / KOL / 自媒體經營者</option>
+                <option>傳統產業 / 製造業</option>
+                <option>新創公司</option>
+                <option>地方型店家(餐廳、咖啡店、診所等)</option>
               </select>
             </div>
 
@@ -116,35 +127,49 @@
                 <option>降低風險 / 避免出錯</option>
                 <option>提升品牌形象 / 對外面子</option>
                 <option>解決個人麻煩 / 心情焦慮</option>
+                <option>搶時間上市 / 抓住市場機會</option>
+                <option>擴大規模 / 系統化複製</option>
+                <option>留住人才 / 降低流動率</option>
+                <option>合規 / 避免法律問題</option>
+                <option>差異化 / 跟競爭對手拉開距離</option>
+                <option>傳承 / 接班 / 永續經營</option>
+                <option>解決長期未解的問題</option>
+                <option>建立護城河 / 提高進入門檻</option>
               </select>
             </div>
 
             <div class="ce-field">
               <label for="qt-old">你過去報價區間</label>
               <select id="qt-old">
-                <option>一萬以下</option>
-                <option>一萬到五萬</option>
-                <option selected>五萬到二十萬</option>
-                <option>二十萬到一百萬</option>
-                <option>一百萬到五百萬</option>
-                <option>五百萬以上</option>
+                <option>三千以下</option>
+                <option>三千到一萬</option>
+                <option>一萬到三萬</option>
+                <option>三萬到五萬</option>
+                <option selected>五萬到十萬</option>
+                <option>十萬到三十萬</option>
+                <option>三十萬到八十萬</option>
+                <option>八十萬到兩百萬</option>
+                <option>兩百萬到五百萬</option>
+                <option>五百萬到一千萬</option>
+                <option>一千萬以上</option>
               </select>
             </div>
 
             <div class="ce-field">
               <label for="qt-target-price">本次想衝的目標</label>
               <select id="qt-target-price">
+                <option>低價買門票(用較低價先進場,鋪陳長期)</option>
                 <option>跟過去差不多</option>
+                <option>提高 1.2 倍</option>
                 <option selected>提高 1.5 倍</option>
                 <option>提高 2 倍</option>
-                <option>提高 3 倍</option>
                 <option>讓對方願意簽長期年約</option>
               </select>
             </div>
 
             <div class="ce-field ce-full">
               <label for="qt-strength">你的差異化優勢(可選填)</label>
-              <textarea id="qt-strength" placeholder="例如:做過 30 家以上餐飲空間、能整合品牌設計+空間設計、跟在地工班合作 5 年以上、有設計獎項..."></textarea>
+              <textarea id="qt-strength" placeholder="例如:做過 30 家以上類似客戶 / 能整合 X+Y 跨界服務 / 跟在地工班/合作單位 5 年以上 / 有得獎作品或大客戶背書 / 有獨家方法論 / 交期穩定不拖稿..."></textarea>
             </div>
 
             <button type="submit" class="ce-submit" id="ce-submit-btn">
@@ -285,6 +310,10 @@
 
 你的核心理念:報價不是「成本+利潤」,是「對方的商業獲利 × 你的合理分成」。
 客戶不會殺一個能讓他賺更多的方案,只會殺一個「看起來像成本」的方案。
+
+【重要的策略區分】
+- 如果接案者選擇「低價買門票」策略:這代表他想用較低價先進場,鋪陳之後的長期合作。請在 brian_note 提醒他「便宜不是賤賣,要設計清楚的『升級路徑』讓對方下次心甘情願付更多」,並把 RECOMMENDED 方案設計成相對親民、但留有後續加值空間的版本。三段式報價的價差幅度可以縮小,重點放在「後續可加購、可升級、可續約」的設計。
+- 其他選項:正常用高價策略。
 
 請為以下案件,設計一份完整的「高價報價策略」:
 

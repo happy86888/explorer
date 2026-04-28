@@ -79,6 +79,10 @@
         </header>
 
         <section class="ce-form-card">
+          <div class="ce-tool-disclaimer" style="margin-bottom:0;margin-top:0;border-left:none;background:transparent;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px;">
+            <span class="ce-tool-disclaimer-icon">☕</span>
+            <span>AI 給的是策略起點,不是最終答案。執行前歡迎<a href="https://lin.ee/9Ba3XjY" target="_blank">加 Brian 的 LINE</a>聊聊。</span>
+          </div>
           <form id="ce-form" class="ce-form-grid">
             <div class="ce-field ce-full">
               <label for="ob-text">客戶說了什麼(原話)</label>
@@ -88,12 +92,12 @@
 
             <div class="ce-field ce-full">
               <label for="ob-context">背景補充(選填,但會大幅提升準確度)</label>
-              <textarea id="ob-context" placeholder="例如:這是第二次會議,第一次有給對方初步報價 30 萬;對方是製造業,老闆是創二代;這次見面老闆全程低頭看手機..."></textarea>
+              <textarea id="ob-context" placeholder="範例 1:這是第二次會議,第一次有給對方初步報價 30 萬;對方是製造業,老闆是創二代;這次見面老闆全程低頭看手機...&#10;&#10;範例 2:對方是電商品牌行銷主管,我已經提案做 3 個月社群經營,他主管要求他要再比價 3 家;之前我幫他朋友做過,口碑應該不錯...&#10;&#10;範例 3:餐飲老闆想拍菜單,我報 8 萬,他覺得貴;我知道他剛開店半年燒了不少錢,但拍照是他客流量低的核心問題..."></textarea>
             </div>
 
             <div class="ce-field">
               <label for="ob-trade">你的專業</label>
-              <input type="text" id="ob-trade" placeholder="例如:品牌設計" required />
+              <input type="text" id="ob-trade" placeholder="例如:品牌設計 / 商業攝影 / 文案撰寫 / 顧問諮詢 / 網站開發..." required />
             </div>
 
             <div class="ce-field">

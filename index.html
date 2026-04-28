@@ -81,6 +81,45 @@
     margin: 0 auto; line-height: 1.85;
   }
 
+  /* === 溫馨提醒 === */
+  .home-disclaimer {
+    background: linear-gradient(135deg, rgba(184, 137, 58, 0.12) 0%, rgba(74, 93, 58, 0.08) 100%);
+    border: 1px solid rgba(184, 137, 58, 0.25);
+    border-left: 4px solid var(--gold);
+    padding: 22px 26px;
+    margin-bottom: 60px;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+  }
+  .home-disclaimer-icon {
+    font-size: 28px;
+    line-height: 1;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .home-disclaimer-body { flex: 1; }
+  .home-disclaimer-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .home-disclaimer-text {
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--ink-soft);
+  }
+  .home-disclaimer-text strong { color: var(--ink); font-weight: 700; }
+  .home-disclaimer-text a {
+    color: var(--gold-deep);
+    text-decoration: underline;
+    font-weight: 700;
+  }
+  .home-disclaimer-text a:hover { color: var(--rust); }
+
   /* === 工具卡 === */
   .home-section-title {
     font-family: 'JetBrains Mono', monospace; font-size: 11px;
@@ -253,10 +292,44 @@
       </p>
     </header>
 
+    <!-- 溫馨提醒 -->
+    <div class="home-disclaimer">
+      <div class="home-disclaimer-icon">☕</div>
+      <div class="home-disclaimer-body">
+        <div class="home-disclaimer-title">給你的小提醒</div>
+        <div class="home-disclaimer-text">
+          這些工具都是 Brian 用 AI 為你整理的<strong>策略草稿</strong>,
+          像是一位 24 小時在線的助教先幫你打底。<br/>
+          但 AI 會猜錯、會給出不夠到位的建議,你的判斷永遠最重要。<br/>
+          如果有任何拿不定的地方,
+          <a href="https://lin.ee/9Ba3XjY" target="_blank">歡迎加 Brian 的 LINE</a>
+          一對一聊聊,讓真人教練幫你接住最後一哩路。
+        </div>
+      </div>
+    </div>
+
+
     <!-- 工具列表 -->
     <section>
       <div class="home-section-title">// AVAILABLE TOOLS</div>
       <div class="tools-grid">
+
+        <!-- 新手起步指南 -->
+        <a href="#" class="tool-card" data-tool="newbie" data-href="tools/newbie.html" style="border-color:var(--rust);background:linear-gradient(135deg, rgba(168, 68, 42, 0.06) 0%, var(--paper-card) 100%);">
+          <span class="tool-badge new" style="background:var(--rust);">START HERE</span>
+          <div class="tool-num">00</div>
+          <div class="tool-title">我是新手,想接案</div>
+          <div class="tool-en">Where to Start</div>
+          <div class="tool-desc">
+            完全沒接過案?不知道從哪開始?告訴我你會什麼,
+            我從 30+ 個接案網中幫你挑出最適合的入口,
+            再給你一份「7 天起步清單」+ 6 堂新手必修觀念。
+          </div>
+          <div class="tool-cta">
+            <span>從這裡開始 →</span>
+            <span class="tool-cta-arrow">→</span>
+          </div>
+        </a>
 
         <!-- 合作探索器(可用) -->
         <a href="#" class="tool-card" data-tool="collab" data-href="tools/collab.html">
@@ -305,6 +378,22 @@
             <span class="tool-cta-arrow">→</span>
           </div>
         </a>
+
+        <!-- 預留位 04 -->
+        <div class="tool-card coming">
+          <span class="tool-badge soon">COMING</span>
+          <div class="tool-num">04</div>
+          <div class="tool-title">合約陷阱檢查器</div>
+          <div class="tool-en">The Contract Sentinel</div>
+          <div class="tool-desc">
+            把客戶丟給你的合約貼進來,AI 用接案者的角度幫你抓出對你不利的條款、
+            付款條件陷阱、智財權陷阱、無限改稿陷阱,並建議怎麼修。
+          </div>
+          <div class="tool-cta">
+            <span>規劃中</span>
+            <span class="tool-cta-arrow">·</span>
+          </div>
+        </div>
 
       </div>
     </section>
