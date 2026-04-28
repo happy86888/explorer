@@ -14,6 +14,27 @@
   'use strict';
 
   // ============================================================
+  // URL 參數切換 AI Provider(隱藏功能,只有 Brian 知道)
+  // ?gemini = 切到 Gemini 模式 / ?claude = 切回 Claude 模式
+  // ============================================================
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('gemini')) {
+      localStorage.setItem('ce_ai_provider', 'gemini');
+      const url = new URL(window.location.href);
+      url.searchParams.delete('gemini');
+      window.history.replaceState({}, '', url.toString());
+      console.log('🔧 已切換到 Gemini 模式(管理者模式)');
+    } else if (params.has('claude')) {
+      localStorage.setItem('ce_ai_provider', 'claude');
+      const url = new URL(window.location.href);
+      url.searchParams.delete('claude');
+      window.history.replaceState({}, '', url.toString());
+      console.log('🔧 已切換到 Claude 模式');
+    }
+  } catch (e) {}
+
+  // ============================================================
   // 設定區 ⬇️
   // ============================================================
 
