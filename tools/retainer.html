@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>月顧問費設計器 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) { window.location.href = '../index.html'; }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  .plan-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    margin-bottom: 18px; overflow: hidden;
+  }
+  .plan-card.recommended { border-color: var(--gold); border-width: 2px; }
+  .plan-header {
+    padding: 18px 22px; background: var(--ink); color: var(--paper);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .plan-card.recommended .plan-header { background: var(--gold-deep); }
+  .plan-name { font-size: 20px; font-weight: 700; }
+  .plan-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    background: var(--gold); color: var(--ink); padding: 4px 10px;
+    letter-spacing: 0.15em;
+  }
+  .plan-card.recommended .plan-tag { background: white; color: var(--gold-deep); }
+  .plan-body { padding: 22px 24px; }
+  .plan-price-row {
+    background: rgba(184, 137, 58, 0.08); padding: 16px 18px;
+    margin-bottom: 16px; display: flex; justify-content: space-between;
+    align-items: baseline; flex-wrap: wrap; gap: 12px;
+  }
+  .plan-price {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 32px; font-weight: 600; color: var(--gold-deep); line-height: 1;
+  }
+  .plan-cycle {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--ink-mute); letter-spacing: 0.15em;
+  }
+  .deliv-list {
+    list-style: none; padding: 0; margin-bottom: 14px;
+  }
+  .deliv-list li {
+    padding: 7px 0 7px 22px; position: relative;
+    font-size: 14px; line-height: 1.7;
+    border-bottom: 1px dashed var(--line);
+  }
+  .deliv-list li:last-child { border-bottom: none; }
+  .deliv-list li::before {
+    content: '✓'; position: absolute; left: 0; top: 7px;
+    color: var(--moss); font-weight: 700;
+  }
+
+  .roi-grid {
+    display: grid; grid-template-columns: 1fr; gap: 14px;
+    margin-bottom: 24px;
+  }
+  @media (min-width: 720px) { .roi-grid { grid-template-columns: 1fr 1fr; } }
+  .roi-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 20px;
+  }
+  .roi-card.them { border-left: 4px solid var(--moss); }
+  .roi-card.you { border-left: 4px solid var(--gold); }
+  .roi-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; color: var(--gold-deep);
+    margin-bottom: 8px; text-transform: uppercase; font-weight: 700;
+  }
+  .roi-value {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 26px; font-weight: 600; color: var(--ink); margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .roi-desc { font-size: 13.5px; line-height: 1.7; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <div class="ce-modal-overlay" id="ce-key-modal">
+    <div class="ce-modal">
+      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
+      <div class="ce-modal-title">Connect Your Brain</div>
+      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
+      <div class="ce-modal-body">
+        到 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> →
+        API Keys → Create Key → 複製貼上 → Billing 充值 5 美金。
+      </div>
+      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="ce-modal-actions">
+        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
+      </div>
+      <div class="ce-modal-cost"><strong>費用估算:</strong>每次設計約 NT$1.5。</div>
+    </div>
+  </div>
+
+  <nav class="ce-nav">
+    <div class="ce-nav-brand">
+      <div class="ce-nav-mark">CEO Brian</div>
+      <div class="ce-nav-title">月顧問費設計器</div>
+    </div>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新方案</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Subscription Plans</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <div id="ce-form-page">
+        <header class="ce-header">
+          <div class="ce-eyebrow">From One-Off to Recurring</div>
+          <h1 class="ce-title">The Retainer Builder</h1>
+          <div class="ce-title-cn">月顧問費設計器</div>
+          <div class="ce-divider"></div>
+          <p class="ce-subtitle">
+            單次案結束想轉長期合作?<br/>
+            Brian 幫你設計月費 / 季費 / 年費結構,<br/>
+            告訴你每月該交付什麼、怎麼提案、怎麼讓客戶說「好」。
+          </p>
+        </header>
+
+        <section class="ce-form-card">
+          <div class="ce-tool-disclaimer" style="margin-bottom:0;margin-top:0;border-left:none;background:transparent;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px;">
+            <span class="ce-tool-disclaimer-icon">☕</span>
+            <span>方案是策略起點,實際數字要看你的市場行情。執行前歡迎<a href="https://lin.ee/9Ba3XjY" target="_blank">加 Brian 的 LINE</a>聊聊。</span>
+          </div>
+
+          <form id="ce-form" class="ce-form-grid">
+            <div class="ce-field ce-full">
+              <label for="rt-trade">你的專業</label>
+              <input type="text" id="rt-trade" placeholder="例如:社群行銷顧問 / 品牌設計 / 商業攝影 / 文案策略..." required />
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="rt-current">目前跟這個客戶的合作狀況</label>
+              <textarea id="rt-current" placeholder="例如:&#10;『幫某餐飲品牌做了完整的 Logo 跟菜單設計,案子收 8 萬。&#10;客戶很滿意,結束後說『以後還會找你』。&#10;我想趁熱提案『月顧問費』,讓他每月固定付我顧問+設計支援費用,不用每次都重新報價。』" required style="min-height:130px;"></textarea>
+            </div>
+
+            <div class="ce-field">
+              <label for="rt-client-type">客戶類型</label>
+              <select id="rt-client-type">
+                <option>個人 / 個人品牌</option>
+                <option selected>小型企業 / 工作室</option>
+                <option>中小型企業</option>
+                <option>連鎖品牌 / 集團</option>
+                <option>新創公司</option>
+                <option>地方店家</option>
+                <option>非營利組織</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="rt-client-revenue">客戶大概營收級別</label>
+              <select id="rt-client-revenue">
+                <option>個人/未知</option>
+                <option selected>月營收 30-100 萬</option>
+                <option>月營收 100-300 萬</option>
+                <option>月營收 300-1000 萬</option>
+                <option>月營收 1000 萬以上</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="rt-old-fee">過去這個案的單次費用</label>
+              <input type="text" id="rt-old-fee" placeholder="例如:NT$ 80,000 (一次性案件)" required />
+            </div>
+
+            <div class="ce-field">
+              <label for="rt-time">你願意每月投入多少時間在這個客戶</label>
+              <select id="rt-time">
+                <option>每月 5 小時內</option>
+                <option selected>每月 10-20 小時</option>
+                <option>每月 20-40 小時</option>
+                <option>每月 40-80 小時</option>
+                <option>每月 80 小時以上</option>
+              </select>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="rt-services">你能提供的服務 / 對方可能需要的</label>
+              <textarea id="rt-services" placeholder="列出你能提供、且對這個客戶有持續價值的服務。&#10;例如:&#10;- 每月新貼文視覺設計&#10;- 每季度品牌策略會議&#10;- 隨時可問的設計諮詢&#10;- 緊急 24 小時對應&#10;- 每月行銷報告..."></textarea>
+            </div>
+
+            <button type="submit" class="ce-submit" id="ce-submit-btn">
+              設計訂閱制方案 →
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section class="ce-results" id="ce-results"></section>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 月顧問費設計器</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('retainers');
+  let currentId = null;
+
+  const form = document.getElementById('ce-form');
+  const formPage = document.getElementById('ce-form-page');
+  const resultsEl = document.getElementById('ce-results');
+  const submitBtn = document.getElementById('ce-submit-btn');
+  const savedListEl = document.getElementById('ce-saved-list');
+  const savedCountEl = document.getElementById('ce-saved-count');
+
+  T.setupApiKeyModal('ce-key-modal', 'ce-api-key', 'ce-key-save');
+  document.getElementById('ce-settings-btn').addEventListener('click', () => {
+    document.getElementById('ce-api-key').value = T.getApiKey();
+    document.getElementById('ce-key-modal').classList.add('show');
+  });
+  document.getElementById('ce-new-btn').addEventListener('click', () => {
+    showFormPage(); form.reset(); currentId = null;
+  });
+
+  function showFormPage() {
+    formPage.classList.remove('ce-hidden');
+    resultsEl.innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideFormPage() { formPage.classList.add('ce-hidden'); }
+
+  loadSavedList();
+  if (!T.getApiKey()) document.getElementById('ce-key-modal').classList.add('show');
+
+  function loadSavedList() {
+    const records = storage.list();
+    savedCountEl.textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      savedListEl.innerHTML = `<div class="ce-empty-state">尚未儲存任何方案。</div>`;
+      return;
+    }
+    savedListEl.innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => `
+          <div class="ce-saved-card" data-id="${r.id}">
+            <button class="ce-saved-del" data-del="${r.id}">✕</button>
+            <div class="ce-saved-trade">${T.escapeHtml(r.input.trade)}</div>
+            <div class="ce-saved-target">${T.escapeHtml(r.input.clientType)} · ${T.escapeHtml(r.input.oldFee)}</div>
+            <div class="ce-saved-meta">${T.formatDate(r.createdAt)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    savedListEl.querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) { currentId = r.id; hideFormPage(); renderResults(r); }
+      });
+    });
+    savedListEl.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除?')) {
+          storage.delete(btn.dataset.del); loadSavedList();
+          if (currentId === btn.dataset.del) { showFormPage(); currentId = null; }
+        }
+      });
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!T.getApiKey()) { document.getElementById('ce-key-modal').classList.add('show'); return; }
+
+    const input = {
+      trade: document.getElementById('rt-trade').value.trim(),
+      current: document.getElementById('rt-current').value.trim(),
+      clientType: document.getElementById('rt-client-type').value,
+      clientRevenue: document.getElementById('rt-client-revenue').value,
+      oldFee: document.getElementById('rt-old-fee').value.trim(),
+      time: document.getElementById('rt-time').value,
+      services: document.getElementById('rt-services').value.trim()
+    };
+    if (!input.trade || !input.current || !input.oldFee) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '正在設計...';
+    resultsEl.innerHTML = `
+      <div class="ce-loading">
+        <div class="ce-loading-text">Brian 正在設計你的訂閱制方案...</div>
+        <div class="ce-loading-bar"></div>
+      </div>
+    `;
+
+    try {
+      const data = await designRetainer(input);
+      const id = 'rt_' + Date.now();
+      const record = { id, input, data, createdAt: Date.now() };
+      storage.save(id, record);
+      currentId = id;
+      renderResults(record);
+      loadSavedList();
+    } catch (err) {
+      console.error(err);
+      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${T.escapeHtml(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '設計訂閱制方案 →';
+    }
+  });
+
+  async function designRetainer(input) {
+    const prompt = `你是 Brian(老闆的接案學院創辦人),13 年實戰經驗,擅長把單次案件轉成「長期顧問合約 / 訂閱制」。
+
+你的核心信念:
+- 訂閱制的本質不是「便宜的服務 × 每月」,是「持續創造價值的承諾」
+- 客戶願意付月費,是因為「不付的損失」比「每月成本」大
+- 設計方案時必須讓「持續訂閱」對雙方都比「一次性合作」划算
+
+請為以下狀況設計訂閱制方案:
+
+【接案者背景】
+- 專業:${input.trade}
+- 過去這個案的單次費用:${input.oldFee}
+- 願意每月投入時間:${input.time}
+- 能提供的服務:${input.services || '(未列出,請推測)'}
+
+【客戶資料】
+- 客戶類型:${input.clientType}
+- 客戶營收級別:${input.clientRevenue}
+
+【目前合作狀況】
+${input.current}
+
+【輸出 JSON,只回 JSON,不要 markdown code fence】
+
+{
+  "brian_note": "用 Brian 口吻寫一段 100-150 字的「教練筆記」,告訴接案者:這個客戶轉訂閱制的最大機會在哪、最該避免的陷阱是什麼。",
+
+  "value_logic": {
+    "client_pain_continuous": "客戶有什麼『持續性』的痛點是訂閱制能解決的(80-150 字)。重要:必須是『持續性』的,不是一次性的。例如:每月都要新內容、每週都有突發狀況需要應對、長期累積品牌資產。",
+    "your_unique_value": "為什麼是你來做最合適,而不是他內部請員工或找其他人(80-120 字)",
+    "value_to_them": "客戶簽訂閱後能得到什麼具體價值(可量化最好)",
+    "value_to_you": "你能得到什麼:不只是收入,還有時間穩定、客戶累積、案例價值"
+  },
+
+  "plans": [
+    {
+      "name": "方案名稱(取個有感的名字,不要叫『標準/進階/高級』)",
+      "tag": "BASIC / RECOMMENDED / PREMIUM",
+      "monthly_price": "月費(NT$ 數字)",
+      "billing_cycle": "計費方式建議(月繳 / 季繳 / 半年繳 / 年繳的優惠設計)",
+      "deliverables": ["每月固定交付項目 1", "項目 2", "項目 3", "..."],
+      "extras": ["額外但重要的承諾(例如:24 小時 LINE 回覆、每季策略會議、緊急救火優先處理...)"],
+      "best_for": "什麼樣的客戶會選這個方案",
+      "psychology": "這個方案的設計心理(例如:這是錨定方案,讓客戶覺得 RECOMMENDED 划算)"
+    }
+  ],
+
+  "roi_pitch": {
+    "client_roi": "用一句話總結客戶投資 ROI(例如:每月 3 萬可以省下 15 萬找正職員工的成本)",
+    "your_roi": "用一句話總結你的 ROI(例如:每月 3 萬 × 12 月 = 36 萬,等於原本 5 個單次案的工作量)",
+    "comparison_table": [
+      {
+        "item": "比較項目(例如:可預測收入)",
+        "one_time": "單次合作的狀況",
+        "retainer": "訂閱制的狀況"
+      }
+    ]
+  },
+
+  "pitch_strategy": {
+    "timing": "什麼時機提出最好(交付當天 / 交付後 1-2 週 / 對方主動找你時...)",
+    "opening": "提案開場白(80-120 字,像顧問不像業務)",
+    "framing": "怎麼包裝這個方案讓對方不覺得是『被推銷』",
+    "demo_offer": "可以給的試水溫方案(例如:第一個月半價、頭 3 個月可隨時取消...),但要設計成讓客戶不會占便宜走人"
+  },
+
+  "objection_preview": [
+    {
+      "objection": "對方最可能說什麼(例如:這個月先這樣有需要再說 / 月費好像有點高 / 我自己做就好)",
+      "response": "Brian 風格回應(150 字內)"
+    }
+  ]
+}
+
+【3 個方案的設計原則】
+- 必須有 3 個方案,符合錨定效應
+- BASIC = 入門價、有限交付,設計給對方說「太少了那升一級」
+- RECOMMENDED = 主推,涵蓋對方最痛的需求,價格甜蜜點(原單次費用的 30-50% × 月)
+- PREMIUM = 高價、無限暢飲式,設計給有預算的客戶,也讓 RECOMMENDED 看起來划算
+- 月費基本邏輯參考:RECOMMENDED 月費 ≒ 原單次費用 × 30-50%,但要根據投入時間和客戶營收調整
+
+【硬核要求】
+- 月費要實際合理,不要報得離譜
+- deliverables 要具體可量化(「每月 4 篇貼文」而非「持續經營」)
+- objection_preview 給 3 個常見拒絕
+- pitch_strategy.opening 必須是可直接複製去開口的話
+- 全部繁體中文,台灣口吻、台幣計價`;
+
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 5500 });
+  }
+
+  function renderResults(record) {
+    hideFormPage();
+    const d = record.data;
+    const vl = d.value_logic || {};
+    const ps = d.pitch_strategy || {};
+    const roi = d.roi_pitch || {};
+
+    let html = `
+      <div class="ce-result-toolbar">
+        <div class="ce-result-info"><strong>${T.escapeHtml(record.input.trade)}</strong> · 訂閱制方案設計</div>
+        <div class="ce-result-actions">
+          <button class="ce-action-btn" id="ce-print-btn">列印 / 存 PDF</button>
+          <button class="ce-action-btn" id="ce-back-btn">+ 新方案</button>
+        </div>
+      </div>
+
+      ${d.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${T.escapeHtml(d.brian_note)}</div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Value Logic</div>
+        <div class="ce-section-cn">訂閱制的價值邏輯</div>
+        <div class="ce-block">
+          <div class="ce-block-body">
+            <div class="ce-block-row"><div class="ce-block-key">客戶持續痛點</div><div class="ce-block-val">${T.escapeHtml(vl.client_pain_continuous || '')}</div></div>
+            <div class="ce-block-row"><div class="ce-block-key">你的獨特價值</div><div class="ce-block-val">${T.escapeHtml(vl.your_unique_value || '')}</div></div>
+          </div>
+        </div>
+
+        <div class="roi-grid" style="margin-top:18px;">
+          <div class="roi-card them">
+            <div class="roi-label">他能得到</div>
+            <div class="roi-value">${T.escapeHtml(roi.client_roi || '')}</div>
+            <div class="roi-desc">${T.escapeHtml(vl.value_to_them || '')}</div>
+          </div>
+          <div class="roi-card you">
+            <div class="roi-label">你能得到</div>
+            <div class="roi-value">${T.escapeHtml(roi.your_roi || '')}</div>
+            <div class="roi-desc">${T.escapeHtml(vl.value_to_you || '')}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">3 Plans</div>
+        <div class="ce-section-cn">3 段式訂閱方案</div>
+        ${(d.plans || []).map(p => renderPlan(p)).join('')}
+      </div>
+
+      ${(roi.comparison_table && roi.comparison_table.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Why Subscription</div>
+          <div class="ce-section-cn">為什麼訂閱制比單次更好(給客戶看的對比)</div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;background:var(--paper-card);">
+              <thead>
+                <tr style="background:var(--ink);color:var(--paper);">
+                  <th style="padding:14px 16px;text-align:left;font-size:13px;letter-spacing:0.05em;">比較項目</th>
+                  <th style="padding:14px 16px;text-align:left;font-size:13px;letter-spacing:0.05em;">一次性合作</th>
+                  <th style="padding:14px 16px;text-align:left;font-size:13px;letter-spacing:0.05em;background:var(--gold-deep);">訂閱制</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${roi.comparison_table.map(row => `
+                  <tr style="border-bottom:1px solid var(--line);">
+                    <td style="padding:12px 16px;font-weight:700;font-size:14px;">${T.escapeHtml(row.item || '')}</td>
+                    <td style="padding:12px 16px;font-size:13.5px;color:var(--ink-soft);">${T.escapeHtml(row.one_time || '')}</td>
+                    <td style="padding:12px 16px;font-size:13.5px;background:rgba(184, 137, 58, 0.05);font-weight:500;">${T.escapeHtml(row.retainer || '')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ` : ''}
+
+      ${ps && (ps.timing || ps.opening) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Pitch Strategy</div>
+          <div class="ce-section-cn">提案策略與話術</div>
+          <div class="ce-block">
+            <div class="ce-block-body">
+              ${ps.timing ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key">何時提</div>
+                  <div class="ce-block-val">${T.escapeHtml(ps.timing)}</div>
+                </div>
+              ` : ''}
+              ${ps.framing ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key">怎麼包裝</div>
+                  <div class="ce-block-val">${T.escapeHtml(ps.framing)}</div>
+                </div>
+              ` : ''}
+              ${ps.opening ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key">開場話術</div>
+                  <div class="ce-block-val">
+                    <div class="ce-quote-box">${T.escapeHtml(ps.opening)}</div>
+                    <button class="ce-copy-btn" data-copy="${T.escapeHtml(ps.opening)}">複製話術</button>
+                  </div>
+                </div>
+              ` : ''}
+              ${ps.demo_offer ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key">試水溫方案</div>
+                  <div class="ce-block-val"><div class="ce-insight">💡 ${T.escapeHtml(ps.demo_offer)}</div></div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      ${(d.objection_preview && d.objection_preview.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Objection Preview</div>
+          <div class="ce-section-cn">預想對方拒絕</div>
+          ${d.objection_preview.map((o, i) => `
+            <div class="ce-block">
+              <div class="ce-block-header">
+                <div class="ce-block-title">${i+1}. ${T.escapeHtml(o.objection || '')}</div>
+              </div>
+              <div class="ce-block-body">
+                <div class="ce-quote-box">${T.escapeHtml(o.response || '')}</div>
+                <button class="ce-copy-btn" data-copy="${T.escapeHtml(o.response || '')}">複製回應</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-block">
+          <div class="ce-block-header"><div class="ce-block-title">進階深挖</div></div>
+          <div class="ce-block-body">
+            <div class="ce-deep-buttons">
+              <button class="ce-deep-btn btn-primary" data-action="proposal-doc">📄 給我完整提案文件結構</button>
+              <button class="ce-deep-btn btn-rust" data-action="contract-template">📝 訂閱制合約該寫什麼條款</button>
+              <button class="ce-deep-btn" data-action="onboarding">第一個月該怎麼經營客戶體驗</button>
+              <button class="ce-deep-btn" data-action="renewal">怎麼讓客戶續約 / 升級方案</button>
+              <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
+            </div>
+            <div class="ce-deep-result" id="ce-deep-result"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    resultsEl.innerHTML = html;
+    bindResultEvents(record);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderPlan(p) {
+    const isRec = p.tag === 'RECOMMENDED';
+    return `
+      <div class="plan-card ${isRec ? 'recommended' : ''}">
+        <div class="plan-header">
+          <div class="plan-name">${T.escapeHtml(p.name || '')}</div>
+          <div class="plan-tag">${T.escapeHtml(p.tag || '')}</div>
+        </div>
+        <div class="plan-body">
+          <div class="plan-price-row">
+            <div>
+              <div class="plan-price">${T.escapeHtml(p.monthly_price || '')}</div>
+              <div class="plan-cycle" style="margin-top:4px;">/ 月</div>
+            </div>
+            <div style="font-size:13px;color:var(--ink-soft);text-align:right;line-height:1.6;">
+              <div style="font-family:'JetBrains Mono', monospace;font-size:10px;letter-spacing:0.15em;color:var(--gold-deep);margin-bottom:4px;">計費方式</div>
+              ${T.escapeHtml(p.billing_cycle || '')}
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <div style="font-family:'JetBrains Mono', monospace;font-size:10px;letter-spacing:0.2em;color:var(--gold-deep);margin-bottom:8px;font-weight:700;">▶ 每月固定交付</div>
+            <ul class="deliv-list">
+              ${(p.deliverables || []).map(d => `<li>${T.escapeHtml(d)}</li>`).join('')}
+            </ul>
+          </div>
+
+          ${(p.extras && p.extras.length) ? `
+            <div style="margin-bottom:16px;background:rgba(74, 93, 58, 0.06);padding:12px 16px;border-left:2px solid var(--moss);">
+              <div style="font-family:'JetBrains Mono', monospace;font-size:10px;letter-spacing:0.15em;color:var(--moss);margin-bottom:6px;font-weight:700;">★ 額外承諾</div>
+              <ul class="deliv-list">
+                ${p.extras.map(e => `<li style="border:none;">${T.escapeHtml(e)}</li>`).join('')}
+              </ul>
+            </div>
+          ` : ''}
+
+          <div style="font-size:13px;color:var(--ink-soft);line-height:1.7;margin-bottom:10px;">
+            <strong>適合誰:</strong>${T.escapeHtml(p.best_for || '')}
+          </div>
+
+          ${p.psychology ? `
+            <div class="ce-insight" style="margin-top:12px;">💡 設計心理:${T.escapeHtml(p.psychology)}</div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function bindResultEvents(record) {
+    document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
+    document.getElementById('ce-back-btn').addEventListener('click', () => {
+      showFormPage(); currentId = null; form.reset();
+    });
+    document.querySelectorAll('.ce-copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard?.writeText(btn.dataset.copy).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = '✓ 已複製'; btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+        });
+      });
+    });
+    document.querySelectorAll('.ce-deep-btn[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const action = btn.dataset.action;
+        const resultEl = document.getElementById('ce-deep-result');
+        btn.disabled = true; const orig = btn.textContent;
+        btn.textContent = '思考中...';
+        resultEl.classList.add('show');
+        resultEl.textContent = 'Brian 正在分析...';
+        try { resultEl.textContent = await deepDive(record, action); }
+        catch (err) { resultEl.textContent = '產生失敗:' + err.message; }
+        finally { btn.disabled = false; btn.textContent = orig; }
+      });
+    });
+  }
+
+  async function deepDive(record, action) {
+    const prompts = {
+      'proposal-doc': `請寫一份完整的「訂閱制提案文件」結構與內容,包含:
+
+【1. 封面】(1 頁)
+- 提案標題、副標、雙方資訊
+
+【2. 我聽到的需求】(1 頁)
+總結客戶痛點,證明我聽懂
+
+【3. 為什麼從『單次』走向『持續』】(1-2 頁)
+論述為什麼訂閱對雙方都好
+
+【4. 三段式方案說明】(2-3 頁)
+直接列出 3 個方案,主推 RECOMMENDED
+
+【5. 預期的客戶 ROI 試算】(1 頁)
+量化客戶能得到的回報
+
+【6. 服務流程與承諾】(1 頁)
+如何溝通、應對緊急、進度回報
+
+【7. 試行期方案】(1 頁)
+如果還在猶豫的選項
+
+【8. 下一步】(1 頁)
+清楚的決策路徑
+
+每段請寫實際內容,不要寫「此處放 XXX」。約 1500-2500 字。`,
+
+      'contract-template': `請列出訂閱制合約該包含的條款,每條給出建議文字。
+
+至少包含:
+1. 服務範圍(每月固定交付的項目)
+2. 服務「不包含」的項目(避免無限要求)
+3. 月費與計費週期
+4. 付款條件(月初付 / 月底付、逾期罰則)
+5. 雙方溝通方式與回應時間
+6. 「重大需求」的另計收費規則
+7. 客戶可隨時取消的條款 / 鎖定期(例如 3 個月內不可取消)
+8. 你可隨時終止的條款
+9. 智財權歸屬
+10. 保密義務(雙向)
+11. 不可抗力
+12. 爭議解決
+
+每條用「建議文字:」開頭,寫出可直接用的條款。
+⚠️ 結尾加上:「此為範本參考,正式使用前請給律師看過。」`,
+
+      'onboarding': `客戶剛簽訂閱制方案,第一個月是「決定他會不會續約」的關鍵期。
+請設計第一個月的客戶體驗:
+
+【Week 1 · 啟動】
+- 第 1-3 天該做什麼(歡迎、文件、會議)
+- 第 4-7 天該做什麼(初步交付、確認方向)
+
+【Week 2 · 第一波交付】
+- 該交付什麼,讓對方感覺「果然簽訂閱對」
+
+【Week 3 · 主動驚喜】
+- 多給一個對方沒預期的東西(超出合約的小贈品)
+
+【Week 4 · 月度收尾】
+- 回顧會議、報告、下個月計畫
+- 蒐集滿意度
+
+整體要讓客戶感覺「這不是合約,這是合作關係」。`,
+
+      'renewal': `客戶第 1 個月、第 3 個月、第 6 個月、第 12 個月是關鍵節點。
+請設計每個節點的「續約 / 升級」策略:
+
+【月底 1 (第 1 個月結束)】
+評估:對方繼續的訊號 / 想取消的訊號
+你該做的動作
+
+【季底 (第 3 個月結束)】
+這時可以提出升級方案嗎?怎麼提?
+
+【半年 (第 6 個月結束)】
+中期回顧、續約討論、報價調整時機
+
+【年度 (第 12 個月結束)】
+全年總結、下一年提案、漲價策略
+
+每個節點寫:該主動做什麼、客戶會出現什麼訊號、該怎麼回應。`
+    };
+
+    const prompt = `你是 Brian。
+案件背景:
+- 接案類型:${record.input.trade}
+- 客戶類型:${record.input.clientType}
+- 過去單次費用:${record.input.oldFee}
+- 投入時間:${record.input.time}
+
+任務:${prompts[action]}
+
+繁體中文,台灣口吻,直接輸出。`;
+
+    return await T.callClaude(prompt, { maxTokens: 3500 });
+  }
+})();
+</script>
+</body>
+</html>

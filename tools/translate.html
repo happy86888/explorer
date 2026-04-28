@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>客戶溝通翻譯機 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) { window.location.href = '../index.html'; }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  .translate-box {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 22px 24px; margin-bottom: 22px;
+  }
+  .translate-section {
+    padding: 14px 0; border-bottom: 1px solid var(--line);
+  }
+  .translate-section:last-child { border-bottom: none; }
+  .translate-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; color: var(--gold-deep);
+    margin-bottom: 8px; font-weight: 700; text-transform: uppercase;
+  }
+  .translate-original {
+    background: var(--paper); padding: 14px 16px;
+    border-left: 3px solid var(--ink-mute); font-size: 14.5px;
+    line-height: 1.85; font-style: italic; color: var(--ink);
+  }
+  .translate-meaning {
+    background: rgba(184, 137, 58, 0.06); padding: 14px 16px;
+    border-left: 3px solid var(--gold);
+    font-size: 14.5px; line-height: 1.85;
+  }
+  .translate-emotion {
+    display: inline-block; padding: 6px 12px;
+    background: var(--ink); color: var(--paper);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.1em; margin-right: 6px; margin-bottom: 6px;
+  }
+
+  .reply-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    margin-bottom: 16px; overflow: hidden;
+  }
+  .reply-header {
+    padding: 16px 20px; background: var(--ink); color: var(--paper);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .reply-title { font-size: 16px; font-weight: 700; }
+  .reply-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    background: var(--gold); color: var(--ink); padding: 4px 10px;
+    letter-spacing: 0.15em;
+  }
+  .reply-body { padding: 18px 20px; }
+  .reply-when {
+    font-size: 13px; color: var(--ink-mute); margin-bottom: 12px;
+    font-style: italic;
+  }
+  .reply-message {
+    background: var(--paper); padding: 16px 18px;
+    border-left: 3px solid var(--gold);
+    font-size: 14.5px; line-height: 1.85;
+    white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <div class="ce-modal-overlay" id="ce-key-modal">
+    <div class="ce-modal">
+      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
+      <div class="ce-modal-title">Connect Your Brain</div>
+      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
+      <div class="ce-modal-body">
+        到 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> →
+        API Keys → Create Key → 複製貼上 → Billing 充值 5 美金。
+      </div>
+      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="ce-modal-actions">
+        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
+      </div>
+      <div class="ce-modal-cost"><strong>費用估算:</strong>每次翻譯約 NT$0.5。</div>
+    </div>
+  </div>
+
+  <nav class="ce-nav">
+    <div class="ce-nav-brand">
+      <div class="ce-nav-mark">CEO Brian</div>
+      <div class="ce-nav-title">客戶溝通翻譯機</div>
+    </div>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新翻譯</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Translations</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <div id="ce-form-page">
+        <header class="ce-header">
+          <div class="ce-eyebrow">What Clients Say vs. What They Mean</div>
+          <h1 class="ce-title">Client Decoder</h1>
+          <div class="ce-title-cn">客戶溝通翻譯機</div>
+          <div class="ce-divider"></div>
+          <p class="ce-subtitle">
+            「再幫我修一下整體感覺」「我朋友覺得好像不太對」<br/>
+            這些話到底什麼意思?Brian 用 13 年經驗幫你翻譯,<br/>
+            還給你 3 個專業回覆版本,直接複製貼上。
+          </p>
+        </header>
+
+        <section class="ce-form-card">
+          <div class="ce-tool-disclaimer" style="margin-bottom:0;margin-top:0;border-left:none;background:transparent;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px;">
+            <span class="ce-tool-disclaimer-icon">☕</span>
+            <span>翻譯只是參考,你最了解你的客戶。回覆前歡迎<a href="https://lin.ee/9Ba3XjY" target="_blank">加 Brian 的 LINE</a>聊聊。</span>
+          </div>
+
+          <form id="ce-form" class="ce-form-grid">
+            <div class="ce-field ce-full">
+              <label for="tr-message">客戶說的話(原話貼進來)</label>
+              <textarea id="tr-message" placeholder="範例:&#10;『東西收到了,大概看了一下,整體感覺好像差了什麼,你再幫我抓一下方向?』&#10;&#10;『我跟朋友討論了一下,他建議可以再調一下,你看一下這樣會不會比較好?』&#10;&#10;『不好意思打擾了,想說再確認一下進度,謝謝你辛苦了。』&#10;&#10;『這個顏色我老婆覺得不太喜歡,可不可以再換一個?』" required style="min-height:120px;"></textarea>
+              <div class="ce-helper">原話貼上即可。AI 會解讀對方真正想說的</div>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="tr-context">這段話的背景(可選填,但會大幅提升準確度)</label>
+              <textarea id="tr-context" placeholder="例如:這是第三次改稿了 / 我已經交付正式檔但他突然說... / 他之前都很滿意,今天突然... / 已經拖款 2 週了..."></textarea>
+            </div>
+
+            <div class="ce-field">
+              <label for="tr-stage">目前在什麼階段</label>
+              <select id="tr-stage">
+                <option>初次接觸 / 詢價中</option>
+                <option>提案中 / 等對方回覆</option>
+                <option>已簽約 / 案件進行中</option>
+                <option selected>初稿 / 改稿期</option>
+                <option>準備交付 / 驗收中</option>
+                <option>已交付 / 等尾款</option>
+                <option>合作結束 / 售後服務</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="tr-relationship">你跟客戶的關係</label>
+              <select id="tr-relationship">
+                <option selected>第一次合作</option>
+                <option>第 2-3 次合作</option>
+                <option>長期客戶</option>
+                <option>朋友介紹</option>
+                <option>朋友本人</option>
+                <option>家人</option>
+              </select>
+            </div>
+
+            <button type="submit" class="ce-submit" id="ce-submit-btn">
+              翻譯這段話 →
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section class="ce-results" id="ce-results"></section>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 客戶溝通翻譯機</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('translates');
+  let currentId = null;
+
+  const form = document.getElementById('ce-form');
+  const formPage = document.getElementById('ce-form-page');
+  const resultsEl = document.getElementById('ce-results');
+  const submitBtn = document.getElementById('ce-submit-btn');
+  const savedListEl = document.getElementById('ce-saved-list');
+  const savedCountEl = document.getElementById('ce-saved-count');
+
+  T.setupApiKeyModal('ce-key-modal', 'ce-api-key', 'ce-key-save');
+  document.getElementById('ce-settings-btn').addEventListener('click', () => {
+    document.getElementById('ce-api-key').value = T.getApiKey();
+    document.getElementById('ce-key-modal').classList.add('show');
+  });
+  document.getElementById('ce-new-btn').addEventListener('click', () => {
+    showFormPage(); form.reset(); currentId = null;
+  });
+
+  function showFormPage() {
+    formPage.classList.remove('ce-hidden');
+    resultsEl.innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideFormPage() { formPage.classList.add('ce-hidden'); }
+
+  loadSavedList();
+  if (!T.getApiKey()) document.getElementById('ce-key-modal').classList.add('show');
+
+  function loadSavedList() {
+    const records = storage.list();
+    savedCountEl.textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      savedListEl.innerHTML = `<div class="ce-empty-state">尚未儲存任何翻譯紀錄。</div>`;
+      return;
+    }
+    savedListEl.innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => `
+          <div class="ce-saved-card" data-id="${r.id}">
+            <button class="ce-saved-del" data-del="${r.id}">✕</button>
+            <div class="ce-saved-trade">${T.escapeHtml(r.input.stage)}</div>
+            <div class="ce-saved-target">"${T.escapeHtml(r.input.message.substring(0, 50))}..."</div>
+            <div class="ce-saved-meta">${T.formatDate(r.createdAt)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    savedListEl.querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) { currentId = r.id; hideFormPage(); renderResults(r); }
+      });
+    });
+    savedListEl.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除?')) {
+          storage.delete(btn.dataset.del); loadSavedList();
+          if (currentId === btn.dataset.del) { showFormPage(); currentId = null; }
+        }
+      });
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!T.getApiKey()) { document.getElementById('ce-key-modal').classList.add('show'); return; }
+
+    const input = {
+      message: document.getElementById('tr-message').value.trim(),
+      context: document.getElementById('tr-context').value.trim(),
+      stage: document.getElementById('tr-stage').value,
+      relationship: document.getElementById('tr-relationship').value
+    };
+    if (!input.message) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '翻譯中...';
+    resultsEl.innerHTML = `
+      <div class="ce-loading">
+        <div class="ce-loading-text">Brian 正在解讀對方的真正含義...</div>
+        <div class="ce-loading-bar"></div>
+      </div>
+    `;
+
+    try {
+      const data = await translate(input);
+      const id = 'tr_' + Date.now();
+      const record = { id, input, data, createdAt: Date.now() };
+      storage.save(id, record);
+      currentId = id;
+      renderResults(record);
+      loadSavedList();
+    } catch (err) {
+      console.error(err);
+      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${T.escapeHtml(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '翻譯這段話 →';
+    }
+  });
+
+  async function translate(input) {
+    const prompt = `你是 Brian(老闆的接案學院創辦人),13 年實戰經驗,擅長解讀客戶話語背後的真實含義。
+
+你的核心信念:客戶說的話 70% 不是字面意思。「整體感覺好像差了什麼」可能是「我自己也不知道哪裡怪,你幫我想」、「你再加油一下」可能是「我對品質不滿但又不想直接講」、「我朋友覺得...」通常是客戶自己的想法借朋友之名提出。
+
+請翻譯以下這段客戶說的話:
+
+【背景】
+- 目前階段:${input.stage}
+- 雙方關係:${input.relationship}
+- 補充背景:${input.context || '(未填)'}
+
+【客戶原話】
+${input.message}
+
+【輸出 JSON,只回 JSON,不要 markdown code fence】
+
+{
+  "brian_note": "用 Brian 口吻寫一段 80-120 字的「教練筆記」,直接告訴接案者:對方這段話的核心是什麼、你應該怎麼想。",
+
+  "translation": {
+    "literal_meaning": "字面意思(對方表面在說什麼,2-3 句)",
+    "real_meaning": "真實含義(對方實際想表達什麼,要解讀到位,2-3 句)",
+    "hidden_concern": "對方沒講出口的擔心(80-150 字深度解讀)"
+  },
+
+  "emotion_tags": ["情緒標籤 1", "情緒標籤 2", "情緒標籤 3"],
+
+  "key_signals": [
+    {
+      "phrase": "對方原話中的關鍵字句",
+      "signal": "這個字句透露的訊號(50-80 字)"
+    }
+  ],
+
+  "deal_temperature": "成交/合作熱度判斷(熱 / 溫 / 冷 / 警戒)",
+  "temperature_reason": "為什麼這樣判斷(50-80 字)",
+
+  "replies": [
+    {
+      "label": "回覆風格(例如:同理確認型 / 專業引導型 / 直接釐清型)",
+      "best_when": "什麼狀況下用這個版本最合適",
+      "message": "可以直接複製去回對方的訊息(150-250 字,口語、有溫度、不卑不亢)"
+    }
+  ],
+
+  "do_not_say": [
+    "絕對不能講的回應 1(以及為什麼)",
+    "回應 2",
+    "回應 3"
+  ]
+}
+
+【翻譯重點】
+- 要從「對方真正想要什麼」「對方在害怕什麼」「對方在試探什麼」三個角度同時看
+- emotion_tags 用 3 個標籤描述對方此刻情緒(例如:焦慮、客氣、強勢、不滿、觀望、試探)
+- key_signals 至少給 2-3 個,從原文抓出真的有的字句
+- replies 一定要 3 個風格不同的版本
+- replies 的 message 要寫得像真人說話,不是寫文章
+- do_not_say 寫實際容易犯的錯,例如「我跟你解釋一下這樣設計的原因...」(因為這會讓對方覺得你在防衛)
+
+【常見的客戶潛台詞範例(供你判斷時參考)】
+- 「整體感覺好像差了什麼」= 我說不上來但不滿意,你幫我想原因
+- 「我朋友覺得...」= 通常是我自己的想法,只是不想直接講
+- 「你再加油一下」= 你做得不夠好,但我不想說太重
+- 「不急,你慢慢來」= 我其實在等,但我不想催
+- 「再幫我修一下」= 又要改,但我覺得這應該不算多
+- 「預算我們再聊」= 我希望你先給個低價
+- 「我老闆/老婆覺得...」= 找擋箭牌,通常是要我改
+
+要求:
+- 全部繁體中文,台灣口吻
+- 不要寫「對方可能...」這種模糊判斷,要直接給判斷
+- replies 的訊息要寫得讓接案者「複製就能用」`;
+
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 4000 });
+  }
+
+  function renderResults(record) {
+    hideFormPage();
+    const d = record.data;
+    const tr = d.translation || {};
+    const tempColor = d.deal_temperature?.includes('熱') ? 'var(--rust)' :
+                     d.deal_temperature?.includes('警戒') ? 'var(--rust)' :
+                     d.deal_temperature?.includes('冷') ? 'var(--ink-mute)' : 'var(--gold-deep)';
+
+    let html = `
+      <div class="ce-result-toolbar">
+        <div class="ce-result-info"><strong>翻譯結果</strong> · ${T.escapeHtml(record.input.stage)}</div>
+        <div class="ce-result-actions">
+          <button class="ce-action-btn" id="ce-print-btn">列印 / 存 PDF</button>
+          <button class="ce-action-btn" id="ce-back-btn">+ 新翻譯</button>
+        </div>
+      </div>
+
+      ${d.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${T.escapeHtml(d.brian_note)}</div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">Translation</div>
+        <div class="ce-section-cn">字面 vs 真實意思</div>
+        <div class="translate-box">
+          <div class="translate-section">
+            <div class="translate-label">原話</div>
+            <div class="translate-original">"${T.escapeHtml(record.input.message)}"</div>
+          </div>
+          <div class="translate-section">
+            <div class="translate-label">字面意思</div>
+            <div style="font-size:14.5px;line-height:1.85;color:var(--ink-soft);">${T.escapeHtml(tr.literal_meaning || '')}</div>
+          </div>
+          <div class="translate-section">
+            <div class="translate-label">★ 真實含義</div>
+            <div class="translate-meaning"><strong>${T.escapeHtml(tr.real_meaning || '')}</strong></div>
+          </div>
+          ${tr.hidden_concern ? `
+            <div class="translate-section">
+              <div class="translate-label">沒講出口的擔心</div>
+              <div style="font-size:14.5px;line-height:1.85;">${T.escapeHtml(tr.hidden_concern)}</div>
+            </div>
+          ` : ''}
+          ${(d.emotion_tags && d.emotion_tags.length) ? `
+            <div class="translate-section">
+              <div class="translate-label">對方情緒</div>
+              <div>${d.emotion_tags.map(t => `<span class="translate-emotion">${T.escapeHtml(t)}</span>`).join('')}</div>
+            </div>
+          ` : ''}
+          ${d.deal_temperature ? `
+            <div class="translate-section">
+              <div class="translate-label">合作熱度</div>
+              <div><span style="display:inline-block;background:${tempColor};color:white;padding:6px 14px;font-weight:700;font-family:'JetBrains Mono', monospace;font-size:12px;letter-spacing:0.15em;">${T.escapeHtml(d.deal_temperature)}</span></div>
+              <div style="font-size:13px;color:var(--ink-soft);margin-top:8px;line-height:1.7;">${T.escapeHtml(d.temperature_reason || '')}</div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+
+      ${(d.key_signals && d.key_signals.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Key Signals</div>
+          <div class="ce-section-cn">關鍵訊號拆解</div>
+          ${d.key_signals.map(s => `
+            <div style="background:var(--paper-card);border:1px solid var(--line);border-left:3px solid var(--gold);padding:14px 18px;margin-bottom:10px;">
+              <div style="font-style:italic;color:var(--ink);font-size:14px;margin-bottom:8px;">"${T.escapeHtml(s.phrase || '')}"</div>
+              <div style="font-size:13.5px;line-height:1.7;color:var(--ink-soft);">↳ ${T.escapeHtml(s.signal || '')}</div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">3 Reply Versions</div>
+        <div class="ce-section-cn">3 個回覆版本(選一個複製貼上)</div>
+        ${(d.replies || []).map((r, i) => `
+          <div class="reply-card">
+            <div class="reply-header">
+              <div class="reply-title">版本 ${i+1} · ${T.escapeHtml(r.label || '')}</div>
+              <div class="reply-tag">復刻即用</div>
+            </div>
+            <div class="reply-body">
+              <div class="reply-when">適合用在:${T.escapeHtml(r.best_when || '')}</div>
+              <div class="reply-message">${T.escapeHtml(r.message || '')}</div>
+              <button class="ce-copy-btn" data-copy="${T.escapeHtml(r.message || '')}" style="margin-top:10px;">複製這個版本</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      ${(d.do_not_say && d.do_not_say.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Do Not Say</div>
+          <div class="ce-section-cn">這些話絕對不要說</div>
+          <div class="ce-block">
+            <div class="ce-block-body">
+              ${d.do_not_say.map((item, i) => `
+                <div class="ce-block-row">
+                  <div class="ce-block-key" style="color:var(--rust);">✗ NO ${i+1}</div>
+                  <div class="ce-block-val">${T.escapeHtml(item)}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-block">
+          <div class="ce-block-header"><div class="ce-block-title">進階深挖</div></div>
+          <div class="ce-block-body">
+            <div class="ce-deep-buttons">
+              <button class="ce-deep-btn btn-primary" data-action="dialog-rehearsal">🎭 演練接下來 3 回合對話</button>
+              <button class="ce-deep-btn btn-rust" data-action="firm-version">寫一個更有底氣的版本</button>
+              <button class="ce-deep-btn" data-action="why-this-happened">為什麼對方會說這句話</button>
+              <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
+            </div>
+            <div class="ce-deep-result" id="ce-deep-result"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    resultsEl.innerHTML = html;
+    bindResultEvents(record);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function bindResultEvents(record) {
+    document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
+    document.getElementById('ce-back-btn').addEventListener('click', () => {
+      showFormPage(); currentId = null; form.reset();
+    });
+    document.querySelectorAll('.ce-copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard?.writeText(btn.dataset.copy).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = '✓ 已複製'; btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+        });
+      });
+    });
+    document.querySelectorAll('.ce-deep-btn[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const action = btn.dataset.action;
+        const resultEl = document.getElementById('ce-deep-result');
+        btn.disabled = true; const orig = btn.textContent;
+        btn.textContent = '思考中...';
+        resultEl.classList.add('show');
+        resultEl.textContent = 'Brian 正在分析...';
+        try { resultEl.textContent = await deepDive(record, action); }
+        catch (err) { resultEl.textContent = '產生失敗:' + err.message; }
+        finally { btn.disabled = false; btn.textContent = orig; }
+      });
+    });
+  }
+
+  async function deepDive(record, action) {
+    const prompts = {
+      'dialog-rehearsal': `假設學員用第 1 個回覆版本回應對方,請預演接下來 3 回合對話:
+
+【第 2 回合】對方可能怎麼回應、學員該怎麼接(寫具體話術)
+【第 3 回合】同上
+【第 4 回合】同上,並寫到一個明確結論點(例如:對方接受你的方案 / 提出新需求 / 說要再考慮)
+
+格式:
+對方:「...」
+你:「...」(短說明你為什麼這樣回)
+
+寫得像真實對話,不要寫成劇本說明。`,
+
+      'firm-version': `現有的回覆版本可能對某些客戶太溫和。
+請寫一個「更有底氣」的版本(150-250 字),要求:
+- 不卑不亢但更直接
+- 不害怕拒絕對方
+- 守住專業界線
+- 讓對方知道你不是任他擺布的乙方
+- 不要變成兇或賭氣
+- 結尾要明確的下一步
+
+寫得像有 5 年資歷的接案者會說的話,不是新手會說的。`,
+
+      'why-this-happened': `請從「為什麼對方會說這句話」這個角度,深入分析:
+
+1. 對方在這段關係中的位置(他覺得自己是強勢/弱勢/平等)
+2. 這段話可能反映的「過去經驗」(例如:可能被前任服務商坑過、可能習慣這樣談判)
+3. 接案者過去的哪些行為,可能導致對方敢這樣說(自我反省的角度)
+4. 下次怎麼從根本避免這類對話發生
+
+不是給話術,是給「結構性理解」。100-200 字。`
+    };
+
+    const prompt = `你是 Brian。
+背景:
+- 目前階段:${record.input.stage}
+- 雙方關係:${record.input.relationship}
+- 客戶原話:${record.input.message}
+- 已翻譯:${record.data.translation?.real_meaning || ''}
+
+任務:${prompts[action]}
+
+繁體中文,台灣口吻,直接輸出。`;
+
+    return await T.callClaude(prompt, { maxTokens: 3000 });
+  }
+})();
+</script>
+</body>
+</html>

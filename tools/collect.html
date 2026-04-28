@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>尾款催收器 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) { window.location.href = '../index.html'; }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  .stage-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    margin-bottom: 16px; overflow: hidden;
+  }
+  .stage-header {
+    padding: 16px 20px; color: white;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .stage-header.soft { background: var(--moss); }
+  .stage-header.firm { background: var(--gold-deep); }
+  .stage-header.final { background: var(--rust); }
+
+  .stage-num {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 24px; font-weight: 600; line-height: 1;
+  }
+  .stage-title { font-size: 16px; font-weight: 700; flex: 1; }
+  .stage-when {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    background: rgba(255,255,255,0.2); padding: 4px 10px;
+    letter-spacing: 0.1em;
+  }
+  .stage-body { padding: 20px 22px; }
+  .stage-strategy {
+    font-size: 13.5px; color: var(--ink-soft); line-height: 1.85;
+    margin-bottom: 14px; padding: 12px 14px;
+    background: rgba(184, 137, 58, 0.06); border-left: 2px solid var(--gold);
+  }
+  .stage-message {
+    background: var(--paper); padding: 16px 18px;
+    border-left: 3px solid; font-size: 14.5px;
+    line-height: 1.85; white-space: pre-wrap;
+  }
+  .stage-card .stage-message { border-left-color: var(--ink); }
+  .stage-card.soft .stage-message { border-left-color: var(--moss); }
+  .stage-card.firm .stage-message { border-left-color: var(--gold-deep); }
+  .stage-card.final .stage-message { border-left-color: var(--rust); }
+
+  .channels {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+  }
+  .channel-tag {
+    background: var(--paper); border: 1px solid var(--line);
+    padding: 4px 10px; font-size: 12px;
+  }
+
+  .legal-note {
+    background: rgba(168, 68, 42, 0.06); border: 1px solid var(--rust);
+    padding: 14px 18px; margin: 24px 0;
+    font-size: 13px; line-height: 1.75; color: var(--ink-soft);
+  }
+  .legal-note strong { color: var(--rust); }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <div class="ce-modal-overlay" id="ce-key-modal">
+    <div class="ce-modal">
+      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
+      <div class="ce-modal-title">Connect Your Brain</div>
+      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
+      <div class="ce-modal-body">
+        到 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> →
+        API Keys → Create Key → 複製貼上 → Billing 充值 5 美金。
+      </div>
+      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="ce-modal-actions">
+        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
+      </div>
+      <div class="ce-modal-cost"><strong>費用估算:</strong>每次催收策略約 NT$1。</div>
+    </div>
+  </div>
+
+  <nav class="ce-nav">
+    <div class="ce-nav-brand">
+      <div class="ce-nav-mark">CEO Brian</div>
+      <div class="ce-nav-title">尾款催收器</div>
+    </div>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新催收</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Collection Cases</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <div id="ce-form-page">
+        <header class="ce-header">
+          <div class="ce-eyebrow">Get Paid Without Burning Bridges</div>
+          <h1 class="ce-title">The Collector</h1>
+          <div class="ce-title-cn">尾款催收器</div>
+          <div class="ce-divider"></div>
+          <p class="ce-subtitle">
+            交付完客戶就消失?尾款拖了好幾週?<br/>
+            Brian 設計 3 階段催收策略:從友善提醒、公事公辦、到最後通牒,<br/>
+            讓你拿到該得的錢,又不會撕破臉。
+          </p>
+        </header>
+
+        <section class="ce-form-card">
+          <div class="ce-tool-disclaimer" style="margin-bottom:0;margin-top:0;border-left:none;background:transparent;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px;">
+            <span class="ce-tool-disclaimer-icon">☕</span>
+            <span>催收技巧重要,但每個關係不同,先了解狀況再行動。執行前歡迎<a href="https://lin.ee/9Ba3XjY" target="_blank">加 Brian 的 LINE</a>聊聊。</span>
+          </div>
+
+          <form id="ce-form" class="ce-form-grid">
+            <div class="ce-field ce-full">
+              <label for="cc-situation">案件狀況描述</label>
+              <textarea id="cc-situation" placeholder="範例:&#10;『6 月 15 日交付完整檔案給客戶,當時口頭說 30 天內結款。&#10;7 月底我傳 LINE 提醒,對方回「我跟會計確認一下」,後來就沒下文。&#10;8 月初再傳一次,對方說「最近資金有點吃緊,再給我一週」。&#10;到現在 8 月底了,完全沒消息,LINE 已讀不回。』" required style="min-height:160px;"></textarea>
+              <div class="ce-helper">寫越完整越好。包含時間軸、對方回應、你已經做過什麼動作</div>
+            </div>
+
+            <div class="ce-field">
+              <label for="cc-amount">未付金額</label>
+              <input type="text" id="cc-amount" placeholder="例如:NT$ 50,000" required />
+            </div>
+
+            <div class="ce-field">
+              <label for="cc-overdue">逾期多久</label>
+              <select id="cc-overdue">
+                <option>剛好到期沒付</option>
+                <option>1-2 週</option>
+                <option selected>2-4 週</option>
+                <option>1-2 個月</option>
+                <option>2-3 個月</option>
+                <option>3-6 個月</option>
+                <option>超過半年</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="cc-relationship">跟客戶的關係</label>
+              <select id="cc-relationship">
+                <option selected>第一次合作</option>
+                <option>合作過 2-3 次</option>
+                <option>長期合作</option>
+                <option>朋友介紹來的</option>
+                <option>朋友本人</option>
+                <option>家人 / 親戚</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="cc-contract">有正式合約嗎</label>
+              <select id="cc-contract">
+                <option>有書面合約 + 雙方簽名</option>
+                <option>有 Email 確認過條款</option>
+                <option>有 LINE / 訊息對話為憑</option>
+                <option selected>口頭約定為主</option>
+                <option>什麼都沒有</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="cc-trade">你的接案類型</label>
+              <input type="text" id="cc-trade" placeholder="例如:平面設計 / 商業攝影..." required />
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="cc-tried">你已經試過什麼方法(可選填)</label>
+              <textarea id="cc-tried" placeholder="例如:傳了 3 次 LINE / 寄過 1 次正式 Email / 打電話他不接 / 透過介紹人提醒..."></textarea>
+            </div>
+
+            <button type="submit" class="ce-submit" id="ce-submit-btn">
+              產生催收策略 →
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section class="ce-results" id="ce-results"></section>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 尾款催收器</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('collections');
+  let currentId = null;
+
+  const form = document.getElementById('ce-form');
+  const formPage = document.getElementById('ce-form-page');
+  const resultsEl = document.getElementById('ce-results');
+  const submitBtn = document.getElementById('ce-submit-btn');
+  const savedListEl = document.getElementById('ce-saved-list');
+  const savedCountEl = document.getElementById('ce-saved-count');
+
+  T.setupApiKeyModal('ce-key-modal', 'ce-api-key', 'ce-key-save');
+  document.getElementById('ce-settings-btn').addEventListener('click', () => {
+    document.getElementById('ce-api-key').value = T.getApiKey();
+    document.getElementById('ce-key-modal').classList.add('show');
+  });
+  document.getElementById('ce-new-btn').addEventListener('click', () => {
+    showFormPage(); form.reset(); currentId = null;
+  });
+
+  function showFormPage() {
+    formPage.classList.remove('ce-hidden');
+    resultsEl.innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideFormPage() { formPage.classList.add('ce-hidden'); }
+
+  loadSavedList();
+  if (!T.getApiKey()) document.getElementById('ce-key-modal').classList.add('show');
+
+  function loadSavedList() {
+    const records = storage.list();
+    savedCountEl.textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      savedListEl.innerHTML = `<div class="ce-empty-state">尚未儲存任何催收紀錄。</div>`;
+      return;
+    }
+    savedListEl.innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => `
+          <div class="ce-saved-card" data-id="${r.id}">
+            <button class="ce-saved-del" data-del="${r.id}">✕</button>
+            <div class="ce-saved-trade">${T.escapeHtml(r.input.amount)}</div>
+            <div class="ce-saved-target">逾期 ${T.escapeHtml(r.input.overdue)} · ${T.escapeHtml(r.input.trade)}</div>
+            <div class="ce-saved-meta">${T.formatDate(r.createdAt)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    savedListEl.querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) { currentId = r.id; hideFormPage(); renderResults(r); }
+      });
+    });
+    savedListEl.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除?')) {
+          storage.delete(btn.dataset.del); loadSavedList();
+          if (currentId === btn.dataset.del) { showFormPage(); currentId = null; }
+        }
+      });
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!T.getApiKey()) { document.getElementById('ce-key-modal').classList.add('show'); return; }
+
+    const input = {
+      situation: document.getElementById('cc-situation').value.trim(),
+      amount: document.getElementById('cc-amount').value.trim(),
+      overdue: document.getElementById('cc-overdue').value,
+      relationship: document.getElementById('cc-relationship').value,
+      contract: document.getElementById('cc-contract').value,
+      trade: document.getElementById('cc-trade').value.trim(),
+      tried: document.getElementById('cc-tried').value.trim()
+    };
+    if (!input.situation || !input.trade) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '正在設計策略...';
+    resultsEl.innerHTML = `
+      <div class="ce-loading">
+        <div class="ce-loading-text">Brian 正在分析狀況、設計 3 階段催收方案...</div>
+        <div class="ce-loading-bar"></div>
+      </div>
+    `;
+
+    try {
+      const data = await generateStrategy(input);
+      const id = 'cc_' + Date.now();
+      const record = { id, input, data, createdAt: Date.now() };
+      storage.save(id, record);
+      currentId = id;
+      renderResults(record);
+      loadSavedList();
+    } catch (err) {
+      console.error(err);
+      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${T.escapeHtml(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '產生催收策略 →';
+    }
+  });
+
+  async function generateStrategy(input) {
+    const prompt = `你是 Brian(老闆的接案學院創辦人),13 年實戰經驗,看過無數尾款催收的案例。
+
+你的核心信念:催收的目標是「拿到錢 + 保留專業形象 + 不撕破臉」。
+從最軟到最硬,每個階段都該有節奏,不要跳級。
+但也不能無限軟下去——溫柔三次客戶就會把你當軟柿子。
+
+請為以下狀況設計完整的催收策略:
+
+【接案者狀況】
+- 接案類型:${input.trade}
+- 未付金額:${input.amount}
+- 逾期時間:${input.overdue}
+- 跟客戶關係:${input.relationship}
+- 合約形式:${input.contract}
+- 已試過的方法:${input.tried || '(沒試過)'}
+
+【完整狀況描述】
+${input.situation}
+
+【輸出 JSON,只回 JSON,不要 markdown code fence】
+
+{
+  "brian_note": "用 Brian 口吻寫一段 100-150 字的「教練筆記」,告訴接案者:這個案件最重要的判斷是什麼、客戶很可能的真實狀況是什麼。",
+
+  "client_situation_analysis": "從原話和時間軸推測客戶現在的真實狀況(是真的沒錢 / 故意拖 / 不滿成果想殺價 / 公司流程問題等),100-200 字",
+
+  "stages": [
+    {
+      "level": 1,
+      "label": "軟性提醒",
+      "tone": "soft",
+      "when_to_use": "什麼時機用這封(時間點具體)",
+      "strategy": "策略說明(80-120 字,告訴接案者為什麼這樣寫)",
+      "channel_suggestion": ["建議用什麼管道:LINE / Email / 電話 / 見面"],
+      "message": "可直接複製的訊息全文(150-250 字,LINE/簡訊版本可以短一點)"
+    },
+    {
+      "level": 2,
+      "label": "中性催繳",
+      "tone": "firm",
+      "when_to_use": "...",
+      "strategy": "...",
+      "channel_suggestion": ["..."],
+      "message": "..."
+    },
+    {
+      "level": 3,
+      "label": "最後通牒",
+      "tone": "final",
+      "when_to_use": "...",
+      "strategy": "...",
+      "channel_suggestion": ["...(這階段建議書面,例如正式 Email + 存證信函的可能)"],
+      "message": "..."
+    }
+  ],
+
+  "preventive_measures": [
+    "下次接案要怎麼避免(具體可執行,例如:訂金提到 50%、合約加違約金條款)"
+  ],
+
+  "legal_options": {
+    "feasibility": "走法律途徑的可行性評估(高 / 中 / 低)",
+    "reason": "為什麼(根據合約形式、金額大小、證據完整度判斷)",
+    "if_yes": "如果決定走法律,該做什麼(支付命令、小額訴訟、調解...等台灣可用的方式)",
+    "if_no": "如果不建議走法律,該怎麼漂亮放下(放下是為了不再內耗)"
+  },
+
+  "psychological_tips": [
+    "心理層面的提醒(例如:不要焦慮影響其他工作、不要 24 小時等對方回 LINE...)"
+  ]
+}
+
+【3 階段語氣規劃】
+- Level 1 軟性提醒:像朋友提醒,不要任何指責,給對方台階下,假設「對方可能忘了」
+- Level 2 中性催繳:公事公辦,提到合約 / 雙方約定,要求明確付款日期,但仍保有禮貌
+- Level 3 最後通牒:明確說明後果(例如:超過 X 日將進行下一步法律行動 / 不再提供售後服務 / 終止合作),但不能威脅、不能罵人
+- 三階段中間應該有 1-2 週緩衝,不要連發
+
+【硬核要求】
+- message 必須直接可用,不要寫「您好,以下是建議...」這種說明文
+- 根據已試過的方法、逾期時間、關係,智慧調整每階段建議的時機點
+- 如果關係是「朋友」「家人」,Level 1 的口吻要更軟、更有空間
+- 如果關係是「第一次合作」+逾期 1 個月以上,Level 1 可以直接跳得更明確
+- legal_options 不是法律意見,只是大方向,結尾要提醒「具體請諮詢律師」
+- 全部繁體中文,台灣口吻、台灣法律用語`;
+
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 5000 });
+  }
+
+  function renderResults(record) {
+    hideFormPage();
+    const d = record.data;
+
+    let html = `
+      <div class="ce-result-toolbar">
+        <div class="ce-result-info"><strong>${T.escapeHtml(record.input.amount)}</strong> · 逾期 ${T.escapeHtml(record.input.overdue)} · ${T.escapeHtml(record.input.trade)}</div>
+        <div class="ce-result-actions">
+          <button class="ce-action-btn" id="ce-print-btn">列印 / 存 PDF</button>
+          <button class="ce-action-btn" id="ce-back-btn">+ 新催收</button>
+        </div>
+      </div>
+
+      ${d.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${T.escapeHtml(d.brian_note)}</div>
+        </div>
+      ` : ''}
+
+      ${d.client_situation_analysis ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Client Analysis</div>
+          <div class="ce-section-cn">客戶狀況推測</div>
+          <div style="background:var(--paper-card);border:1px solid var(--line);border-left:3px solid var(--gold);padding:18px 22px;font-size:14.5px;line-height:1.85;">
+            ${T.escapeHtml(d.client_situation_analysis)}
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">3-Stage Strategy</div>
+        <div class="ce-section-cn">3 階段催收策略(從軟到硬)</div>
+        ${(d.stages || []).map(s => renderStage(s)).join('')}
+      </div>
+
+      ${(d.preventive_measures && d.preventive_measures.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Prevention</div>
+          <div class="ce-section-cn">下次怎麼避免</div>
+          <div class="ce-block">
+            <div class="ce-block-body">
+              <ul style="list-style:none;padding:0;">
+                ${d.preventive_measures.map(m => `<li style="padding:8px 0 8px 20px;position:relative;font-size:14px;line-height:1.7;border-bottom:1px dashed var(--line);"><span style="position:absolute;left:0;color:var(--moss);">+</span> ${T.escapeHtml(m)}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      ${d.legal_options ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Legal Options</div>
+          <div class="ce-section-cn">法律途徑評估</div>
+          <div class="legal-note">
+            <strong>⚖️ 提醒:</strong>以下是大方向參考,不是法律意見。要走法律途徑請先諮詢律師,或聯繫各地法律扶助基金會免費諮詢。
+          </div>
+          <div class="ce-block">
+            <div class="ce-block-body">
+              <div class="ce-block-row">
+                <div class="ce-block-key">可行性</div>
+                <div class="ce-block-val"><strong>${T.escapeHtml(d.legal_options.feasibility || '?')}</strong></div>
+              </div>
+              <div class="ce-block-row">
+                <div class="ce-block-key">原因</div>
+                <div class="ce-block-val">${T.escapeHtml(d.legal_options.reason || '')}</div>
+              </div>
+              ${d.legal_options.if_yes ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key" style="color:var(--rust);">如要走</div>
+                  <div class="ce-block-val">${T.escapeHtml(d.legal_options.if_yes)}</div>
+                </div>
+              ` : ''}
+              ${d.legal_options.if_no ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key" style="color:var(--moss);">如放下</div>
+                  <div class="ce-block-val">${T.escapeHtml(d.legal_options.if_no)}</div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      ${(d.psychological_tips && d.psychological_tips.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Mindset</div>
+          <div class="ce-section-cn">心理層面提醒</div>
+          <div style="background:rgba(74, 93, 58, 0.06);border-left:3px solid var(--moss);padding:18px 22px;">
+            <ul style="list-style:none;padding:0;">
+              ${d.psychological_tips.map(t => `<li style="padding:6px 0 6px 18px;position:relative;font-size:14px;line-height:1.75;"><span style="position:absolute;left:0;color:var(--moss);">♥</span> ${T.escapeHtml(t)}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-block">
+          <div class="ce-block-header"><div class="ce-block-title">進階深挖</div></div>
+          <div class="ce-block-body">
+            <div class="ce-deep-buttons">
+              <button class="ce-deep-btn btn-primary" data-action="formal-letter">📜 寫一份正式存證信函草稿</button>
+              <button class="ce-deep-btn btn-rust" data-action="phone-script">☎ 該打電話了,給我電話腳本</button>
+              <button class="ce-deep-btn" data-action="excuse-handle">如果他編理由,怎麼回</button>
+              <button class="ce-deep-btn" data-action="learn-from-this">這次經驗該學到什麼</button>
+              <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
+            </div>
+            <div class="ce-deep-result" id="ce-deep-result"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    resultsEl.innerHTML = html;
+    bindResultEvents(record);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderStage(s) {
+    const channels = s.channel_suggestion || [];
+    return `
+      <div class="stage-card ${s.tone || 'soft'}">
+        <div class="stage-header ${s.tone || 'soft'}">
+          <span class="stage-num">0${s.level}</span>
+          <span class="stage-title">${T.escapeHtml(s.label || '')}</span>
+          <span class="stage-when">${T.escapeHtml(s.when_to_use || '')}</span>
+        </div>
+        <div class="stage-body">
+          <div class="stage-strategy">
+            💡 ${T.escapeHtml(s.strategy || '')}
+          </div>
+          ${channels.length ? `
+            <div style="margin-bottom:14px;">
+              <div style="font-family:'JetBrains Mono', monospace;font-size:10px;letter-spacing:0.15em;color:var(--gold-deep);margin-bottom:6px;font-weight:700;">▶ 建議管道</div>
+              <div class="channels">${channels.map(c => `<span class="channel-tag">${T.escapeHtml(c)}</span>`).join('')}</div>
+            </div>
+          ` : ''}
+          <div style="font-family:'JetBrains Mono', monospace;font-size:10px;letter-spacing:0.15em;color:var(--gold-deep);margin-bottom:6px;font-weight:700;">▶ 訊息全文(可直接複製)</div>
+          <div class="stage-message">${T.escapeHtml(s.message || '')}</div>
+          <button class="ce-copy-btn" data-copy="${T.escapeHtml(s.message || '')}" style="margin-top:10px;">複製訊息</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function bindResultEvents(record) {
+    document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
+    document.getElementById('ce-back-btn').addEventListener('click', () => {
+      showFormPage(); currentId = null; form.reset();
+    });
+    document.querySelectorAll('.ce-copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard?.writeText(btn.dataset.copy).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = '✓ 已複製'; btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+        });
+      });
+    });
+    document.querySelectorAll('.ce-deep-btn[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const action = btn.dataset.action;
+        const resultEl = document.getElementById('ce-deep-result');
+        btn.disabled = true; const orig = btn.textContent;
+        btn.textContent = '思考中...';
+        resultEl.classList.add('show');
+        resultEl.textContent = 'Brian 正在分析...';
+        try { resultEl.textContent = await deepDive(record, action); }
+        catch (err) { resultEl.textContent = '產生失敗:' + err.message; }
+        finally { btn.disabled = false; btn.textContent = orig; }
+      });
+    });
+  }
+
+  async function deepDive(record, action) {
+    const prompts = {
+      'formal-letter': `請寫一份「存證信函」草稿。
+要求:
+- 符合台灣存證信函的格式(收件人/寄件人/案由/事實經過/請求/法律依據)
+- 內容專業、不情緒化
+- 寫清楚:服務內容、應付金額、催繳經過、要求對方多少天內處理、否則進行的法律行動
+- 文字風格:法律文書,但不過度刁鑽
+- 約 400-600 字
+
+⚠️ 結尾加上:「此為草稿,實際寄發前建議找律師審閱,確保用詞與請求權基礎正確。」`,
+
+      'phone-script': `請設計打電話催收的對話腳本(預演 3-4 分鐘的通話)。
+
+包含:
+1. 接通後的開場白(30 秒內,降低對方戒心)
+2. 切入正題的轉折(不要直接說「你還沒付錢」)
+3. 對方說「我等等去處理」的回應(怎麼確保他真的會做)
+4. 對方說「最近真的沒錢」的回應
+5. 對方說「等我看一下再回你」的回應(怎麼鎖定具體時間)
+6. 結尾必須拿到的承諾(具體日期、具體做法)
+
+格式:
+你:「...」(短說明心理)
+對方:「...」
+你:「...」`,
+
+      'excuse-handle': `客戶催收時最常編 5 個理由。
+請列出這 5 個理由,每個理由給:
+1. 對方原話範例
+2. 真實意思(他在拖什麼)
+3. Brian 風格的回應(150 字內,不卑不亢、把球丟回對方)
+
+5 個常見理由:
+1. 「會計請假/出差」
+2. 「公司流程要走 1-2 個月」
+3. 「最近現金流真的吃緊」
+4. 「我覺得成果還可以再修一下,等修完一起付」
+5. 「我老闆/合夥人還沒簽核」`,
+
+      'learn-from-this': `從這次經驗,給接案者一份「終身受用的尾款預防清單」。
+
+請寫:
+1. 接案前該做的 3 個防呆設計(訂金、合約、付款條件設計)
+2. 案件進行中該做的 3 件事(階段付款、進度確認、書面記錄)
+3. 交付時該做的 3 件事(交付儀式、付款連結、明確期限)
+4. 客戶分級制度(哪種客戶要堅持先付清、哪種可以給彈性)
+5. 一個「停損公式」(逾期多久 + 金額多少 = 該採取什麼動作)
+
+要寫成「下次絕對不會再遇到這狀況」的高度。具體、可執行。`
+    };
+
+    const prompt = `你是 Brian。
+案件背景:
+- 接案類型:${record.input.trade}
+- 未付金額:${record.input.amount}
+- 逾期:${record.input.overdue}
+- 關係:${record.input.relationship}
+- 合約:${record.input.contract}
+
+任務:${prompts[action]}
+
+繁體中文,台灣口吻,直接輸出。`;
+
+    return await T.callClaude(prompt, { maxTokens: 3000 });
+  }
+})();
+</script>
+</body>
+</html>

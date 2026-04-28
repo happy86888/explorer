@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>案件健診器 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) {
+    window.location.href = '../index.html';
+  }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  .health-banner {
+    padding: 24px 28px; margin-bottom: 28px;
+    display: flex; align-items: center; gap: 20px;
+    border-left: 6px solid;
+  }
+  .health-banner.green { background: rgba(74, 93, 58, 0.08); border-color: var(--moss); }
+  .health-banner.yellow { background: rgba(184, 137, 58, 0.1); border-color: var(--gold); }
+  .health-banner.red { background: rgba(168, 68, 42, 0.08); border-color: var(--rust); }
+
+  .health-grade {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 80px; font-weight: 600; line-height: 1; flex-shrink: 0;
+  }
+  .health-banner.green .health-grade { color: var(--moss); }
+  .health-banner.yellow .health-grade { color: var(--gold-deep); }
+  .health-banner.red .health-grade { color: var(--rust); }
+  .health-info { flex: 1; }
+  .health-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.25em; margin-bottom: 6px; font-weight: 700;
+  }
+  .health-banner.green .health-label { color: var(--moss); }
+  .health-banner.yellow .health-label { color: var(--gold-deep); }
+  .health-banner.red .health-label { color: var(--rust); }
+  .health-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .health-desc { font-size: 14px; color: var(--ink-soft); line-height: 1.7; }
+
+  .signal-grid {
+    display: grid; grid-template-columns: 1fr; gap: 12px;
+  }
+  @media (min-width: 720px) { .signal-grid { grid-template-columns: 1fr 1fr; } }
+  .signal-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 16px 18px; border-left: 3px solid;
+  }
+  .signal-card.danger { border-left-color: var(--rust); }
+  .signal-card.warning { border-left-color: var(--gold); }
+  .signal-card.good { border-left-color: var(--moss); }
+  .signal-head {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .signal-icon { font-size: 18px; }
+  .signal-title { font-weight: 700; font-size: 14.5px; flex: 1; }
+  .signal-desc { font-size: 13px; line-height: 1.7; color: var(--ink-soft); }
+
+  .persona-box {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 22px 24px; margin-bottom: 22px;
+  }
+  .persona-tag {
+    display: inline-block; background: var(--ink); color: var(--paper);
+    padding: 6px 14px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em; margin-bottom: 14px;
+  }
+  .persona-traits { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 600px) { .persona-traits { grid-template-columns: 1fr 1fr; } }
+  .persona-trait { display: flex; gap: 10px; }
+  .persona-trait-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.15em; color: var(--gold-deep);
+    margin-bottom: 4px; font-weight: 700;
+  }
+  .persona-trait-val { font-size: 13.5px; line-height: 1.7; }
+
+  .verdict-box {
+    background: var(--ink); color: var(--paper);
+    padding: 24px 28px; margin: 24px 0;
+    border-left: 4px solid var(--gold);
+  }
+  .verdict-action {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 28px; font-weight: 600; color: var(--gold); margin-bottom: 10px;
+  }
+  .verdict-reason { font-size: 14.5px; line-height: 1.85; color: var(--paper-deep); }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <div class="ce-modal-overlay" id="ce-key-modal">
+    <div class="ce-modal">
+      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
+      <div class="ce-modal-title">Connect Your Brain</div>
+      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
+      <div class="ce-modal-body">
+        這個工具用 <strong>Anthropic Claude AI</strong> 幫你健診案件。<br/>
+        到 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> →
+        API Keys → Create Key → 複製貼上 → Billing 充值 5 美金即可。
+      </div>
+      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="ce-modal-actions">
+        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
+      </div>
+      <div class="ce-modal-cost"><strong>費用估算:</strong>每次健診約 NT$1.5。</div>
+    </div>
+  </div>
+
+  <nav class="ce-nav">
+    <div class="ce-nav-brand">
+      <div class="ce-nav-mark">CEO Brian</div>
+      <div class="ce-nav-title">案件健診器</div>
+    </div>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新健診</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Health Checks</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <div id="ce-form-page">
+        <header class="ce-header">
+          <div class="ce-eyebrow">Spot the Red Flags Before You Bid</div>
+          <h1 class="ce-title">The Brief Doctor</h1>
+          <div class="ce-title-cn">案件健診器</div>
+          <div class="ce-divider"></div>
+          <p class="ce-subtitle">
+            把客戶傳來的需求 / 案件描述貼進來,<br/>
+            AI 用 13 年實戰經驗幫你判斷:這是好案還是雷案?<br/>
+            告訴你客戶心理側寫、該不該接、怎麼回覆。
+          </p>
+        </header>
+
+        <section class="ce-form-card">
+          <div class="ce-tool-disclaimer" style="margin-bottom:0;margin-top:0;border-left:none;background:transparent;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px;">
+            <span class="ce-tool-disclaimer-icon">☕</span>
+            <span>AI 只是初步健診,你的直覺仍是最後判斷。執行前歡迎<a href="https://lin.ee/9Ba3XjY" target="_blank">加 Brian 的 LINE</a>聊聊。</span>
+          </div>
+
+          <form id="ce-form" class="ce-form-grid">
+            <div class="ce-field ce-full">
+              <label for="hd-brief">客戶傳來的需求 / 案件描述</label>
+              <textarea id="hd-brief" placeholder="把客戶原話貼進來,越完整越好。不要自己整理過,AI 要看原始文字才能判斷對方的溝通模式。&#10;&#10;範例:&#10;『您好,我想做一個 LOGO,希望年輕、簡約、有質感、又能讓人記得住,有看到您的作品很喜歡,想問報價多少?可以先看看您怎麼設計嗎?預算我們再聊。謝謝!』" required style="min-height:160px;"></textarea>
+              <div class="ce-helper">原話貼上即可,不用整理。AI 會從用詞、語氣、需求清晰度判斷對方類型</div>
+            </div>
+
+            <div class="ce-field">
+              <label for="hd-channel">這封訊息來自哪裡</label>
+              <select id="hd-channel">
+                <option value="referral">朋友/客戶介紹</option>
+                <option value="ig">IG 私訊</option>
+                <option value="fb">FB 粉專/社團</option>
+                <option value="line" selected>LINE 詢問</option>
+                <option value="email">Email</option>
+                <option value="case-platform">接案平台(104外包/Pro360 等)</option>
+                <option value="cold-dm">完全陌生的人主動找</option>
+                <option value="other">其他</option>
+              </select>
+            </div>
+
+            <div class="ce-field">
+              <label for="hd-trade">你的接案類型</label>
+              <input type="text" id="hd-trade" placeholder="例如:平面設計 / 商業攝影 / 文案 / 影片剪輯..." required />
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="hd-context">你已經知道的客戶背景(選填)</label>
+              <textarea id="hd-context" placeholder="例如:對方是某餐廳老闆 / 朋友轉介來的 / 對方有自己的公司 / 看 IG 介紹說是學生..."></textarea>
+            </div>
+
+            <button type="submit" class="ce-submit" id="ce-submit-btn">
+              開始健診這個案件 →
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section class="ce-results" id="ce-results"></section>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 案件健診器</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('briefs');
+  let currentId = null;
+
+  const form = document.getElementById('ce-form');
+  const formPage = document.getElementById('ce-form-page');
+  const resultsEl = document.getElementById('ce-results');
+  const submitBtn = document.getElementById('ce-submit-btn');
+  const savedListEl = document.getElementById('ce-saved-list');
+  const savedCountEl = document.getElementById('ce-saved-count');
+
+  T.setupApiKeyModal('ce-key-modal', 'ce-api-key', 'ce-key-save');
+  document.getElementById('ce-settings-btn').addEventListener('click', () => {
+    document.getElementById('ce-api-key').value = T.getApiKey();
+    document.getElementById('ce-key-modal').classList.add('show');
+  });
+  document.getElementById('ce-new-btn').addEventListener('click', () => {
+    showFormPage(); form.reset(); currentId = null;
+  });
+
+  function showFormPage() {
+    formPage.classList.remove('ce-hidden');
+    resultsEl.innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideFormPage() { formPage.classList.add('ce-hidden'); }
+
+  loadSavedList();
+  if (!T.getApiKey()) document.getElementById('ce-key-modal').classList.add('show');
+
+  function loadSavedList() {
+    const records = storage.list();
+    savedCountEl.textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      savedListEl.innerHTML = `<div class="ce-empty-state">尚未儲存任何健診紀錄。</div>`;
+      return;
+    }
+    savedListEl.innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => {
+          const gradeColor = r.data.grade === 'A' ? 'var(--moss)' :
+                            (r.data.grade === 'C' || r.data.grade === 'D' ? 'var(--rust)' : 'var(--gold-deep)');
+          return `
+            <div class="ce-saved-card" data-id="${r.id}">
+              <button class="ce-saved-del" data-del="${r.id}">✕</button>
+              <div class="ce-saved-trade"><span style="color:${gradeColor};font-size:18px;font-weight:700;">${T.escapeHtml(r.data.grade || '?')}</span> · ${T.escapeHtml(r.input.trade)}</div>
+              <div class="ce-saved-target">"${T.escapeHtml(r.input.brief.substring(0, 50))}..."</div>
+              <div class="ce-saved-meta">${T.formatDate(r.createdAt)}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    savedListEl.querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) { currentId = r.id; hideFormPage(); renderResults(r); }
+      });
+    });
+    savedListEl.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除?')) {
+          storage.delete(btn.dataset.del);
+          loadSavedList();
+          if (currentId === btn.dataset.del) { showFormPage(); currentId = null; }
+        }
+      });
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!T.getApiKey()) { document.getElementById('ce-key-modal').classList.add('show'); return; }
+
+    const input = {
+      brief: document.getElementById('hd-brief').value.trim(),
+      channel: document.getElementById('hd-channel').value,
+      trade: document.getElementById('hd-trade').value.trim(),
+      context: document.getElementById('hd-context').value.trim()
+    };
+    if (!input.brief || !input.trade) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '正在健診...';
+    resultsEl.innerHTML = `
+      <div class="ce-loading">
+        <div class="ce-loading-text">Brian 正在從用詞、語氣、需求結構解讀對方...</div>
+        <div class="ce-loading-bar"></div>
+      </div>
+    `;
+
+    try {
+      const data = await diagnose(input);
+      const id = 'hd_' + Date.now();
+      const record = { id, input, data, createdAt: Date.now() };
+      storage.save(id, record);
+      currentId = id;
+      renderResults(record);
+      loadSavedList();
+    } catch (err) {
+      console.error(err);
+      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${T.escapeHtml(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '開始健診這個案件 →';
+    }
+  });
+
+  async function diagnose(input) {
+    const channelLabels = {
+      'referral': '朋友/客戶介紹', 'ig': 'IG 私訊', 'fb': 'FB 粉專/社團',
+      'line': 'LINE 詢問', 'email': 'Email', 'case-platform': '接案平台',
+      'cold-dm': '陌生人主動', 'other': '其他'
+    };
+
+    const prompt = `你是 Brian(老闆的接案學院創辦人),13 年實戰經驗,看過數千個案件詢問。
+
+你要從接案者的角度,健診一個剛收到的詢問,判斷這是好案還是雷案。
+
+【接案者背景】
+- 接案類型:${input.trade}
+- 訊息來自:${channelLabels[input.channel]}
+- 已知客戶背景:${input.context || '(未填)'}
+
+【客戶訊息原話】
+${input.brief}
+
+【輸出 JSON,只回 JSON,不要 markdown code fence】
+
+{
+  "grade": "A / B / C / D",
+  "grade_label": "對應的形容(A=黃金案件 / B=正常案件 / C=要小心的案件 / D=雷案,建議拒絕)",
+  "grade_reason": "為什麼給這個評級(80-150 字)",
+
+  "brian_note": "用 Brian 口吻寫一段 100-150 字的「教練筆記」,告訴接案者:這個詢問最該注意的訊號是什麼、你的直覺應該是什麼。要直接、有溫度。",
+
+  "danger_signals": [
+    {
+      "title": "雷案訊號的標題(短)",
+      "evidence": "從原文中引用的證據(不要編造,要用對方真的講過的話)",
+      "explanation": "這個訊號代表什麼(50-100 字)"
+    }
+  ],
+
+  "good_signals": [
+    {
+      "title": "好案訊號的標題(短)",
+      "evidence": "原文證據",
+      "explanation": "為什麼這是好訊號"
+    }
+  ],
+
+  "client_persona": {
+    "type": "客戶類型標籤(例如:急著做型 / 殺價型 / 龜毛完美型 / 比稿派 / 觀望派 / 專業派)",
+    "decision_style": "決策風格描述",
+    "communication_style": "溝通風格(明快 / 模糊 / 客套 / 直接)",
+    "money_attitude": "對金錢的態度(預算意識強 / 看重 CP / 重視價值不在乎價格 / 模糊不講)",
+    "likely_objection": "他最可能的拒絕點(例如:價格、時程、改稿次數)"
+  },
+
+  "verdict": {
+    "action": "建議行動(用一個短句,例如:接、謹慎接、深入了解再決定、婉拒)",
+    "reason": "為什麼建議這個行動(80-120 字)"
+  },
+
+  "first_response": {
+    "strategy": "第一次回覆的策略(例如:先問問題不報價 / 直接報區間 / 邀約見面)",
+    "message": "可以直接複製去回對方的訊息(150-250 字,口語、有 Brian 風格、不油不業務)"
+  }
+}
+
+【評級標準】
+- A 黃金案件:需求清楚、預算明確或合理範圍、客戶懂行業、溝通專業、有合作誠意
+- B 正常案件:需求清楚但有 1-2 個小疑慮(例如預算未提但其他都好)
+- C 要小心:有 2-3 個雷案訊號(預算面議、需求模糊、強調便宜、急、要看草稿)
+- D 雷案:有 4 個以上紅旗訊號,或出現「先做我看看」「不滿意不付」「給我一點折扣」這類典型剝削語言
+
+【典型雷案訊號(供參考)】
+- 預算永遠不講、用「再聊」「看看」帶過
+- 需求極度模糊(「就那種感覺」「年輕一點」「跟 XX 那種風格差不多」)
+- 強調「應該不難吧」、「對你來說很簡單對吧」
+- 要求免費草稿/試做
+- 一次想做超多但只想付一個價格
+- 強調自己是學生/小公司沒預算
+- 急(明天、本週、最好今天)
+- 「看你能不能配合一下」這種隱性議價
+- 用「我朋友的設計師只要 XX 元」做比較
+
+【typical good 訊號】
+- 主動講預算或預算範圍
+- 描述清楚使用情境、目標客群
+- 提到時程是合理的(2 週以上)
+- 明確說做這個案的「目的」而不只是「要什麼」
+- 主動問報價包含什麼、不包含什麼
+- 願意付訂金不拗
+
+要求:
+- danger_signals 和 good_signals 各給 0-5 個,有就寫沒有不要硬湊
+- evidence 必須是對方原文裡真的有的字句,不要編造
+- first_response.message 要寫得像 Brian 風格——專業、有溫度、不油、會反問釐清需求,不要急著報價
+- 全部繁體中文,台灣口吻`;
+
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 5000 });
+  }
+
+  function renderResults(record) {
+    hideFormPage();
+    const d = record.data;
+    const gradeClass = d.grade === 'A' ? 'green' : (d.grade === 'B' ? 'yellow' : 'red');
+    const gradeLabel = d.grade === 'A' ? 'GOLDEN' : (d.grade === 'B' ? 'NORMAL' : (d.grade === 'C' ? 'CAUTION' : 'AVOID'));
+
+    let html = `
+      <div class="ce-result-toolbar">
+        <div class="ce-result-info"><strong>${T.escapeHtml(record.input.trade)}</strong> · 案件健診結果</div>
+        <div class="ce-result-actions">
+          <button class="ce-action-btn" id="ce-print-btn">列印 / 存 PDF</button>
+          <button class="ce-action-btn" id="ce-back-btn">+ 新健診</button>
+        </div>
+      </div>
+
+      <div class="health-banner ${gradeClass}">
+        <div class="health-grade">${T.escapeHtml(d.grade || '?')}</div>
+        <div class="health-info">
+          <div class="health-label">${gradeLabel} · 案件評級</div>
+          <div class="health-title">${T.escapeHtml(d.grade_label || '')}</div>
+          <div class="health-desc">${T.escapeHtml(d.grade_reason || '')}</div>
+        </div>
+      </div>
+
+      ${d.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${T.escapeHtml(d.brian_note)}</div>
+        </div>
+      ` : ''}
+
+      ${(d.danger_signals && d.danger_signals.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Danger Signals</div>
+          <div class="ce-section-cn">⚠ 雷案訊號 (${d.danger_signals.length})</div>
+          <div class="signal-grid">
+            ${d.danger_signals.map(s => `
+              <div class="signal-card danger">
+                <div class="signal-head"><span class="signal-icon">⚠</span><div class="signal-title">${T.escapeHtml(s.title || '')}</div></div>
+                <div style="font-size:13px;font-style:italic;color:var(--ink-mute);margin-bottom:8px;padding:8px 10px;background:var(--paper);border-left:2px solid var(--rust);">"${T.escapeHtml(s.evidence || '')}"</div>
+                <div class="signal-desc">${T.escapeHtml(s.explanation || '')}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${(d.good_signals && d.good_signals.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Good Signals</div>
+          <div class="ce-section-cn">✓ 好案訊號 (${d.good_signals.length})</div>
+          <div class="signal-grid">
+            ${d.good_signals.map(s => `
+              <div class="signal-card good">
+                <div class="signal-head"><span class="signal-icon" style="color:var(--moss);">✓</span><div class="signal-title">${T.escapeHtml(s.title || '')}</div></div>
+                <div style="font-size:13px;font-style:italic;color:var(--ink-mute);margin-bottom:8px;padding:8px 10px;background:var(--paper);border-left:2px solid var(--moss);">"${T.escapeHtml(s.evidence || '')}"</div>
+                <div class="signal-desc">${T.escapeHtml(s.explanation || '')}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      ${d.client_persona ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Client Persona</div>
+          <div class="ce-section-cn">客戶心理側寫</div>
+          <div class="persona-box">
+            <div class="persona-tag">${T.escapeHtml(d.client_persona.type || '')}</div>
+            <div class="persona-traits">
+              <div class="persona-trait"><div><div class="persona-trait-label">決策風格</div><div class="persona-trait-val">${T.escapeHtml(d.client_persona.decision_style || '')}</div></div></div>
+              <div class="persona-trait"><div><div class="persona-trait-label">溝通風格</div><div class="persona-trait-val">${T.escapeHtml(d.client_persona.communication_style || '')}</div></div></div>
+              <div class="persona-trait"><div><div class="persona-trait-label">金錢態度</div><div class="persona-trait-val">${T.escapeHtml(d.client_persona.money_attitude || '')}</div></div></div>
+              <div class="persona-trait"><div><div class="persona-trait-label">最可能拒絕點</div><div class="persona-trait-val">${T.escapeHtml(d.client_persona.likely_objection || '')}</div></div></div>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      ${d.verdict ? `
+        <div class="verdict-box">
+          <div class="verdict-action">→ ${T.escapeHtml(d.verdict.action || '')}</div>
+          <div class="verdict-reason">${T.escapeHtml(d.verdict.reason || '')}</div>
+        </div>
+      ` : ''}
+
+      ${d.first_response ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">First Response</div>
+          <div class="ce-section-cn">第一次回覆建議</div>
+          <div class="ce-block">
+            <div class="ce-block-header"><div class="ce-block-title">回覆策略</div></div>
+            <div class="ce-block-body">
+              <div style="font-size:14px;color:var(--ink-soft);margin-bottom:14px;line-height:1.85;">
+                💡 ${T.escapeHtml(d.first_response.strategy || '')}
+              </div>
+              <div class="ce-quote-box" style="font-style:normal;">${T.escapeHtml(d.first_response.message || '')}</div>
+              <button class="ce-copy-btn" data-copy="${T.escapeHtml(d.first_response.message || '')}">複製訊息</button>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-block">
+          <div class="ce-block-header"><div class="ce-block-title">進階深挖</div></div>
+          <div class="ce-block-body">
+            <div class="ce-deep-buttons">
+              <button class="ce-deep-btn btn-primary" data-action="ask-questions">📋 給我 5 個該問對方的關鍵問題</button>
+              <button class="ce-deep-btn btn-rust" data-action="reject-script">✗ 想婉拒,寫一段保留情面的話</button>
+              <button class="ce-deep-btn" data-action="quote-strategy">如果決定要報價,該報多少</button>
+              <button class="ce-deep-btn" data-action="meet-prep">如果要約見面,事前該準備什麼</button>
+              <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
+            </div>
+            <div class="ce-deep-result" id="ce-deep-result"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    resultsEl.innerHTML = html;
+    bindResultEvents(record);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function bindResultEvents(record) {
+    document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
+    document.getElementById('ce-back-btn').addEventListener('click', () => {
+      showFormPage(); currentId = null; form.reset();
+    });
+    document.querySelectorAll('.ce-copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard?.writeText(btn.dataset.copy).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = '✓ 已複製';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+        });
+      });
+    });
+    document.querySelectorAll('.ce-deep-btn[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const action = btn.dataset.action;
+        const resultEl = document.getElementById('ce-deep-result');
+        btn.disabled = true; const orig = btn.textContent;
+        btn.textContent = '思考中...';
+        resultEl.classList.add('show');
+        resultEl.textContent = 'Brian 正在分析...';
+        try {
+          resultEl.textContent = await deepDive(record, action);
+        } catch (err) {
+          resultEl.textContent = '產生失敗:' + err.message;
+        } finally {
+          btn.disabled = false; btn.textContent = orig;
+        }
+      });
+    });
+  }
+
+  async function deepDive(record, action) {
+    const prompts = {
+      'ask-questions': `對方傳的訊息有不少模糊地方,請列出 5 個該問對方的關鍵問題,目的是釐清:
+1. 真實預算範圍
+2. 真實時程
+3. 對方真正的目的(不是表面的需求)
+4. 過去有沒有類似合作經驗
+5. 決策者是誰
+
+每個問題要寫:
+- 問題本身(口語、不會嚇到對方)
+- 為什麼要問這個(背後策略)
+- 對方答案會告訴你什麼
+
+用條列格式呈現。`,
+
+      'reject-script': `學員決定婉拒這個案件,但想保留未來的可能。
+請寫一段婉拒訊息(150-200 字),要求:
+- 不指責對方
+- 給一個合理的理由(不要說「我太貴你出不起」)
+- 留一個門讓對方未來可以找你
+- 像專業顧問,不像在生氣
+- 結尾可以順便推薦一個方向(例如:這類預算可能適合 OO 平台或 OO 服務)
+
+直接寫出可複製的訊息,不要前言。`,
+
+      'quote-strategy': `如果學員決定要報價,請設計報價策略:
+
+1. 該怎麼開報價(直接報數字 vs 報區間 vs 先問需求)
+2. 建議的報價結構(三段式 vs 單一價)
+3. 該包含什麼、該明確排除什麼
+4. 預想對方的議價,該怎麼回
+5. 最低底線該設多少(避免做白工)
+
+具體寫,不要寫「視情況而定」這種廢話。`,
+
+      'meet-prep': `如果學員決定要約見面,請準備:
+
+1. 約會議的訊息怎麼寫(60 字內)
+2. 開會地點建議(對方公司 vs 咖啡廳 vs 線上,各情境的優缺點)
+3. 會前該準備的 3 樣東西
+4. 開場 60 秒該講什麼(降低對方戒心)
+5. 中場該問哪些問題(深挖真實需求)
+6. 收尾該怎麼明確下一步(不要散場後沒下文)`
+    };
+
+    const prompt = `你是 Brian。
+案件背景:
+- 接案類型:${record.input.trade}
+- 案件評級:${record.data.grade} (${record.data.grade_label})
+- 客戶類型:${record.data.client_persona?.type || '未知'}
+- 客戶原話:${record.input.brief}
+
+任務:${prompts[action]}
+
+繁體中文,台灣口吻,直接輸出內容。`;
+
+    return await T.callClaude(prompt, { maxTokens: 3000 });
+  }
+})();
+</script>
+</body>
+</html>

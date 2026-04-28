@@ -133,6 +133,49 @@
     color: var(--gold-deep); text-transform: uppercase;
   }
 
+  /* === 學習資源 === */
+  .learn-resources-grid {
+    display: grid; grid-template-columns: 1fr; gap: 12px;
+  }
+  @media (min-width: 720px) { .learn-resources-grid { grid-template-columns: 1fr 1fr; } }
+  .learn-resource {
+    background: var(--paper-card); border: 1px solid var(--line);
+    border-left: 3px solid var(--moss);
+    padding: 16px 18px; transition: all 0.2s;
+  }
+  .learn-resource:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  .learn-resource.paid { border-left-color: var(--rust); }
+  .learn-resource-head {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 6px; margin-bottom: 8px;
+  }
+  .learn-resource-type {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    background: var(--moss); color: white; padding: 3px 8px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .learn-resource-lang {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--ink-mute); letter-spacing: 0.1em;
+  }
+  .learn-resource-name {
+    font-size: 15px; font-weight: 700; margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .learn-resource-url {
+    display: inline-block; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--gold-deep); margin-bottom: 8px;
+    text-decoration: underline; word-break: break-all;
+  }
+  .learn-resource-url:hover { color: var(--rust); }
+  .learn-resource-url-text {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--ink-mute); margin-bottom: 8px; font-style: italic;
+  }
+  .learn-resource-why {
+    font-size: 13px; line-height: 1.7; color: var(--ink-soft);
+  }
+
   /* === 篩選 Pills === */
   .filter-pills {
     display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px;
@@ -218,8 +261,8 @@
           <form id="ce-form" class="ce-form-grid">
             <div class="ce-field ce-full">
               <label for="nb-skill">你會什麼 / 想接什麼類型的案子</label>
-              <input type="text" id="nb-skill" placeholder="例如:平面設計 / 寫網站前端 / 拍商業照片 / 寫文案 / 剪 YT 影片 / 做 PPT / 翻譯 / 程式接案..." required />
-              <div class="ce-helper">越具體越好。如果有多個技能,寫主要那個就好</div>
+              <input type="text" id="nb-skill" placeholder="例如:剪 YT 影片 / 寫網站前端 / 拍商業照 / 寫文案 / 做 PPT / 翻譯 / 平面設計 / Notion 系統 / 土木工程繪圖 / 室內設計..." required />
+              <div class="ce-helper">越具體越好。如果這個技能你還不會,也直接寫,AI 會告訴你怎麼學</div>
             </div>
 
             <div class="ce-field">
@@ -283,32 +326,6 @@
 
       <section class="ce-results" id="ce-results"></section>
 
-      <!-- Step 2:接案網清單 -->
-      <section style="margin-top:60px;" id="ce-platforms-section">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
-          <div>
-            <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:32px;font-weight:600;">All Platforms</h2>
-            <div style="font-size:16px;font-weight:700;border-bottom:2px solid var(--ink);display:inline-block;padding-bottom:8px;margin-top:4px;">30+ 接案網完整清單</div>
-          </div>
-          <div style="font-family:'JetBrains Mono', monospace;font-size:11px;color:var(--ink-mute);letter-spacing:0.15em;" id="ce-platform-count">LOADING...</div>
-        </div>
-
-        <p style="font-size:14px;color:var(--ink-soft);line-height:1.85;margin:18px 0;">
-          這是 Brian 整理的全球主流接案平台,涵蓋台灣本土、英文國際、亞洲華文、垂直領域。
-          按下面的標籤可以篩選地區。
-        </p>
-
-        <div class="filter-pills" id="ce-filter-pills">
-          <button class="filter-pill active" data-filter="all">全部顯示</button>
-          <button class="filter-pill" data-filter="tw">台灣本土</button>
-          <button class="filter-pill" data-filter="intl">英文國際</button>
-          <button class="filter-pill" data-filter="cn">中港 / 亞洲</button>
-          <button class="filter-pill" data-filter="vertical">垂直領域</button>
-        </div>
-
-        <div id="ce-platforms-list"></div>
-      </section>
-
       <!-- Step 3:基礎教學 -->
       <section style="margin-top:60px;">
         <div style="margin-bottom:24px;">
@@ -360,6 +377,32 @@
         </div>
 
         <div id="ce-lesson-result" style="margin-top:24px;"></div>
+      </section>
+
+      <!-- 接案網清單(放在最下面的資源庫) -->
+      <section style="margin-top:60px;" id="ce-platforms-section">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:32px;font-weight:600;">All Platforms</h2>
+            <div style="font-size:16px;font-weight:700;border-bottom:2px solid var(--ink);display:inline-block;padding-bottom:8px;margin-top:4px;">30+ 接案網完整清單</div>
+          </div>
+          <div style="font-family:'JetBrains Mono', monospace;font-size:11px;color:var(--ink-mute);letter-spacing:0.15em;" id="ce-platform-count">LOADING...</div>
+        </div>
+
+        <p style="font-size:14px;color:var(--ink-soft);line-height:1.85;margin:18px 0;">
+          這是 Brian 整理的全球主流接案平台,涵蓋台灣本土、英文國際、亞洲華文、垂直領域。
+          上面 AI 已經為你挑了適合的,如果想看完整清單就在這裡瀏覽。
+        </p>
+
+        <div class="filter-pills" id="ce-filter-pills">
+          <button class="filter-pill active" data-filter="all">全部顯示</button>
+          <button class="filter-pill" data-filter="tw">台灣本土</button>
+          <button class="filter-pill" data-filter="intl">英文國際</button>
+          <button class="filter-pill" data-filter="cn">中港 / 亞洲</button>
+          <button class="filter-pill" data-filter="vertical">垂直領域</button>
+        </div>
+
+        <div id="ce-platforms-list"></div>
       </section>
 
       <footer style="text-align:center;margin-top:80px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
@@ -1049,6 +1092,39 @@ ${platformList}
 {
   "brian_note": "用 Brian 口吻寫一段 100-150 字的「教練筆記」,直接告訴這位學員:你最大的優勢是什麼、最該避免的陷阱是什麼、第一個月該專注做什麼。要有溫度,像在面對面講話。",
 
+  "learning_path": {
+    "needed": true 或 false,
+    "skill_assessment": "用 80-120 字評估這位學員「目前的技能離可以接案還差多少」,以及他想接的『${input.skill}』需要哪些核心能力。如果他已經有經驗(level 不是 zero/hobby)就直接寫『你的技能應該已經夠用,可以直接開始接案』,並把 needed 設為 false。",
+    "core_skills": [
+      "需要掌握的核心技能 1(具體,例如:Premiere Pro 剪輯+調色、HTML/CSS/JavaScript 基礎、AutoCAD 出圖)",
+      "技能 2",
+      "技能 3"
+    ],
+    "free_resources": [
+      {
+        "type": "YouTube頻道 / 線上課程 / 書 / 部落格 / 社群",
+        "name": "資源名稱(具體,例如:六指淵、Hahow、Coursera 上的 XX 課)",
+        "url": "如果有公開網址就放,沒有就寫『搜尋關鍵字:XXX』",
+        "why": "為什麼推薦這個(30-50 字)",
+        "language": "中文 / 英文 / 中英混合"
+      }
+    ],
+    "paid_resources": [
+      {
+        "name": "付費課程或書籍名稱",
+        "platform": "Hahow / Udemy / Pressplay / 實體書店等",
+        "price_range": "價格區間(NT$)",
+        "why": "為什麼值得花錢(30-50 字)"
+      }
+    ],
+    "practice_milestones": [
+      "練習里程碑 1(例如:剪 5 部 1 分鐘短片放 IG)",
+      "里程碑 2",
+      "里程碑 3"
+    ],
+    "estimated_time": "達到『可以收費接案』的程度,大概需要多少時間(具體,例如:每天 1 小時的話約 3 個月)"
+  },
+
   "recommended_platforms": [
     {
       "name": "平台名稱(必須是上面清單中的)",
@@ -1074,9 +1150,17 @@ ${platformList}
 - recommended_platforms 給 4-6 個,至少 1 個 PRIMARY、2 個 SECONDARY、1 個 EXPLORE
 - 推薦邏輯:配合學員的語言能力、經驗、時間期望、技能類型
 - seven_day_plan 必須是 7 天,每天具體任務,要實際可做(不要寫「思考你的方向」這種廢話)
-- 全部繁體中文,台灣口吻`;
+- learning_path:
+  * 如果學員 level 是 'zero' 或 'hobby',learning_path.needed 設為 true,提供完整學習路徑
+  * 如果學員 level 是 'some' 或 'emerging',learning_path.needed 設為 false,但仍可在 skill_assessment 給「進階提升」的建議
+  * free_resources 必須給 4-6 個真實存在的資源(YouTube 頻道、Coursera/Hahow/Udemy 等知名平台課程、知名部落格)。不要編造不存在的資源
+  * 如果是台灣人多看的繁中內容,優先推台灣本地資源(六指淵、PressPlay、Hahow、Coursera 中文課程)
+  * 如果學員技能屬於需要實作工具(剪片需要 Premiere、設計需要 Figma 等),也要把工具學習資源列出
+  * 如果學員技能是冷門領域(例如土木工程、特定工法),如實說「網路資源較少,建議報名實體課程或加入專業社群」,並提供方向
+- 全部繁體中文,台灣口吻
+- 如果無法判斷某個技能(例如太冷門或太模糊),在 brian_note 提示學員把技能寫得更具體後再試一次`;
 
-    return await T.callClaude(prompt, { parseJson: true, maxTokens: 4000 });
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 5000 });
   }
 
   function renderPath(data, input) {
@@ -1094,6 +1178,8 @@ ${platformList}
           <div class="ce-brian-note-body">${T.escapeHtml(data.brian_note)}</div>
         </div>
       ` : ''}
+
+      ${renderLearningPath(data.learning_path)}
 
       <div class="ce-result-section">
         <div class="ce-section-title">Your Platforms</div>
@@ -1174,6 +1260,100 @@ ${platformList}
     resultsEl.innerHTML = html;
     document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
     resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // 渲染學習路徑
+  function renderLearningPath(lp) {
+    if (!lp) return '';
+
+    // 如果不需要學習路徑(已有經驗),只顯示簡短評估
+    if (!lp.needed) {
+      return `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Skill Check</div>
+          <div class="ce-section-cn">技能檢視</div>
+          <div style="background:rgba(74, 93, 58, 0.08);border-left:4px solid var(--moss);padding:18px 22px;font-size:14.5px;line-height:1.85;color:var(--ink);">
+            ✓ ${T.escapeHtml(lp.skill_assessment || '你的技能應該已經夠用,直接開始接案。')}
+          </div>
+        </div>
+      `;
+    }
+
+    // 完整學習路徑
+    const freeRes = (lp.free_resources || []).map(r => `
+      <div class="learn-resource">
+        <div class="learn-resource-head">
+          <span class="learn-resource-type">${T.escapeHtml(r.type || '')}</span>
+          <span class="learn-resource-lang">${T.escapeHtml(r.language || '')}</span>
+        </div>
+        <div class="learn-resource-name">${T.escapeHtml(r.name || '')}</div>
+        ${r.url && r.url.startsWith('http')
+          ? `<a href="${T.escapeHtml(r.url)}" target="_blank" rel="noopener" class="learn-resource-url">${T.escapeHtml(r.url)} →</a>`
+          : `<div class="learn-resource-url-text">${T.escapeHtml(r.url || '')}</div>`
+        }
+        <div class="learn-resource-why">${T.escapeHtml(r.why || '')}</div>
+      </div>
+    `).join('');
+
+    const paidRes = (lp.paid_resources || []).map(r => `
+      <div class="learn-resource paid">
+        <div class="learn-resource-head">
+          <span class="learn-resource-type" style="background:var(--rust);color:white;">付費 · ${T.escapeHtml(r.platform || '')}</span>
+          <span class="learn-resource-lang" style="color:var(--rust);font-weight:700;">${T.escapeHtml(r.price_range || '')}</span>
+        </div>
+        <div class="learn-resource-name">${T.escapeHtml(r.name || '')}</div>
+        <div class="learn-resource-why">${T.escapeHtml(r.why || '')}</div>
+      </div>
+    `).join('');
+
+    return `
+      <div class="ce-result-section">
+        <div class="ce-section-title">Learning Path</div>
+        <div class="ce-section-cn">★ 你的技能學習路徑</div>
+
+        <div style="background:var(--ink);color:var(--paper);padding:22px 24px;margin-bottom:24px;border-left:4px solid var(--gold);">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;color:var(--gold);margin-bottom:10px;font-weight:700;">技能評估 · SKILL ASSESSMENT</div>
+          <div style="font-size:14.5px;line-height:1.85;color:var(--paper-deep);">${T.escapeHtml(lp.skill_assessment || '')}</div>
+          ${lp.estimated_time ? `
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.15);font-size:13px;color:var(--gold);font-style:italic;">
+              ⏱ 預估投入時間:${T.escapeHtml(lp.estimated_time)}
+            </div>
+          ` : ''}
+        </div>
+
+        ${(lp.core_skills && lp.core_skills.length) ? `
+          <div style="margin-bottom:24px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;color:var(--gold-deep);margin-bottom:12px;font-weight:700;">▶ 你需要掌握的核心技能</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              ${lp.core_skills.map(s => `<span style="background:var(--paper-card);border:1px solid var(--gold);padding:8px 14px;font-size:13.5px;font-weight:500;">◆ ${T.escapeHtml(s)}</span>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        ${freeRes ? `
+          <div style="margin-bottom:24px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;color:var(--moss);margin-bottom:12px;font-weight:700;">▶ 免費學習資源(優先用這些)</div>
+            <div class="learn-resources-grid">${freeRes}</div>
+          </div>
+        ` : ''}
+
+        ${paidRes ? `
+          <div style="margin-bottom:24px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;color:var(--rust);margin-bottom:12px;font-weight:700;">▶ 值得花錢的付費資源(進階加速)</div>
+            <div class="learn-resources-grid">${paidRes}</div>
+          </div>
+        ` : ''}
+
+        ${(lp.practice_milestones && lp.practice_milestones.length) ? `
+          <div style="background:rgba(184, 137, 58, 0.06);border:1px dashed var(--gold);padding:18px 22px;">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;color:var(--gold-deep);margin-bottom:12px;font-weight:700;">▶ 練習里程碑(達成這幾個就可以開始接案)</div>
+            <ol style="padding-left:20px;font-size:14px;line-height:2;">
+              ${lp.practice_milestones.map(m => `<li>${T.escapeHtml(m)}</li>`).join('')}
+            </ol>
+          </div>
+        ` : ''}
+      </div>
+    `;
   }
 
   // 啟動

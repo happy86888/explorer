@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>作品集診斷器 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) { window.location.href = '../index.html'; }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  .score-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+  }
+  .score-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 18px; text-align: center;
+  }
+  .score-num {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 42px; font-weight: 600; line-height: 1; margin-bottom: 6px;
+  }
+  .score-num.high { color: var(--moss); }
+  .score-num.mid { color: var(--gold-deep); }
+  .score-num.low { color: var(--rust); }
+  .score-label {
+    font-size: 13px; font-weight: 700; margin-bottom: 4px;
+  }
+  .score-sub {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--ink-mute); letter-spacing: 0.1em;
+  }
+
+  .issue-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 18px 20px; margin-bottom: 14px;
+    border-left: 4px solid;
+  }
+  .issue-card.critical { border-left-color: var(--rust); }
+  .issue-card.improve { border-left-color: var(--gold); }
+  .issue-card.strength { border-left-color: var(--moss); }
+  .issue-head {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .issue-icon { font-size: 20px; }
+  .issue-title { font-weight: 700; font-size: 15px; }
+  .issue-desc { font-size: 13.5px; line-height: 1.75; color: var(--ink-soft); margin-bottom: 10px; }
+  .issue-fix {
+    background: var(--paper); padding: 10px 12px;
+    font-size: 13px; line-height: 1.7;
+    border-left: 2px solid var(--moss);
+  }
+  .issue-fix-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.15em; color: var(--moss);
+    margin-bottom: 4px; font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <div class="ce-modal-overlay" id="ce-key-modal">
+    <div class="ce-modal">
+      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
+      <div class="ce-modal-title">Connect Your Brain</div>
+      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
+      <div class="ce-modal-body">
+        到 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> →
+        API Keys → Create Key → 複製貼上 → Billing 充值 5 美金。
+      </div>
+      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="ce-modal-actions">
+        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
+      </div>
+      <div class="ce-modal-cost"><strong>費用估算:</strong>每次診斷約 NT$1.5。</div>
+    </div>
+  </div>
+
+  <nav class="ce-nav">
+    <div class="ce-nav-brand">
+      <div class="ce-nav-mark">CEO Brian</div>
+      <div class="ce-nav-title">作品集診斷器</div>
+    </div>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新診斷</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Diagnoses</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <div id="ce-form-page">
+        <header class="ce-header">
+          <div class="ce-eyebrow">See Your Portfolio Through Client's Eyes</div>
+          <h1 class="ce-title">Portfolio MRI</h1>
+          <div class="ce-title-cn">作品集診斷器</div>
+          <div class="ce-divider"></div>
+          <p class="ce-subtitle">
+            說說你的作品集現在長什麼樣,<br/>
+            Brian 用客戶視角給你 5 個面向的評分,<br/>
+            告訴你該砍掉哪些、該補上什麼、怎麼改才會接到案。
+          </p>
+        </header>
+
+        <section class="ce-form-card">
+          <div class="ce-tool-disclaimer" style="margin-bottom:0;margin-top:0;border-left:none;background:transparent;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px;">
+            <span class="ce-tool-disclaimer-icon">☕</span>
+            <span>因為 AI 看不到你實際的作品圖,需要你誠實描述現況。誠實程度決定診斷精準度。改造時歡迎<a href="https://lin.ee/9Ba3XjY" target="_blank">加 Brian 的 LINE</a>聊聊。</span>
+          </div>
+
+          <form id="ce-form" class="ce-form-grid">
+            <div class="ce-field">
+              <label for="po-trade">你的接案類型</label>
+              <input type="text" id="po-trade" placeholder="例如:平面設計 / UI 設計 / 商業攝影..." required />
+            </div>
+
+            <div class="ce-field">
+              <label for="po-platform">作品集放在哪</label>
+              <select id="po-platform">
+                <option>個人網站(自架)</option>
+                <option>Behance</option>
+                <option>Dribbble</option>
+                <option selected>Notion</option>
+                <option>IG</option>
+                <option>Google Drive / Dropbox 連結</option>
+                <option>PDF 檔</option>
+                <option>還沒有,規劃中</option>
+              </select>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="po-url">作品集網址(可選填)</label>
+              <input type="url" id="po-url" placeholder="https://..." />
+              <div class="ce-helper">填上會讓判斷更準。AI 看不到實際畫面但會搭配你下面的描述</div>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="po-desc">作品集現況描述(誠實寫越好)</label>
+              <textarea id="po-desc" placeholder="告訴 AI:&#10;- 總共有幾件作品?&#10;- 主要是哪幾種類型(例如:Logo、海報、IG 視覺、APP UI...)?&#10;- 有沒有寫每件作品的設計理念 / 客戶背景 / 解決什麼問題?&#10;- 有放真實客戶見證嗎?&#10;- 有沒有「關於我」、「服務項目」、「報價區間」這類資訊?&#10;- 自己看的時候,你最不滿意的地方是什麼?&#10;&#10;越誠實越好,AI 才能給準確診斷。" required style="min-height:180px;"></textarea>
+            </div>
+
+            <div class="ce-field">
+              <label for="po-target">你想吸引什麼客戶</label>
+              <input type="text" id="po-target" placeholder="例如:餐飲品牌老闆 / 新創公司 / 個人品牌經營者..." />
+            </div>
+
+            <div class="ce-field">
+              <label for="po-experience">接案經驗</label>
+              <select id="po-experience">
+                <option selected>新手 - 0-3 個案</option>
+                <option>初階 - 4-15 個案</option>
+                <option>中階 - 15-50 個案</option>
+                <option>資深 - 50 個案以上</option>
+              </select>
+            </div>
+
+            <button type="submit" class="ce-submit" id="ce-submit-btn">
+              開始診斷我的作品集 →
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section class="ce-results" id="ce-results"></section>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 作品集診斷器</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('portfolios');
+  let currentId = null;
+
+  const form = document.getElementById('ce-form');
+  const formPage = document.getElementById('ce-form-page');
+  const resultsEl = document.getElementById('ce-results');
+  const submitBtn = document.getElementById('ce-submit-btn');
+  const savedListEl = document.getElementById('ce-saved-list');
+  const savedCountEl = document.getElementById('ce-saved-count');
+
+  T.setupApiKeyModal('ce-key-modal', 'ce-api-key', 'ce-key-save');
+  document.getElementById('ce-settings-btn').addEventListener('click', () => {
+    document.getElementById('ce-api-key').value = T.getApiKey();
+    document.getElementById('ce-key-modal').classList.add('show');
+  });
+  document.getElementById('ce-new-btn').addEventListener('click', () => {
+    showFormPage(); form.reset(); currentId = null;
+  });
+
+  function showFormPage() {
+    formPage.classList.remove('ce-hidden');
+    resultsEl.innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideFormPage() { formPage.classList.add('ce-hidden'); }
+
+  loadSavedList();
+  if (!T.getApiKey()) document.getElementById('ce-key-modal').classList.add('show');
+
+  function loadSavedList() {
+    const records = storage.list();
+    savedCountEl.textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      savedListEl.innerHTML = `<div class="ce-empty-state">尚未儲存任何診斷紀錄。</div>`;
+      return;
+    }
+    savedListEl.innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => {
+          const score = r.data.overall_score || 0;
+          const scoreColor = score >= 75 ? 'var(--moss)' : (score >= 50 ? 'var(--gold-deep)' : 'var(--rust)');
+          return `
+            <div class="ce-saved-card" data-id="${r.id}">
+              <button class="ce-saved-del" data-del="${r.id}">✕</button>
+              <div class="ce-saved-trade"><span style="color:${scoreColor};font-size:18px;font-weight:700;">${score}</span>/100 · ${T.escapeHtml(r.input.trade)}</div>
+              <div class="ce-saved-target">${T.escapeHtml(r.input.platform)}</div>
+              <div class="ce-saved-meta">${T.formatDate(r.createdAt)}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    savedListEl.querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) { currentId = r.id; hideFormPage(); renderResults(r); }
+      });
+    });
+    savedListEl.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除?')) {
+          storage.delete(btn.dataset.del); loadSavedList();
+          if (currentId === btn.dataset.del) { showFormPage(); currentId = null; }
+        }
+      });
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!T.getApiKey()) { document.getElementById('ce-key-modal').classList.add('show'); return; }
+
+    const input = {
+      trade: document.getElementById('po-trade').value.trim(),
+      platform: document.getElementById('po-platform').value,
+      url: document.getElementById('po-url').value.trim(),
+      desc: document.getElementById('po-desc').value.trim(),
+      target: document.getElementById('po-target').value.trim(),
+      experience: document.getElementById('po-experience').value
+    };
+    if (!input.trade || !input.desc) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '正在診斷...';
+    resultsEl.innerHTML = `
+      <div class="ce-loading">
+        <div class="ce-loading-text">Brian 正在用客戶視角看你的作品集...</div>
+        <div class="ce-loading-bar"></div>
+      </div>
+    `;
+
+    try {
+      const data = await diagnose(input);
+      const id = 'po_' + Date.now();
+      const record = { id, input, data, createdAt: Date.now() };
+      storage.save(id, record);
+      currentId = id;
+      renderResults(record);
+      loadSavedList();
+    } catch (err) {
+      console.error(err);
+      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${T.escapeHtml(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '開始診斷我的作品集 →';
+    }
+  });
+
+  async function diagnose(input) {
+    const prompt = `你是 Brian(老闆的接案學院創辦人)。你要從「客戶視角」幫一位接案者診斷他的作品集。
+
+你的核心信念:作品集不是給同行看的(他們只看美感),是給「客戶」看的。
+客戶買的不是你做了多漂亮,是「你能不能解決我的問題」。
+所以作品集要有故事、有情境、有信任元素,而不只是漂亮的圖。
+
+【接案者資料】
+- 接案類型:${input.trade}
+- 作品集平台:${input.platform}
+- 作品集網址:${input.url || '(未提供)'}
+- 想吸引的客戶:${input.target || '(未說明)'}
+- 接案經驗:${input.experience}
+
+【作品集現況描述】
+${input.desc}
+
+【輸出 JSON,只回 JSON,不要 markdown code fence】
+
+{
+  "overall_score": 一個 0-100 的數字,代表這個作品集吸引到目標客戶的能力,
+  "verdict": "整體評語(50-80 字,說這個作品集現在的最大問題)",
+
+  "brian_note": "用 Brian 口吻寫一段 100-150 字的「教練筆記」,直接告訴接案者:從客戶視角看你的作品集最大的盲點是什麼、你最該做的一件事是什麼。",
+
+  "scores": {
+    "first_impression": { "score": 0-100, "comment": "30 字內評語" },
+    "case_storytelling": { "score": 0-100, "comment": "..." },
+    "trust_signals": { "score": 0-100, "comment": "..." },
+    "target_fit": { "score": 0-100, "comment": "..." },
+    "call_to_action": { "score": 0-100, "comment": "..." }
+  },
+
+  "critical_issues": [
+    {
+      "title": "重大問題標題(短)",
+      "why_bad": "為什麼客戶看到這個會走掉(80-150 字)",
+      "fix": "具體怎麼修(直接寫出可執行的步驟)"
+    }
+  ],
+
+  "improvements": [
+    {
+      "title": "可以更好的地方",
+      "why_better": "改了會帶來什麼好處",
+      "fix": "具體怎麼做"
+    }
+  ],
+
+  "strengths": [
+    {
+      "title": "你做得好的地方",
+      "comment": "為什麼這個是優勢"
+    }
+  ],
+
+  "case_study_template": {
+    "intro": "對「該怎麼寫一個案例」的說明(60 字)",
+    "structure": [
+      "案例該包含的段落 1(例如:挑戰)",
+      "段落 2",
+      "段落 3"
+    ],
+    "example": "用接案者的領域,寫一個 200-300 字的範例案例,讓他模仿"
+  },
+
+  "should_remove": [
+    "如果這個作品集有以下類型的作品建議刪掉(例如:沒有完整成品的草稿、跟目標客群不搭的個人練習等)"
+  ],
+
+  "should_add": [
+    "建議補上的東西(例如:客戶見證 3 則、服務流程說明、聯絡資訊...)"
+  ]
+}
+
+【5 個評分面向解釋】
+- first_impression(第一印象):打開後 5 秒內,客戶會被吸引嗎?排版/視覺/速度
+- case_storytelling(案例敘事):每件作品有沒有「故事」? 解決什麼問題?背景?過程?成果?
+- trust_signals(信任元素):有沒有客戶見證、合作品牌、得獎紀錄、聯絡管道?
+- target_fit(客群匹配):作品有沒有跟「想吸引的客戶」對應?(例如想接餐飲案卻全是個人插畫)
+- call_to_action(行動引導):看完後客戶知道怎麼聯絡你嗎?有清楚的下一步嗎?
+
+【評分標準】
+- 90-100:業界頂尖,客戶看了會主動聯絡
+- 75-89:夠專業,可以接到中價位案
+- 60-74:OK 但平庸,需要靠投標才能接案
+- 40-59:勉強及格,可能會被客戶跳過
+- 0-39:嚴重問題,需要重做
+
+【critical_issues 數量原則】
+- 沒問題就 0 個,不要硬湊
+- 通常新手作品集會有 2-4 個 critical_issues
+- 嚴重的問題例如:沒有寫案例說明只放圖、沒有聯絡方式、作品太雜沒主軸
+
+【硬核要求】
+- 不要客套、不要「整體很不錯」這種廢話
+- 要直接點出問題,但用建設性的方式講
+- case_study_template.example 必須針對學員的接案類型寫出實際可用的範例
+- 全部繁體中文,台灣口吻`;
+
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 5000 });
+  }
+
+  function renderResults(record) {
+    hideFormPage();
+    const d = record.data;
+    const overall = d.overall_score || 0;
+    const overallColor = overall >= 75 ? 'var(--moss)' : (overall >= 50 ? 'var(--gold-deep)' : 'var(--rust)');
+    const overallLabel = overall >= 75 ? 'STRONG' : (overall >= 50 ? 'OK' : 'NEEDS WORK');
+
+    function scoreClass(s) {
+      return s >= 75 ? 'high' : (s >= 50 ? 'mid' : 'low');
+    }
+
+    const scores = d.scores || {};
+    const scoreLabels = {
+      first_impression: '第一印象',
+      case_storytelling: '案例敘事',
+      trust_signals: '信任元素',
+      target_fit: '客群匹配',
+      call_to_action: '行動引導'
+    };
+
+    let html = `
+      <div class="ce-result-toolbar">
+        <div class="ce-result-info"><strong>${T.escapeHtml(record.input.trade)}</strong> · 作品集診斷結果</div>
+        <div class="ce-result-actions">
+          <button class="ce-action-btn" id="ce-print-btn">列印 / 存 PDF</button>
+          <button class="ce-action-btn" id="ce-back-btn">+ 新診斷</button>
+        </div>
+      </div>
+
+      <!-- 總分 -->
+      <div style="background:var(--paper-card);border:1px solid var(--line);border-left:6px solid ${overallColor};padding:28px;margin-bottom:28px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:80px;font-weight:600;line-height:1;color:${overallColor};flex-shrink:0;">${overall}</div>
+        <div style="flex:1;min-width:200px;">
+          <div style="font-family:'JetBrains Mono', monospace;font-size:11px;letter-spacing:0.25em;color:${overallColor};font-weight:700;margin-bottom:6px;">${overallLabel} · 整體評分</div>
+          <div style="font-size:16px;line-height:1.85;color:var(--ink);">${T.escapeHtml(d.verdict || '')}</div>
+        </div>
+      </div>
+
+      ${d.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${T.escapeHtml(d.brian_note)}</div>
+        </div>
+      ` : ''}
+
+      <!-- 5 面向評分 -->
+      <div class="ce-result-section">
+        <div class="ce-section-title">Score Breakdown</div>
+        <div class="ce-section-cn">5 個面向細項評分</div>
+        <div class="score-grid">
+          ${Object.keys(scoreLabels).map(key => {
+            const item = scores[key] || { score: 0, comment: '' };
+            return `
+              <div class="score-card">
+                <div class="score-num ${scoreClass(item.score)}">${item.score || 0}</div>
+                <div class="score-label">${scoreLabels[key]}</div>
+                <div class="score-sub">/100</div>
+                <div style="margin-top:10px;font-size:12px;color:var(--ink-soft);line-height:1.6;">${T.escapeHtml(item.comment || '')}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      ${(d.critical_issues && d.critical_issues.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Critical Issues</div>
+          <div class="ce-section-cn">⚠ 必須優先解決的問題 (${d.critical_issues.length})</div>
+          ${d.critical_issues.map(item => `
+            <div class="issue-card critical">
+              <div class="issue-head"><span class="issue-icon">⚠</span><div class="issue-title">${T.escapeHtml(item.title || '')}</div></div>
+              <div class="issue-desc">${T.escapeHtml(item.why_bad || '')}</div>
+              <div class="issue-fix">
+                <div class="issue-fix-label">→ 怎麼修</div>
+                ${T.escapeHtml(item.fix || '')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      ${(d.improvements && d.improvements.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Improvements</div>
+          <div class="ce-section-cn">可以更好的地方 (${d.improvements.length})</div>
+          ${d.improvements.map(item => `
+            <div class="issue-card improve">
+              <div class="issue-head"><span class="issue-icon" style="color:var(--gold-deep);">↗</span><div class="issue-title">${T.escapeHtml(item.title || '')}</div></div>
+              <div class="issue-desc">${T.escapeHtml(item.why_better || '')}</div>
+              <div class="issue-fix">
+                <div class="issue-fix-label">→ 怎麼做</div>
+                ${T.escapeHtml(item.fix || '')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      ${(d.strengths && d.strengths.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Your Strengths</div>
+          <div class="ce-section-cn">✓ 你做得好的地方 (繼續保持) </div>
+          ${d.strengths.map(item => `
+            <div class="issue-card strength">
+              <div class="issue-head"><span class="issue-icon" style="color:var(--moss);">✓</span><div class="issue-title">${T.escapeHtml(item.title || '')}</div></div>
+              <div class="issue-desc">${T.escapeHtml(item.comment || '')}</div>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      ${d.case_study_template ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Case Study Template</div>
+          <div class="ce-section-cn">★ 案例該怎麼寫(範本)</div>
+          <div class="ce-block">
+            <div class="ce-block-body">
+              <p style="font-size:14px;color:var(--ink-soft);line-height:1.85;margin-bottom:18px;">${T.escapeHtml(d.case_study_template.intro || '')}</p>
+
+              ${(d.case_study_template.structure && d.case_study_template.structure.length) ? `
+                <div style="margin-bottom:18px;">
+                  <div style="font-family:'JetBrains Mono', monospace;font-size:11px;letter-spacing:0.15em;color:var(--gold-deep);margin-bottom:10px;font-weight:700;">▶ 案例結構</div>
+                  <ol style="padding-left:24px;font-size:14px;line-height:2;">
+                    ${d.case_study_template.structure.map(s => `<li>${T.escapeHtml(s)}</li>`).join('')}
+                  </ol>
+                </div>
+              ` : ''}
+
+              ${d.case_study_template.example ? `
+                <div>
+                  <div style="font-family:'JetBrains Mono', monospace;font-size:11px;letter-spacing:0.15em;color:var(--gold-deep);margin-bottom:10px;font-weight:700;">▶ 範例(可參考改寫)</div>
+                  <div class="ce-quote-box" style="font-style:normal;">${T.escapeHtml(d.case_study_template.example)}</div>
+                  <button class="ce-copy-btn" data-copy="${T.escapeHtml(d.case_study_template.example)}">複製範例</button>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      ${(d.should_remove && d.should_remove.length) || (d.should_add && d.should_add.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">Action List</div>
+          <div class="ce-section-cn">下一步行動清單</div>
+          <div class="ce-block">
+            <div class="ce-block-body">
+              ${(d.should_remove && d.should_remove.length) ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key" style="color:var(--rust);">該砍掉</div>
+                  <div class="ce-block-val">
+                    <ul style="list-style:none;padding:0;">
+                      ${d.should_remove.map(s => `<li style="padding:4px 0 4px 18px;position:relative;"><span style="position:absolute;left:0;color:var(--rust);">✗</span> ${T.escapeHtml(s)}</li>`).join('')}
+                    </ul>
+                  </div>
+                </div>
+              ` : ''}
+              ${(d.should_add && d.should_add.length) ? `
+                <div class="ce-block-row">
+                  <div class="ce-block-key" style="color:var(--moss);">該補上</div>
+                  <div class="ce-block-val">
+                    <ul style="list-style:none;padding:0;">
+                      ${d.should_add.map(s => `<li style="padding:4px 0 4px 18px;position:relative;"><span style="position:absolute;left:0;color:var(--moss);">+</span> ${T.escapeHtml(s)}</li>`).join('')}
+                    </ul>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-block">
+          <div class="ce-block-header"><div class="ce-block-title">進階深挖</div></div>
+          <div class="ce-block-body">
+            <div class="ce-deep-buttons">
+              <button class="ce-deep-btn btn-primary" data-action="bio">📝 幫我寫一段「關於我」介紹</button>
+              <button class="ce-deep-btn btn-rust" data-action="services-page">📋 幫我設計「服務項目」頁結構</button>
+              <button class="ce-deep-btn" data-action="testimonial-template">客戶見證怎麼跟客戶要</button>
+              <button class="ce-deep-btn" data-action="30-day-plan">給我 30 天作品集改造計畫</button>
+              <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
+            </div>
+            <div class="ce-deep-result" id="ce-deep-result"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    resultsEl.innerHTML = html;
+    bindResultEvents(record);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function bindResultEvents(record) {
+    document.getElementById('ce-print-btn').addEventListener('click', () => window.print());
+    document.getElementById('ce-back-btn').addEventListener('click', () => {
+      showFormPage(); currentId = null; form.reset();
+    });
+    document.querySelectorAll('.ce-copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        navigator.clipboard?.writeText(btn.dataset.copy).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = '✓ 已複製'; btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+        });
+      });
+    });
+    document.querySelectorAll('.ce-deep-btn[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const action = btn.dataset.action;
+        const resultEl = document.getElementById('ce-deep-result');
+        btn.disabled = true; const orig = btn.textContent;
+        btn.textContent = '思考中...';
+        resultEl.classList.add('show');
+        resultEl.textContent = 'Brian 正在分析...';
+        try { resultEl.textContent = await deepDive(record, action); }
+        catch (err) { resultEl.textContent = '產生失敗:' + err.message; }
+        finally { btn.disabled = false; btn.textContent = orig; }
+      });
+    });
+  }
+
+  async function deepDive(record, action) {
+    const prompts = {
+      'bio': `請寫 3 個版本的「關於我」介紹文字,放在作品集首頁:
+
+【版本 A · 故事型】(150-200 字)
+從個人故事切入,講你為什麼做這行、你的轉折點是什麼,讓客戶感覺到你是「真實的人」。
+
+【版本 B · 專業型】(100-150 字)
+直接列出你的核心能力、服務客群、過去成就,讓客戶 30 秒判斷你能不能解決他的問題。
+
+【版本 C · 信念型】(150-200 字)
+從你的「設計/服務理念」切入,強調你的獨特觀點,吸引認同你的客戶。
+
+每個版本前標 A/B/C 和適用情境,版本之間用空行分開。
+要寫得像真人說話,不要像履歷。`,
+
+      'services-page': `請設計「服務項目」頁面的結構。
+
+寫:
+1. 整頁的視覺層次(從上到下該有什麼區塊)
+2. 主要服務的呈現方式(建議 3-5 個服務)
+3. 每個服務該寫的 5 個欄位(標題、適合誰、解決什麼、包含什麼、起價)
+4. 服務以外該補的元素(FAQ、流程圖、保證、見證...)
+5. 結尾的 CTA(該怎麼引導對方聯絡)
+
+寫具體可執行的結構,不要寫「視情況而定」。`,
+
+      'testimonial-template': `客戶見證是作品集最強的信任元素。請給:
+
+1. 該跟誰要見證(挑客戶的標準)
+2. 什麼時機要(交付後、合作後 2 週、長期客戶...)
+3. 怎麼開口要(寫一段可直接複製的請求訊息,150 字內)
+4. 引導客戶寫出「有用的見證」的 5 個問題(例如:合作前你最擔心什麼?合作後解決了什麼?)
+5. 好見證 vs 爛見證的差別(舉例)
+6. 怎麼合法使用對方見證(要不要授權、可不可以放照片名字)`,
+
+      '30-day-plan': `請設計一份「30 天作品集改造計畫」,讓接案者每天投入 1-2 小時,30 天後作品集煥然一新。
+
+格式:
+【Week 1 · 拆解與整理】
+- Day 1-2: ...
+- Day 3-4: ...
+- ...
+
+【Week 2 · 重做核心案例】
+- ...
+
+【Week 3 · 補上信任元素】
+- ...
+
+【Week 4 · 視覺與發布】
+- ...
+
+每天的任務要具體可執行,寫清楚「做什麼、產出什麼」。
+不要寫「思考方向」這種空話。`
+    };
+
+    const prompt = `你是 Brian。
+接案者背景:
+- 接案類型:${record.input.trade}
+- 想吸引客戶:${record.input.target}
+- 經驗:${record.input.experience}
+- 作品集現況:${record.input.desc.substring(0, 300)}
+- 整體評分:${record.data.overall_score}/100
+
+任務:${prompts[action]}
+
+繁體中文,台灣口吻,直接輸出。`;
+
+    return await T.callClaude(prompt, { maxTokens: 3000 });
+  }
+})();
+</script>
+</body>
+</html>
