@@ -208,17 +208,200 @@
   .ce-channels { display: flex; flex-wrap: wrap; gap: 8px; }
   .ce-channel-pill { background: var(--paper); border: 1px solid var(--line); padding: 6px 12px; font-size: 13px; }
 
-  .ce-deep-row { grid-column: 1 / -1; padding-top: 16px !important; border-top: 2px solid var(--line) !important; border-bottom: none !important; }
-  .ce-deep-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-  .ce-deep-btn { background: var(--paper); border: 1px solid var(--gold); color: var(--gold-deep); padding: 9px 14px; font-family: 'Noto Serif TC', serif; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+  .ce-deep-row { grid-column: 1 / -1; padding-top: 18px !important; margin-top: 8px; border-top: 2px solid var(--ink) !important; border-bottom: none !important; background: rgba(184, 137, 58, 0.08); padding-left: 16px !important; padding-right: 16px !important; padding-bottom: 16px !important; }
+  .ce-deep-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .ce-deep-btn { background: var(--paper); border: 1px solid var(--gold); color: var(--gold-deep); padding: 10px 14px; font-family: 'Noto Serif TC', serif; font-size: 13px; cursor: pointer; transition: all 0.2s; flex: 1 1 auto; min-width: 140px; }
   .ce-deep-btn:hover:not(:disabled) { background: var(--gold); color: var(--ink); }
-  .ce-deep-btn[data-action="find-them"] { background: var(--ink); color: var(--paper); border-color: var(--ink); font-weight: 700; }
+  .ce-deep-btn[data-action="find-them"] { background: var(--ink); color: var(--paper); border-color: var(--ink); font-weight: 700; flex: 1 1 100%; }
   .ce-deep-btn[data-action="find-them"]:hover:not(:disabled) { background: var(--gold-deep); color: var(--paper); border-color: var(--gold-deep); }
+  .ce-deep-btn[data-action="content-pack"] {
+    background: linear-gradient(135deg, rgba(184, 137, 58, 0.15) 0%, rgba(168, 68, 42, 0.1) 100%);
+    border-color: var(--rust); color: var(--rust); font-weight: 700; flex: 1 1 100%;
+  }
+  .ce-deep-btn[data-action="content-pack"]:hover:not(:disabled) {
+    background: var(--rust); color: white; border-color: var(--rust);
+  }
+  .ce-deep-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .ce-deep-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .ce-deep-result { margin-top: 16px; padding: 18px 20px; background: rgba(184, 137, 58, 0.06); border-left: 3px solid var(--gold-deep); font-size: 14.5px; line-height: 1.85; white-space: pre-wrap; display: none; }
   .ce-deep-result.show { display: block; }
 
   .ce-note { background: rgba(184, 137, 58, 0.1); border-left: 3px solid var(--gold); padding: 14px 18px; margin-bottom: 28px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.7; }
+
+  /* === Brian's Note - 教練筆記 === */
+  .ce-brian-note {
+    background: var(--ink); color: var(--paper);
+    padding: 24px 26px; margin-bottom: 32px;
+    border-left: 4px solid var(--gold);
+    position: relative;
+  }
+  .ce-brian-note::before {
+    content: '"'; position: absolute; top: -10px; left: 16px;
+    font-family: 'Cormorant Garamond', serif; font-size: 80px;
+    color: var(--gold); line-height: 1; font-style: italic; opacity: 0.5;
+  }
+  .ce-brian-note-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.25em; color: var(--gold); margin-bottom: 10px;
+    text-transform: uppercase; font-weight: 700;
+  }
+  .ce-brian-note-body {
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-size: 16px; line-height: 1.85; font-style: italic;
+    color: var(--paper-deep);
+  }
+
+  /* === 教練觀念提醒 === */
+  .ce-insight {
+    margin-top: 10px; padding: 10px 12px;
+    background: rgba(184, 137, 58, 0.1);
+    border-left: 2px solid var(--gold);
+    font-size: 13px; line-height: 1.65;
+    color: var(--ink-soft); font-style: italic;
+  }
+
+  /* === 對話面板 === */
+  .ce-chat-overlay {
+    position: fixed; inset: 0;
+    background: rgba(26, 22, 18, 0.7);
+    backdrop-filter: blur(6px);
+    display: none; align-items: stretch; justify-content: flex-end;
+    z-index: 999;
+  }
+  .ce-chat-overlay.show { display: flex; animation: ce-fade-in 0.2s ease; }
+  @keyframes ce-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+  .ce-chat-panel {
+    width: 100%; max-width: 540px;
+    background: var(--paper); display: flex; flex-direction: column;
+    border-left: 3px solid var(--gold);
+    animation: ce-slide-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  @keyframes ce-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+  .ce-chat-header {
+    padding: 20px 24px;
+    background: var(--ink); color: var(--paper);
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 12px; border-bottom: 2px solid var(--gold);
+  }
+  .ce-chat-eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.25em; color: var(--gold); margin-bottom: 4px;
+  }
+  .ce-chat-title {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 22px; font-weight: 600;
+  }
+  .ce-chat-sub { font-size: 12px; color: var(--paper-deep); margin-top: 4px; opacity: 0.7; }
+  .ce-chat-close {
+    background: transparent; border: 1px solid var(--paper);
+    color: var(--paper); width: 32px; height: 32px;
+    cursor: pointer; font-size: 14px; flex-shrink: 0;
+  }
+  .ce-chat-close:hover { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+  .ce-chat-messages {
+    flex: 1; overflow-y: auto; padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .ce-msg {
+    max-width: 85%; padding: 12px 16px;
+    font-size: 14.5px; line-height: 1.7;
+    white-space: pre-wrap; word-wrap: break-word;
+  }
+  .ce-msg-user {
+    align-self: flex-end;
+    background: var(--ink); color: var(--paper);
+    border-radius: 14px 14px 2px 14px;
+  }
+  .ce-msg-brian {
+    align-self: flex-start;
+    background: var(--paper-card); color: var(--ink);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 14px 14px 14px;
+  }
+  .ce-msg-brian-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 0.2em; color: var(--gold-deep); margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .ce-msg-loading { font-style: italic; color: var(--ink-mute); }
+
+  .ce-chat-suggestions {
+    padding: 12px 24px; display: flex; flex-wrap: wrap; gap: 6px;
+    background: var(--paper-deep); border-top: 1px solid var(--line);
+  }
+  .ce-suggestion-chip {
+    background: var(--paper); border: 1px solid var(--line);
+    padding: 6px 10px; font-size: 12px; cursor: pointer;
+    font-family: 'Noto Serif TC', serif;
+    color: var(--ink-soft); transition: all 0.15s;
+  }
+  .ce-suggestion-chip:hover {
+    background: var(--gold); color: var(--ink); border-color: var(--gold);
+  }
+
+  .ce-chat-input-area {
+    padding: 14px 16px;
+    background: var(--paper);
+    border-top: 1px solid var(--line);
+    display: flex; gap: 8px;
+  }
+  .ce-chat-input-area textarea {
+    flex: 1; padding: 10px 12px;
+    background: var(--paper-card); border: 1px solid var(--line);
+    font-family: 'Noto Serif TC', serif; font-size: 14px;
+    color: var(--ink); resize: none; line-height: 1.5;
+  }
+  .ce-chat-input-area textarea:focus { outline: none; border-color: var(--gold); }
+  .ce-chat-send {
+    background: var(--ink); color: var(--paper); border: none;
+    padding: 0 20px; cursor: pointer;
+    font-family: 'Noto Serif TC', serif; font-size: 14px; font-weight: 700;
+    letter-spacing: 0.1em; flex-shrink: 0;
+  }
+  .ce-chat-send:hover:not(:disabled) { background: var(--gold-deep); }
+  .ce-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  @media (max-width: 600px) {
+    .ce-chat-panel { max-width: 100%; }
+    .ce-chat-overlay { align-items: stretch; }
+  }
+
+  /* LINE 一對一按鈕 - 綠色強調 */
+  .ce-deep-line-btn {
+    background: #06C755 !important;
+    border-color: #06C755 !important;
+    color: white !important;
+    flex: 1 1 100% !important;
+    font-weight: 700;
+    text-decoration: none !important;
+    text-align: center;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+  .ce-deep-line-btn:hover {
+    background: #05a847 !important;
+    border-color: #05a847 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(6, 199, 85, 0.3);
+  }
+
+  /* 聊天按鈕特殊樣式 */
+  .ce-deep-chat-btn {
+    background: rgba(74, 93, 58, 0.1) !important;
+    border-color: var(--moss) !important;
+    color: var(--moss) !important;
+    flex: 1 1 100% !important;
+    font-weight: 700;
+  }
+  .ce-deep-chat-btn:hover:not(:disabled) {
+    background: var(--moss) !important;
+    color: white !important;
+    border-color: var(--moss) !important;
+  }
   .ce-error { background: rgba(168, 68, 42, 0.1); border-left: 3px solid var(--rust); padding: 16px 20px; color: var(--rust); font-size: 14px; }
 
   .ce-footer { text-align: center; margin-top: 60px; padding-top: 28px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-mute); letter-spacing: 0.1em; }
@@ -234,6 +417,26 @@
 </head>
 <body>
 <div class="ce-app">
+
+  <!-- 對話面板 -->
+  <div class="ce-chat-overlay" id="ce-chat-overlay">
+    <div class="ce-chat-panel">
+      <div class="ce-chat-header">
+        <div>
+          <div class="ce-chat-eyebrow">CHAT WITH BRIAN</div>
+          <div class="ce-chat-title" id="ce-chat-title">跟教練聊聊這個對象</div>
+          <div class="ce-chat-sub" id="ce-chat-sub"></div>
+        </div>
+        <button class="ce-chat-close" id="ce-chat-close" aria-label="關閉">✕</button>
+      </div>
+      <div class="ce-chat-messages" id="ce-chat-messages"></div>
+      <div class="ce-chat-suggestions" id="ce-chat-suggestions"></div>
+      <form class="ce-chat-input-area" id="ce-chat-form">
+        <textarea id="ce-chat-input" placeholder="例如:他說沒預算怎麼辦?他要分潤 50% 太多怎麼回?" rows="2"></textarea>
+        <button type="submit" class="ce-chat-send" id="ce-chat-send">送出</button>
+      </form>
+    </div>
+  </div>
 
   <!-- API Key Modal -->
   <div class="ce-modal-overlay" id="ce-key-modal">
@@ -584,6 +787,7 @@
 請輸出一個 JSON 物件,結構如下,只回傳 JSON 不要任何其他文字(不要 markdown code fence):
 
 {
+  "brian_note": "用 Brian 的口吻,寫一段 100-150 字的「策略註解」,告訴這位接案者:我為什麼這樣畫這張地圖、你應該優先看哪幾個區塊、最大的盲點是什麼。要有教練在面對面講話的感覺,不要寫成說明書。",
   "ecosystem": {
     "summary": "一段話描述這個專業的客戶生態圈,誰在客戶之前接觸到他、誰跟你並肩、誰在你之後",
     "upstream": {
@@ -599,6 +803,7 @@
       "name": "具體合作對象(例如:在地獨立咖啡店、社區型房仲店長)",
       "tier": "上游 / 平行 / 下游",
       "why": "為什麼這是高價值合作對象,2-3 句",
+      "brian_insight": "用 Brian 的口吻,寫一句 30-50 字的「教練觀念提醒」,點出這個對象背後的接案邏輯。例如:『會找豪宅房仲不是因為他有客戶名單,而是因為他每天都在跟你的目標客群聊天,他的一句推薦勝過你 100 張名片。』",
       "value_to_them": "你能幫他賺到什麼或省到什麼(不是你想要什麼)",
       "value_to_you": "他能帶給你的是什麼類型的案源",
       "pitch": "一段可以直接用的合作開場提案(口語、不油、像顧問不像業務,70-120 字)",
@@ -610,7 +815,8 @@
 請給出 5 個 top_partners,至少涵蓋上游、平行、下游各一個。
 所有內容用繁體中文,使用台灣慣用的商業詞彙。
 pitch 不要寫成業務話術,要像 Brian 教的顧問式提問——先理解對方的痛點,再連結到你能提供的價值。
-channels 要寫實際的管道(例如:商會、Facebook 社團類型、產業活動、實體店家拜訪、LinkedIn),不要寫「打電話」或「買名單」。`;
+channels 要寫實際的管道(例如:商會、Facebook 社團類型、產業活動、實體店家拜訪、LinkedIn),不要寫「打電話」或「買名單」。
+brian_insight 要像教練在你耳邊講悄悄話,點破核心、不講廢話。`;
   }
 
   // === 渲染結果 ===
@@ -632,6 +838,12 @@ channels 要寫實際的管道(例如:商會、Facebook 社團類型、產業活
         以下是 AI 根據你的條件、用顧問思維產生的合作策略地圖。<br/>
         建議:先挑 1-2 個最容易接觸的對象,從一場面對面咖啡開始,不要一次全打。
       </div>
+      ${record.data.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">教練筆記 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${escapeHtml(record.data.brian_note)}</div>
+        </div>
+      ` : ''}
       <div class="ce-result-section">
         <div class="ce-section-title">Your Ecosystem</div>
         <div class="ce-section-cn">客戶生態圈總覽</div>
@@ -679,6 +891,12 @@ channels 要寫實際的管道(例如:商會、Facebook 社團類型、產業活
         const partner = record.data.top_partners[partnerIdx];
         const resultEl = document.getElementById(`ce-deep-${partnerIdx}`);
 
+        // 對話模式 - 開啟對話面板
+        if (action === 'open-chat') {
+          openChatPanel(record, partner, partnerIdx);
+          return;
+        }
+
         btn.disabled = true;
         const orig = btn.textContent;
         btn.textContent = '思考中...';
@@ -705,11 +923,11 @@ channels 要寫實際的管道(例如:商會、Facebook 社團類型、產業活
 【絕對禁止】
 - 不能輸出任何個人手機、私人 email、住家地址
 - 不能建議「買名單」、「電話爬蟲」、「資料庫」、「個資撈取」
-- 不能建議「打陌生電話」、「群發簡訊」、「群發 email」
+- 不能建議「群發簡訊」、「群發 email」、「亂槍打鳥式 cold call」
 - 不能建議任何需要繞過隱私設定、需要付費取得個資、或可能違反個資法的方法
 
 【只能輸出以下類型的公開合法管道】
-請依下面 5 大類分別給出實際可執行的建議,每類至少 2-3 個具體選項:
+請依下面 6 大類分別給出實際可執行的建議,每類至少 2-3 個具體選項:
 
 【1. 產業組織】
 - 該角色所屬的公會、協會、商會的名稱(例如:中華民國不動產仲介經紀商業同業公會全國聯合會)
@@ -735,8 +953,45 @@ channels 要寫實際的管道(例如:商會、Facebook 社團類型、產業活
 - 第一次拜訪的合理理由(例如:「我想了解你們近期成交的客戶輪廓,我帶咖啡」)
 - 拜訪時機建議(平日早上 vs. 週末下午)
 
+【6. 找到對象後的接觸方式 - 詳細說明】
+找到對象之後,請建議學員用以下方式逐步接觸,每種方式都要說明「適用情境」和「正確做法」:
+
+(A) Email 開發
+- 來源:對方公司官網「聯絡我們」表單、對方公開放在官網的工作信箱、官方名片掃描的信箱
+- 正確做法:寫具體有價值的內容,主旨清楚、開頭就說來意、不超過 200 字
+- 注意:絕不能用「企業名單」買來的 email,只能用對方主動公開的
+
+(B) Facebook 私訊
+- 來源:對方公司粉專、對方個人公開帳號的 Messenger
+- 正確做法:先按讚對方幾篇貼文、留有價值的留言,建立印象後再私訊
+- 適用:對方有經營粉專或個人帳號公開的情況
+
+(C) Instagram 私訊
+- 來源:對方個人 IG 公開帳號、品牌 IG 帳號
+- 正確做法:先互動 1-2 週(留言、限動回覆),自然進入 DM
+- 適用:該行業是視覺導向、對方有經營 IG
+
+(D) LinkedIn 訊息(免費版)或 InMail(付費)
+- 適用:店長級、經理級、業界資深人物
+- 做法:先 connect 並寫 connection note(150 字內),通過後再聊合作
+
+(E) 對方公開的官方 LINE@
+- 來源:對方門市張貼的 LINE@ QR code、官網列出的客服 LINE@
+- 注意:加的是「公司官方 LINE@」(@開頭)不是個人 LINE,可以放心加
+
+(F) 簡訊開發 ⚠️ 請特別謹慎
+- 適用情境:極少數情況——對方在公開資料(名片、官網)留有手機,且你跟對方有共同朋友引介
+- 法律提醒:即使號碼是公開的,未經對方同意傳「行銷意圖」的簡訊,在台灣可能違反個資法 §20(特定目的外利用)
+- 安全做法:第一通簡訊必須先「身分自我介紹 + 共同朋友是誰 + 詢問是否方便加 LINE 詳談」,絕不直接推銷
+- 風險:對方檢舉的話,可能面臨警告或行政罰
+- 強烈建議:能用 Email/FB/IG/LinkedIn 就不要用簡訊。簡訊是最後手段。
+
 【最後加一段】
-寫一段 50-80 字的「Brian 提醒」,提醒接案者:找到管道只是第一步,真正成交的關鍵是「先給價值再談合作」,不要拿到聯絡方式就 cold call,那會把品牌做爛。
+寫一段 80-120 字的「Brian 提醒」,提醒接案者:
+1. 接觸方式的優先順序應該是「實體見面 > 線上社群互動 > Email > 訊息」
+2. 找到管道只是第一步,真正成交的關鍵是「先給價值再談合作」
+3. 不要拿到聯絡方式就 cold call,那會把品牌做爛
+4. 寧願慢、寧願少,不要快、不要多
 
 格式要清晰,用 ★ 或數字分項。所有資訊必須是繁體中文台灣地區可實際使用的。`,
 
@@ -759,7 +1014,41 @@ C. 互惠型——先給對方一個小幫助(例如分享一個免費的資源)
 - 對方會怎麼反應
 - 進入下一階段的訊號是什麼
 
-要實際、可執行,不要寫空話。`
+要實際、可執行,不要寫空話。`,
+
+      'content-pack': `請產出「整套接觸這個對象的內容包」,包含 5 個版本,每個版本前用 ━━━ 分隔線分開,並標註標題:
+
+━━━━━━━━━━━━━━━━━━
+【1. LINE 第一句訊息】
+適合場景:已經有對方 LINE,還沒聊過。
+要求:不能像業務開場、不能太冷、要讓對方願意回覆。50 字以內,2-3 個版本讓使用者選。
+
+━━━━━━━━━━━━━━━━━━
+【2. IG 私訊版本】
+適合場景:對方有經營 IG,你想用比較輕鬆的方式破冰。
+要求:可以提一下對方最近的貼文(用「假設你看到對方在分享 XXX」這種方式示範),自然帶出。80 字以內。
+
+━━━━━━━━━━━━━━━━━━
+【3. Email 完整版】
+適合場景:正式接觸、對方是公司高層或不熟識者。
+要求:有主旨、有完整段落、有具體合作建議、有明確的下一步邀約。建議 200-300 字。
+
+━━━━━━━━━━━━━━━━━━
+【4. 一頁式合作備忘錄】
+適合場景:第一次見面要遞給對方的紙本。
+要求:用條列式呈現以下五個區塊——
+   ▸ 我是誰(一句話)
+   ▸ 我服務的客群與你高度重疊
+   ▸ 合作的三種可能模式(具體列出)
+   ▸ 我能帶給你的具體價值
+   ▸ 下一步建議
+
+━━━━━━━━━━━━━━━━━━
+【5. 給接案者自己的 FB / IG 貼文】
+適合場景:讓這類對象「主動」來找你。
+要求:寫一篇 200-300 字的貼文,主題是「給 XXX(這類對象)的 N 個建議/觀察」,用價值前置的方式吸引對方留言或私訊。要有具體可分享的洞察,不要空話。
+
+所有內容用繁體中文,台灣口吻,符合 Brian 的「顧問式」品牌(不油、不業務、不卑不亢)。`
     };
 
     const prompt = `你是 Brian,老闆的接案學院創辦人。
@@ -779,7 +1068,7 @@ ${input.strength ? '- 優勢:' + input.strength : ''}
 
 請直接輸出內容,不要前言、不要 JSON,純文字即可。用繁體中文,台灣口吻。`;
 
-    return await callClaude(prompt, false, 3000);
+    return await callClaude(prompt, false, 4000);
   }
 
   function renderTier(label, tier) {
@@ -804,7 +1093,7 @@ ${input.strength ? '- 優勢:' + input.strength : ''}
           <div class="ce-partner-tag">${escapeHtml(p.tier || '')}</div>
         </div>
         <div class="ce-partner-body">
-          <div class="ce-partner-row"><div class="ce-partner-key">為何合作</div><div class="ce-partner-val">${escapeHtml(p.why || '')}</div></div>
+          <div class="ce-partner-row"><div class="ce-partner-key">為何合作</div><div class="ce-partner-val">${escapeHtml(p.why || '')}${p.brian_insight ? `<div class="ce-insight">💡 ${escapeHtml(p.brian_insight)}</div>` : ''}</div></div>
           <div class="ce-partner-row"><div class="ce-partner-key">他能得到</div><div class="ce-partner-val">${escapeHtml(p.value_to_them || '')}</div></div>
           <div class="ce-partner-row"><div class="ce-partner-key">你能得到</div><div class="ce-partner-val">${escapeHtml(p.value_to_you || '')}</div></div>
           <div class="ce-partner-row">
@@ -825,9 +1114,11 @@ ${input.strength ? '- 優勢:' + input.strength : ''}
             <div class="ce-partner-val">
               <div class="ce-deep-buttons">
                 <button class="ce-deep-btn" data-partner="${idx}" data-action="find-them">★ 去哪找這類人(公開合法管道)</button>
+                <button class="ce-deep-btn" data-partner="${idx}" data-action="content-pack">📦 整套接觸內容包(LINE/IG/Email/貼文)</button>
                 <button class="ce-deep-btn" data-partner="${idx}" data-action="three-emails">給我三封不同風格的開場信</button>
                 <button class="ce-deep-btn" data-partner="${idx}" data-action="objection">他可能怎麼拒絕,我怎麼接</button>
                 <button class="ce-deep-btn" data-partner="${idx}" data-action="long-term">3 階段長期合作路徑</button>
+                <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
               </div>
               <div class="ce-deep-result" id="ce-deep-${idx}"></div>
             </div>
@@ -835,6 +1126,228 @@ ${input.strength ? '- 優勢:' + input.strength : ''}
         </div>
       </div>
     `;
+  }
+
+  // ========================================
+  // 對話功能（隨身教練）
+  // ========================================
+  let chatState = {
+    record: null,
+    partner: null,
+    partnerIdx: -1,
+    history: []  // [{role: 'user'|'assistant', content: '...'}]
+  };
+
+  const chatOverlay = document.getElementById('ce-chat-overlay');
+  const chatTitleEl = document.getElementById('ce-chat-title');
+  const chatSubEl = document.getElementById('ce-chat-sub');
+  const chatMessagesEl = document.getElementById('ce-chat-messages');
+  const chatSuggestionsEl = document.getElementById('ce-chat-suggestions');
+  const chatForm = document.getElementById('ce-chat-form');
+  const chatInput = document.getElementById('ce-chat-input');
+  const chatSendBtn = document.getElementById('ce-chat-send');
+  const chatCloseBtn = document.getElementById('ce-chat-close');
+
+  const SUGGESTED_PROMPTS = [
+    '我約過一次他沒回怎麼辦?',
+    '他說現在沒預算',
+    '他要分潤 50% 太多',
+    '我們一起做什麼活動最有效?',
+    '怎麼讓他主動推薦我?',
+    '第一次見面要帶什麼?'
+  ];
+
+  function chatHistoryKey(mapId, partnerIdx) {
+    return `ce_chat_${mapId}_${partnerIdx}`;
+  }
+
+  function loadChatHistory(mapId, partnerIdx) {
+    try {
+      const raw = localStorage.getItem(chatHistoryKey(mapId, partnerIdx));
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+
+  function saveChatHistory(mapId, partnerIdx, history) {
+    try {
+      localStorage.setItem(chatHistoryKey(mapId, partnerIdx), JSON.stringify(history));
+    } catch (e) {}
+  }
+
+  function openChatPanel(record, partner, partnerIdx) {
+    chatState.record = record;
+    chatState.partner = partner;
+    chatState.partnerIdx = partnerIdx;
+    chatState.history = loadChatHistory(record.id, partnerIdx);
+
+    chatTitleEl.textContent = `關於「${partner.name}」`;
+    chatSubEl.textContent = `Brian 已經了解你的背景與這個對象,問什麼都可以`;
+
+    renderChatMessages();
+    renderSuggestions();
+    chatOverlay.classList.add('show');
+    setTimeout(() => chatInput.focus(), 350);
+  }
+
+  function closeChatPanel() {
+    chatOverlay.classList.remove('show');
+  }
+
+  chatCloseBtn.addEventListener('click', closeChatPanel);
+  chatOverlay.addEventListener('click', (e) => {
+    if (e.target === chatOverlay) closeChatPanel();
+  });
+
+  function renderChatMessages() {
+    if (chatState.history.length === 0) {
+      chatMessagesEl.innerHTML = `
+        <div class="ce-msg ce-msg-brian">
+          <div class="ce-msg-brian-label">★ BRIAN</div>
+          欸,你想針對「${escapeHtml(chatState.partner.name)}」聊什麼?<br/><br/>
+          我已經知道你的專業是${escapeHtml(chatState.record.input.trade)}、客戶是${escapeHtml(chatState.record.input.target)},也知道我們為什麼要找這個對象。<br/><br/>
+          你可以問我:約不到、被拒絕、報價怎麼談、合作模式怎麼設計、第一次見面要做什麼...任何卡關的地方,都可以問。
+        </div>
+      `;
+      return;
+    }
+
+    chatMessagesEl.innerHTML = chatState.history.map(msg => {
+      if (msg.role === 'user') {
+        return `<div class="ce-msg ce-msg-user">${escapeHtml(msg.content)}</div>`;
+      } else {
+        return `
+          <div class="ce-msg ce-msg-brian">
+            <div class="ce-msg-brian-label">★ BRIAN</div>
+            ${escapeHtml(msg.content).replace(/\n/g, '<br/>')}
+          </div>
+        `;
+      }
+    }).join('');
+
+    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+  }
+
+  function renderSuggestions() {
+    if (chatState.history.length > 0) {
+      chatSuggestionsEl.innerHTML = '';
+      chatSuggestionsEl.style.display = 'none';
+      return;
+    }
+    chatSuggestionsEl.style.display = 'flex';
+    chatSuggestionsEl.innerHTML = SUGGESTED_PROMPTS.map(p =>
+      `<button class="ce-suggestion-chip" type="button" data-prompt="${escapeHtml(p)}">${escapeHtml(p)}</button>`
+    ).join('');
+    chatSuggestionsEl.querySelectorAll('.ce-suggestion-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chatInput.value = chip.dataset.prompt;
+        chatInput.focus();
+      });
+    });
+  }
+
+  chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const userMsg = chatInput.value.trim();
+    if (!userMsg) return;
+
+    chatState.history.push({ role: 'user', content: userMsg });
+    chatInput.value = '';
+    chatSendBtn.disabled = true;
+    renderChatMessages();
+    renderSuggestions();
+
+    // 加 loading 訊息
+    const loadingEl = document.createElement('div');
+    loadingEl.className = 'ce-msg ce-msg-brian ce-msg-loading';
+    loadingEl.innerHTML = `<div class="ce-msg-brian-label">★ BRIAN</div>思考中...`;
+    chatMessagesEl.appendChild(loadingEl);
+    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+
+    try {
+      const reply = await chatWithBrian();
+      chatState.history.push({ role: 'assistant', content: reply });
+      saveChatHistory(chatState.record.id, chatState.partnerIdx, chatState.history);
+      renderChatMessages();
+    } catch (err) {
+      loadingEl.innerHTML = `<div class="ce-msg-brian-label">★ BRIAN</div>抱歉,出狀況了:${escapeHtml(err.message)}`;
+    } finally {
+      chatSendBtn.disabled = false;
+      chatInput.focus();
+    }
+  });
+
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      chatForm.dispatchEvent(new Event('submit'));
+    }
+  });
+
+  async function chatWithBrian() {
+    const apiKey = getApiKey();
+    if (!apiKey) throw new Error('尚未設定 API Key');
+
+    const input = chatState.record.input;
+    const partner = chatState.partner;
+
+    const systemPrompt = `你是 Brian,老闆的接案學院創辦人,有 13 年接案實戰經驗。
+你正在跟一位接案學員一對一對話,給他關於「異業合作」的具體建議。
+
+【學員背景】
+- 專業:${input.trade}
+- 理想客戶:${input.target}
+- 經營區域:${input.region}
+- 案件報價:${input.price}
+${input.strength ? '- 差異化優勢:' + input.strength : ''}
+
+【目前討論的合作對象】
+- 名稱:${partner.name}
+- 屬性:${partner.tier}
+- 為何合作:${partner.why}
+- 對方能得到:${partner.value_to_them}
+- 學員能得到:${partner.value_to_you}
+
+【你的回答原則】
+1. 像教練在面對面講話,口語、有溫度,不要寫成說明書、不要用條列(除非真的需要)
+2. 用「你」稱呼學員,自稱「我」
+3. 直接、不囉嗦,不要前言後語客套(不要說「這是個好問題」這種廢話)
+4. 一次回答一個重點,不要塞太多。寫 100-200 字最剛好
+5. 如果學員的問題太模糊,可以反問他釐清狀況,不要硬給標準答案
+6. 強調「給對方價值在前、談合作在後」的核心思維
+7. 不教 cold call、買名單、騷擾式行銷
+8. 用繁體中文,台灣口吻
+
+如果學員偏題太遠(例如問人生哲理、技術問題),禮貌帶回主題。`;
+
+    // 組合 messages
+    const messages = chatState.history.map(m => ({
+      role: m.role,
+      content: m.content
+    }));
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        system: systemPrompt,
+        messages: messages
+      })
+    });
+
+    if (!response.ok) {
+      const t = await response.text();
+      throw new Error(`API ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.content.map(b => b.text || '').join('').trim();
   }
 
   function escapeHtml(str) {
