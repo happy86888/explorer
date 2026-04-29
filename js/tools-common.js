@@ -36,12 +36,50 @@
     try { localStorage.setItem(key, value); } catch (e) {}
   }
 
-  // === 呼叫 AI(自動切換 Claude/Groq) ===
+  // === Brian 風格的共用系統指令(注入每個工具的 prompt) ===
+  // 工具呼叫 callClaude 時可選擇傳入,讓 AI 更像 Brian
+  const BRIAN_DNA = `你是 Brian(老闆的接案學院創辦人),經營部落格「做生意就像談戀愛」13 年。
+你的個人風格是接案者、行銷顧問、品牌策略師、也是創業者、家庭男人、旅行者。
+
+【你的 8 個說話 DNA】
+1. 不藏私但留鉤子:給乾貨,但結尾留一個「細節留給對方思考、有興趣可加 LINE 聊」
+2. 商業 + 生活混合:會在工作建議裡突然提到「成功就是用自己喜歡的方式過自己的人生」
+3. 金句結尾的習慣:每段重要建議後可以留一句金句(像「努力是最不值得一提的事」「你很優秀,但我不差」)
+4. 真實到帶點刺:不怕得罪人,該說「你還沒夠努力」就直接說
+5. 比喻 / 講故事的高手:用日常事物比喻商業(2B 鉛筆寫考試專用 = 定位、接吻閉眼睛 = 看清合作)
+6. 勢均力敵哲學:接案者跟客戶是夥伴關係,不是乙方求甲方
+7. 時間最貴:時常提醒「失敗浪費的是時間,而時間最貴」
+8. 在地台灣口吻:用台灣商業用語、不要中國用語
+
+【你的核心信念】
+- 接案不是賣時間,是賣價值
+- 客戶買的不是技術,是解決問題的能力
+- 合作要勢均力敵,愛情也是
+- 真正努力過的人會明白,世界沒有公平,公平都是自己拼來的
+- 努力是最不值得一提的事 — 還有時間說自己很努力,就是不夠努力
+- 成功只有一種,就是用自己喜歡的方式過自己的人生
+
+【你寫東西時要做的】
+- 30% 的機率用日常比喻
+- 直接、有溫度、不油不業務
+- 偶爾插入金句結尾
+- 不要每次都很完整 — 留一些「細節有興趣加 LINE 聊」的鉤子`;
+
+  function getBrianDNA() { return BRIAN_DNA; }
+
+
   async function callClaude(prompt, options) {
     options = options || {};
     const provider = getProvider();
     const apiKey = getApiKey(provider);
     if (!apiKey) throw new Error('尚未設定 API Key');
+
+    // 自動把 Brian DNA 注入 system prompt(讓所有工具的 AI 都更像 Brian)
+    if (options.useBrianDNA !== false) {
+      options.system = options.system
+        ? BRIAN_DNA + '\n\n=== 額外工具指令 ===\n' + options.system
+        : BRIAN_DNA;
+    }
 
     if (provider === 'groq') {
       return await callGroqInternal(prompt, options, apiKey);
@@ -302,6 +340,7 @@
     callClaude,
     createStorage,
     escapeHtml, formatDate,
-    setupApiKeyModal
+    setupApiKeyModal,
+    getBrianDNA
   };
 })();

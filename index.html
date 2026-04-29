@@ -120,6 +120,94 @@
   }
   .home-disclaimer-text a:hover { color: var(--rust); }
 
+  /* === 勢均力敵宣言 === */
+  .home-manifesto {
+    background: linear-gradient(135deg, var(--ink) 0%, #2a241d 100%);
+    color: var(--paper);
+    padding: 50px 40px;
+    margin: 50px 0;
+    text-align: center;
+    position: relative;
+    border-top: 3px solid var(--gold);
+    border-bottom: 3px solid var(--gold);
+    overflow: hidden;
+  }
+  .home-manifesto::before {
+    content: '"';
+    position: absolute;
+    top: -40px; left: 30px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 200px;
+    color: var(--gold);
+    line-height: 1;
+    font-style: italic;
+    opacity: 0.15;
+  }
+  .home-manifesto::after {
+    content: '"';
+    position: absolute;
+    bottom: -120px; right: 30px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 200px;
+    color: var(--gold);
+    line-height: 1;
+    font-style: italic;
+    opacity: 0.15;
+  }
+  .home-manifesto-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    margin-bottom: 12px;
+    position: relative; z-index: 1;
+  }
+  .home-manifesto-title {
+    font-size: clamp(40px, 6vw, 64px);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    margin-bottom: 4px;
+    position: relative; z-index: 1;
+  }
+  .home-manifesto-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(20px, 3vw, 28px);
+    color: var(--gold);
+    margin-bottom: 28px;
+    position: relative; z-index: 1;
+  }
+  .home-manifesto-body {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 15.5px;
+    line-height: 2;
+    color: var(--paper-deep);
+    position: relative; z-index: 1;
+  }
+  .home-manifesto-body p { margin-bottom: 16px; }
+  .home-manifesto-body strong { color: var(--gold); font-weight: 700; }
+  .home-manifesto-quote {
+    margin: 28px auto !important;
+    padding: 22px 28px;
+    background: rgba(184, 137, 58, 0.08);
+    border-left: 3px solid var(--gold);
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--paper);
+  }
+  .home-manifesto-sign {
+    margin-top: 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--gold);
+    opacity: 0.85;
+    letter-spacing: 0.05em;
+  }
+
   /* === 工具卡 === */
   .home-section-title {
     font-family: 'JetBrains Mono', monospace; font-size: 11px;
@@ -252,7 +340,6 @@
     font-size: 12px; color: var(--ink-mute); line-height: 1.7;
   }
   .pw-help a { color: var(--gold-deep); text-decoration: underline; }
-
   /* === 頁腳 === */
   .home-footer {
     text-align: center; margin-top: 80px; padding-top: 32px;
@@ -305,6 +392,23 @@
           <a href="https://lin.ee/9Ba3XjY" target="_blank">歡迎加 Brian 的 LINE</a>
           一對一聊聊,讓真人教練幫你接住最後一哩路。
         </div>
+      </div>
+    </div>
+
+    <!-- 勢均力敵宣言 -->
+    <div class="home-manifesto">
+      <div class="home-manifesto-eyebrow">// THE PHILOSOPHY</div>
+      <div class="home-manifesto-title">勢均力敵</div>
+      <div class="home-manifesto-en">As Equals.</div>
+      <div class="home-manifesto-body">
+        <p>我相信:<br/><strong>接案者跟客戶,應該是「勢均力敵」的夥伴關係。</strong></p>
+        <p>不是乙方跪求甲方,<br/>不是廉價勞工接需求,<br/>而是雙方共同創造,共同進步。</p>
+        <p>這就是<strong>「顧問式接案」</strong>—— 也是這個工具箱的核心。</p>
+        <p class="home-manifesto-quote">
+          「合作要勢均力敵,愛情也是,工作也是。<br/>
+          因為:你很優秀,但我不差。」
+        </p>
+        <div class="home-manifesto-sign">— Brian,接案教練・創業 13 年</div>
       </div>
     </div>
 
@@ -468,6 +572,54 @@
           <div class="tool-desc">
             單次案結束想轉長期合作?Brian 幫你設計月費 / 季費 / 年費結構,
             告訴你每月該交付什麼、怎麼提案、怎麼讓客戶說「好」。
+          </div>
+          <div class="tool-cta">
+            <span>進入工具</span>
+            <span class="tool-cta-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 報價單產生器 -->
+        <a href="#" class="tool-card" data-tool="quotedoc" data-href="tools/quotedoc.html">
+          <span class="tool-badge new">NEW</span>
+          <div class="tool-num">10</div>
+          <div class="tool-title">報價單產生器</div>
+          <div class="tool-en">Quote Builder</div>
+          <div class="tool-desc">
+            填好你的公司資料、LOGO、服務項目,即時產生專業報價單。
+            可直接列印或存 PDF 給客戶。<strong>免 API Key、不消耗費用</strong>。
+          </div>
+          <div class="tool-cta">
+            <span>進入工具</span>
+            <span class="tool-cta-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 含稅計算機 -->
+        <a href="#" class="tool-card" data-tool="taxcalc" data-href="tools/taxcalc.html">
+          <span class="tool-badge new">NEW</span>
+          <div class="tool-num">11</div>
+          <div class="tool-title">含稅計算機</div>
+          <div class="tool-en">Tax Calc</div>
+          <div class="tool-desc">
+            報價要不要 +5% 稅?客戶說的「含稅 5 萬」實拿多少?
+            雙向計算,3 秒搞定。<strong>免 API Key、不消耗費用</strong>。
+          </div>
+          <div class="tool-cta">
+            <span>進入工具</span>
+            <span class="tool-cta-arrow">→</span>
+          </div>
+        </a>
+
+        <!-- 收據產生器 -->
+        <a href="#" class="tool-card" data-tool="receipt" data-href="tools/receipt.html">
+          <span class="tool-badge new">NEW</span>
+          <div class="tool-num">12</div>
+          <div class="tool-title">收據產生器</div>
+          <div class="tool-en">Receipt Builder</div>
+          <div class="tool-desc">
+            收到客戶款項,給對方一張正式收據。自動轉中文大寫金額,
+            可直接列印簽收。<strong>免 API Key、不消耗費用</strong>。
           </div>
           <div class="tool-cta">
             <span>進入工具</span>

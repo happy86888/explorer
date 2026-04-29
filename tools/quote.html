@@ -135,7 +135,20 @@
                 <option>傳承 / 接班 / 永續經營</option>
                 <option>解決長期未解的問題</option>
                 <option>建立護城河 / 提高進入門檻</option>
+                <option>家人滿意(配偶、父母)</option>
+                <option>展現個人成就 / 自我實現</option>
+                <option>不想再操心 / 想交給專家</option>
+                <option>之前合作不順,想換人</option>
+                <option>第一次做這件事 / 怕做錯</option>
+                <option>有外部壓力(投資人、合夥人、上司)</option>
+                <option>其他(下方自行補充)</option>
               </select>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="qt-target-custom">客戶在乎的(自行補充,可選填)</label>
+              <textarea id="qt-target-custom" placeholder="如果上面選不到合適的,或想補充更具體的脈絡,請寫在這裡。&#10;例如:對方剛被前任設計師放鳥所以特別怕拖稿、對方準備上 Shark Tank 想用品牌打動投資人..."></textarea>
+              <div class="ce-helper">越具體 AI 越能設計出對胃口的報價</div>
             </div>
 
             <div class="ce-field">
@@ -180,6 +193,23 @@
       </div>
 
       <section class="ce-results" id="ce-results"></section>
+      <!-- Brian 金句 + 部落格入口 -->
+      <div style="max-width:1100px;margin:60px auto 0;padding:0 24px;">
+        
+      <div class="ce-brian-quote">
+        <div class="ce-brian-quote-eyebrow">★ BRIAN'S WISDOM</div>
+        <div class="ce-brian-quote-text">客戶不會殺一個能讓他賺錢的方案,<br/>只會殺一個看起來像「成本」的方案。<br/>賣價值,不要賣時間。</div>
+        <div class="ce-brian-quote-source">— BRIAN ON 高價報價</div>
+      </div>
+<div class="ce-blog-bridge-desc">
+            這個工具是策略起點,Brian 的部落格是 13 年實戰累積的觀念底氣。<br/>
+            91 頁原創文章,從品牌行銷、創業心法、到生活哲學。
+          </div>
+          <a href="https://www.ceobrian.com/" target="_blank" rel="noopener">前往「做生意就像談戀愛」 →</a>
+        </div>
+
+      </div>
+
 
       <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
         <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
@@ -273,6 +303,7 @@
       project: document.getElementById('qt-project').value.trim(),
       client: document.getElementById('qt-client').value,
       targetCare: document.getElementById('qt-target').value,
+      targetCareCustom: document.getElementById('qt-target-custom').value.trim(),
       oldPrice: document.getElementById('qt-old').value,
       targetPrice: document.getElementById('qt-target-price').value,
       strength: document.getElementById('qt-strength').value.trim()
@@ -321,7 +352,7 @@
 - 接案者專業:${input.trade}
 - 案件描述:${input.project}
 - 客戶類型:${input.client}
-- 客戶最在乎的:${input.targetCare}
+- 客戶最在乎的:${input.targetCare}${input.targetCareCustom ? '\n- 客戶在乎的補充說明:' + input.targetCareCustom : ''}
 - 接案者過去報價:${input.oldPrice}
 - 本次想衝的目標:${input.targetPrice}
 - 接案者差異化優勢:${input.strength || '(未填寫)'}
@@ -344,7 +375,16 @@
         "name": "方案名稱(取個讓對方有感的名字,不要叫『標準版/進階版』,例如『品牌全套規劃』『單點救火方案』)",
         "tag": "BASIC / RECOMMENDED / PREMIUM",
         "price_range": "建議報價區間(用台幣)",
-        "deliverables": ["交付項目 1", "交付項目 2", "交付項目 3", "..."],
+        "deliverables": [
+          {
+            "title": "交付項目主標題(具體、不要空泛)",
+            "details": [
+              "細項 1(具體可量化,例如:每月 12 篇 IG 貼文設計含文案)",
+              "細項 2",
+              "細項 3"
+            ]
+          }
+        ],
         "best_for": "什麼樣的客戶會選這個方案",
         "psychology": "這個方案的價格心理學:設計這個價位的目的是什麼(例如:錨定、誘餌、主推)"
       }
@@ -366,14 +406,42 @@
   ]
 }
 
+【關於 deliverables(交付項目) 的硬性要求 — 非常重要】
+
+❌ 不接受太空泛的項目,例如:
+   - 「全面性的設計服務」
+   - 「詳細的預算控制」
+   - 「完整的後續維護」
+   - 「基本社群分析報告」
+   這種寫法客戶看了不知道你到底會做什麼、值不值得這個價格。
+
+✅ 必須具體可量化,例如:
+   - 「品牌定位文件(含目標族群分析、競品比較、品牌故事)」
+   - 「Logo 主視覺 3 個方案 + 1 次大改 + 2 次小修」
+   - 「品牌色票 / 字型系統 / 應用範例(名片、招牌、官網 Banner)」
+   - 「每月 12 篇 IG 貼文設計含文案 + 8 則限動模板」
+
+【數量規範(每個方案的 deliverables)】
+- BASIC 方案:至少 4-6 個項目,每個項目展開 2-3 個細項
+- RECOMMENDED 方案:至少 6-8 個項目,每個項目展開 3-5 個細項(這是主推,要看起來最豐富)
+- PREMIUM 方案:至少 7-10 個項目,每個項目展開 3-6 個細項(高階方案,涵蓋面要更廣)
+
+【依產業類型給 deliverables 範例】
+- 室內設計:風格定調、平面規劃圖、3D 透視圖、施工圖、預算管控、發包協助、選材陪同、施工督導、軟裝建議、保固維護
+- 社群行銷:策略規劃、貼文設計、文案撰寫、限動製作、廣告投放、KOL 溝通、月報分析、活動策劃、危機處理、社群客服
+- 品牌設計:品牌定位、Logo 設計、視覺系統、應用範例、品牌指南、官網設計、包裝設計、攝影規劃、發表會視覺
+- 商業攝影:腳本規劃、場景設計、拍攝執行、後製修圖、影片剪輯、原檔授權、攝影指導、現場道具
+- 顧問諮詢:現況診斷、策略文件、定期會議、實作陪伴、團隊培訓、KPI 追蹤、專案管理、外部資源接洽
+
 要求:
 - price_structure.tiers 一定要 3 個方案(BASIC, RECOMMENDED, PREMIUM)
 - 三個方案的價差要符合「錨定效應」原理,RECOMMENDED 應該是主推
+- 三個方案的「項目數量」必須有明顯遞增,讓客戶看到「升級的價值」
 - objection_preview 給 3 個最常見的拒絕理由
 - 所有金額用台幣 NT$ 格式,要實際合理(不要報得離譜)
 - 全部繁體中文,台灣商業用語`;
 
-    return await T.callClaude(prompt, { parseJson: true, maxTokens: 4000 });
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 6000 });
   }
 
   function renderResults(record) {
@@ -414,7 +482,11 @@
       <div class="ce-result-section">
         <div class="ce-section-title">Price Structure</div>
         <div class="ce-section-cn">三段式報價設計</div>
-        <p style="font-size:14.5px;color:var(--ink-soft);line-height:1.85;margin-bottom:24px;">${T.escapeHtml(ps.summary || '')}</p>
+        <p style="font-size:14.5px;color:var(--ink-soft);line-height:1.85;margin-bottom:14px;">${T.escapeHtml(ps.summary || '')}</p>
+        <div style="display:flex;gap:8px;margin-bottom:18px;">
+          <button class="ce-action-btn" id="qt-expand-all" style="background:var(--paper-card);border-color:var(--gold);color:var(--gold-deep);">⇣ 展開全部細項</button>
+          <button class="ce-action-btn" id="qt-collapse-all" style="background:var(--paper-card);border-color:var(--ink-mute);color:var(--ink-mute);">⇡ 全部收合</button>
+        </div>
         ${(ps.tiers || []).map((t, i) => renderTier(t, i)).join('')}
       </div>
 
@@ -471,6 +543,52 @@
     const tagClass = t.tag === 'PREMIUM' ? 'rust' : (t.tag === 'RECOMMENDED' ? 'gold' : 'gray');
     const tagBg = t.tag === 'PREMIUM' ? 'var(--rust)' : (t.tag === 'RECOMMENDED' ? 'var(--gold)' : 'var(--ink-mute)');
     const tagColor = t.tag === 'RECOMMENDED' ? 'var(--ink)' : 'white';
+
+    // 處理交付項目 - 支援新格式(物件含 details)和舊格式(純字串)
+    const deliverables = (t.deliverables || []).map((d, di) => {
+      // 新格式:物件含 title 和 details
+      if (typeof d === 'object' && d.title) {
+        const hasDetails = d.details && d.details.length > 0;
+        return `
+          <li class="qt-deliv-item">
+            ${hasDetails ? `
+              <details class="qt-deliv-details">
+                <summary class="qt-deliv-summary">
+                  <span class="qt-deliv-icon">◆</span>
+                  <span class="qt-deliv-title">${T.escapeHtml(d.title)}</span>
+                  <span class="qt-deliv-toggle">▾</span>
+                </summary>
+                <ul class="qt-deliv-sublist">
+                  ${d.details.map(sub => `<li>${T.escapeHtml(sub)}</li>`).join('')}
+                </ul>
+              </details>
+            ` : `
+              <div class="qt-deliv-no-detail">
+                <span class="qt-deliv-icon">◆</span>
+                <span class="qt-deliv-title">${T.escapeHtml(d.title)}</span>
+              </div>
+            `}
+          </li>
+        `;
+      }
+      // 舊格式:純字串
+      return `
+        <li class="qt-deliv-item">
+          <div class="qt-deliv-no-detail">
+            <span class="qt-deliv-icon">◆</span>
+            <span class="qt-deliv-title">${T.escapeHtml(String(d))}</span>
+          </div>
+        </li>
+      `;
+    }).join('');
+
+    // 算項目總數,讓使用者一眼看到豐富度
+    const totalItems = (t.deliverables || []).length;
+    const totalDetails = (t.deliverables || []).reduce((sum, d) => {
+      if (typeof d === 'object' && d.details) return sum + d.details.length;
+      return sum;
+    }, 0);
+
     return `
       <div class="ce-block" style="${t.tag === 'RECOMMENDED' ? 'border-color:var(--gold);border-width:2px;' : ''}">
         <div class="ce-block-header" style="background:${t.tag === 'RECOMMENDED' ? 'var(--gold-deep)' : 'var(--ink)'};">
@@ -479,7 +597,18 @@
         </div>
         <div class="ce-block-body">
           <div class="ce-block-row"><div class="ce-block-key">建議報價</div><div class="ce-block-val" style="font-size:18px;font-weight:700;color:var(--gold-deep);">${T.escapeHtml(t.price_range || '')}</div></div>
-          <div class="ce-block-row"><div class="ce-block-key">交付項目</div><div class="ce-block-val"><ul style="list-style:none;padding:0;">${(t.deliverables || []).map(d => `<li style="padding:4px 0 4px 16px;position:relative;"><span style="position:absolute;left:0;color:var(--gold);">◆</span> ${T.escapeHtml(d)}</li>`).join('')}</ul></div></div>
+          <div class="ce-block-row">
+            <div class="ce-block-key">交付項目</div>
+            <div class="ce-block-val">
+              ${totalItems > 0 ? `
+                <div class="qt-deliv-count">
+                  共 <strong>${totalItems}</strong> 個主項目${totalDetails > 0 ? `,展開 <strong>${totalDetails}</strong> 個細項` : ''}
+                  <span class="qt-deliv-hint">點主項目展開細節 ↓</span>
+                </div>
+              ` : ''}
+              <ul class="qt-deliv-list">${deliverables}</ul>
+            </div>
+          </div>
           <div class="ce-block-row"><div class="ce-block-key">適合誰</div><div class="ce-block-val">${T.escapeHtml(t.best_for || '')}</div></div>
           <div class="ce-block-row"><div class="ce-block-key">設計心理學</div><div class="ce-block-val"><div class="ce-insight">💡 ${T.escapeHtml(t.psychology || '')}</div></div></div>
         </div>
@@ -508,6 +637,20 @@
     document.getElementById('ce-back-btn').addEventListener('click', () => {
       showFormPage(); currentId = null; form.reset();
     });
+
+    // 展開/收合所有交付項目細項
+    const expandBtn = document.getElementById('qt-expand-all');
+    const collapseBtn = document.getElementById('qt-collapse-all');
+    if (expandBtn) {
+      expandBtn.addEventListener('click', () => {
+        document.querySelectorAll('.qt-deliv-details').forEach(d => d.open = true);
+      });
+    }
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', () => {
+        document.querySelectorAll('.qt-deliv-details').forEach(d => d.open = false);
+      });
+    }
 
     document.querySelectorAll('.ce-copy-btn').forEach(btn => {
       btn.addEventListener('click', () => {

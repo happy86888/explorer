@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>含稅計算機 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) { window.location.href = '../index.html'; }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  .calc-grid {
+    display: grid; grid-template-columns: 1fr; gap: 22px;
+  }
+  @media (min-width: 720px) { .calc-grid { grid-template-columns: 1fr 1fr; } }
+
+  .calc-card {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 28px;
+  }
+  .calc-card.highlight {
+    border-color: var(--gold); border-width: 2px;
+    background: linear-gradient(135deg, rgba(184, 137, 58, 0.06) 0%, var(--paper-card) 100%);
+  }
+  .calc-card-eyebrow {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; color: var(--gold-deep);
+    margin-bottom: 6px; font-weight: 700; text-transform: uppercase;
+  }
+  .calc-card-title {
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-style: italic; font-size: 26px; font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .calc-card-cn {
+    font-size: 14px; color: var(--ink-soft); margin-bottom: 20px;
+  }
+
+  .calc-input-wrap {
+    position: relative;
+  }
+  .calc-input-prefix {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace; font-size: 14px;
+    color: var(--ink-mute); pointer-events: none;
+  }
+  .calc-input {
+    width: 100%; padding: 18px 16px 18px 56px;
+    background: white; border: 2px solid var(--line);
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-size: 26px; font-weight: 600; color: var(--ink);
+    transition: border-color 0.15s;
+  }
+  .calc-input:focus { outline: none; border-color: var(--gold); }
+
+  .calc-result {
+    margin-top: 18px;
+    padding: 18px 20px; background: var(--ink); color: var(--paper);
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .calc-result-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; color: var(--gold);
+  }
+  .calc-result-value {
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-size: 32px; font-weight: 600; color: var(--paper);
+  }
+
+  .calc-detail {
+    margin-top: 12px; padding: 12px 16px;
+    background: var(--paper);
+    font-size: 13px; line-height: 1.85; color: var(--ink-soft);
+    display: grid; grid-template-columns: auto 1fr; gap: 10px 16px;
+  }
+  .calc-detail-key {
+    color: var(--gold-deep); font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em;
+  }
+  .calc-detail-val { font-weight: 600; text-align: right; }
+
+  .calc-explanation {
+    background: rgba(184, 137, 58, 0.08); border-left: 3px solid var(--gold);
+    padding: 16px 20px; margin-bottom: 24px;
+    font-size: 13.5px; line-height: 1.85; color: var(--ink-soft);
+  }
+  .calc-explanation strong { color: var(--ink); }
+
+  /* 範例計算 */
+  .calc-examples {
+    margin-top: 36px;
+  }
+  .calc-example {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 18px 22px; margin-bottom: 12px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .calc-example:hover {
+    border-color: var(--gold); transform: translateX(4px);
+  }
+  .calc-example-amount {
+    font-weight: 700; font-size: 16px; margin-bottom: 4px;
+    color: var(--gold-deep);
+  }
+  .calc-example-desc {
+    font-size: 13px; color: var(--ink-soft); line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <nav class="ce-nav">
+    <a href="../index.html" class="ce-nav-brand" style="text-decoration:none;color:inherit;cursor:pointer;" title="回首頁">
+      <div class="ce-nav-mark">老闆的接案學院</div>
+      <div class="ce-nav-title" style="opacity:0.85;">含稅計算機</div>
+    </a>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <header class="ce-header">
+        <div class="ce-eyebrow">5% Business Tax Calculator</div>
+        <h1 class="ce-title">Tax Calc</h1>
+        <div class="ce-title-cn">含稅計算機</div>
+        <div class="ce-divider"></div>
+        <p class="ce-subtitle">
+          報價金額要不要 +5% 稅?<br/>
+          客戶說的「含稅 5 萬」實拿多少?<br/>
+          這個工具幫你 3 秒搞定。
+        </p>
+      </header>
+
+      <div class="calc-explanation">
+        <strong>📘 台灣 5% 營業稅小知識:</strong><br/>
+        1. <strong>外加 5% 稅</strong>:報價 NT$10,000 → 實收 NT$10,500(常用於 B2B 開發票給公司)<br/>
+        2. <strong>內含 5% 稅</strong>:總額 NT$10,000 已含稅 → 未稅金額 NT$9,524、稅金 NT$476<br/>
+        3. 接案者開發票時,客戶通常會問「含稅 / 不含稅」,搞清楚才不會少收
+      </div>
+
+      <div class="calc-grid">
+
+        <!-- 外加稅 -->
+        <div class="calc-card highlight">
+          <div class="calc-card-eyebrow">▶ MODE A · TAX EXCLUSIVE</div>
+          <div class="calc-card-title">未稅 → 含稅</div>
+          <div class="calc-card-cn">輸入未稅金額,算出 +5% 後的總額</div>
+          <div class="calc-input-wrap">
+            <div class="calc-input-prefix">NT$</div>
+            <input type="number" class="calc-input" id="calc-add-input" placeholder="輸入未稅金額" />
+          </div>
+          <div class="calc-result">
+            <div class="calc-result-label">含稅總額</div>
+            <div class="calc-result-value" id="calc-add-result">NT$ 0</div>
+          </div>
+          <div class="calc-detail">
+            <div class="calc-detail-key">原金額</div>
+            <div class="calc-detail-val" id="calc-add-base">NT$ 0</div>
+            <div class="calc-detail-key">5% 稅金</div>
+            <div class="calc-detail-val" id="calc-add-tax">NT$ 0</div>
+          </div>
+        </div>
+
+        <!-- 內含稅 -->
+        <div class="calc-card">
+          <div class="calc-card-eyebrow">▶ MODE B · TAX INCLUSIVE</div>
+          <div class="calc-card-title">含稅 → 拆解</div>
+          <div class="calc-card-cn">輸入含稅總額,拆出未稅 + 稅金</div>
+          <div class="calc-input-wrap">
+            <div class="calc-input-prefix">NT$</div>
+            <input type="number" class="calc-input" id="calc-incl-input" placeholder="輸入含稅總額" />
+          </div>
+          <div class="calc-result">
+            <div class="calc-result-label">未稅金額</div>
+            <div class="calc-result-value" id="calc-incl-result">NT$ 0</div>
+          </div>
+          <div class="calc-detail">
+            <div class="calc-detail-key">總額</div>
+            <div class="calc-detail-val" id="calc-incl-base">NT$ 0</div>
+            <div class="calc-detail-key">內含稅金</div>
+            <div class="calc-detail-val" id="calc-incl-tax">NT$ 0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 常用範例 -->
+      <div class="calc-examples">
+        <h2 style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:24px;margin-bottom:6px;">Quick Examples</h2>
+        <div style="font-size:14px;font-weight:700;border-bottom:2px solid var(--ink);display:inline-block;padding-bottom:6px;margin-bottom:16px;">常用案例(點一下自動帶入)</div>
+
+        <div class="calc-example" data-amount="10000" data-mode="add">
+          <div class="calc-example-amount">未稅 NT$ 10,000 → 算外加稅</div>
+          <div class="calc-example-desc">B2B 接案常見:報價 1 萬,實收 10,500</div>
+        </div>
+        <div class="calc-example" data-amount="50000" data-mode="add">
+          <div class="calc-example-amount">未稅 NT$ 50,000 → 算外加稅</div>
+          <div class="calc-example-desc">中型案件:報價 5 萬,實收 52,500</div>
+        </div>
+        <div class="calc-example" data-amount="100000" data-mode="incl">
+          <div class="calc-example-amount">含稅 NT$ 100,000 → 拆解</div>
+          <div class="calc-example-desc">客戶說「總額 10 萬含稅」,實際你能拿多少</div>
+        </div>
+        <div class="calc-example" data-amount="300000" data-mode="incl">
+          <div class="calc-example-amount">含稅 NT$ 300,000 → 拆解</div>
+          <div class="calc-example-desc">大型案件:總額 30 萬含稅,未稅金額 vs 稅金</div>
+        </div>
+      </div>
+
+      <!-- Brian 金句 -->
+      <div style="margin-top:48px;">
+        <div class="ce-brian-quote">
+          <div class="ce-brian-quote-eyebrow">★ BRIAN'S WISDOM</div>
+          <div class="ce-brian-quote-text">
+            報價沒講清楚「含不含稅」,等於少收 5%。<br/>
+            一個案子的利潤可能就在這 5% 裡。<br/>
+            專業就是不要讓細節吃掉你的錢。
+          </div>
+          <div class="ce-brian-quote-source">— BRIAN ON 報價細節</div>
+        </div>
+      </div>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 含稅計算機</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script>
+(function() {
+  function fmt(n) {
+    if (isNaN(n) || n === '') return '0';
+    return Math.round(n).toLocaleString('zh-TW');
+  }
+
+  // 外加稅
+  const addInput = document.getElementById('calc-add-input');
+  function calcAdd() {
+    const v = Number(addInput.value) || 0;
+    const tax = Math.round(v * 0.05);
+    const total = v + tax;
+    document.getElementById('calc-add-result').textContent = 'NT$ ' + fmt(total);
+    document.getElementById('calc-add-base').textContent = 'NT$ ' + fmt(v);
+    document.getElementById('calc-add-tax').textContent = 'NT$ ' + fmt(tax);
+  }
+  addInput.addEventListener('input', calcAdd);
+
+  // 內含稅
+  const inclInput = document.getElementById('calc-incl-input');
+  function calcIncl() {
+    const v = Number(inclInput.value) || 0;
+    const tax = Math.round(v / 21);
+    const base = v - tax;
+    document.getElementById('calc-incl-result').textContent = 'NT$ ' + fmt(base);
+    document.getElementById('calc-incl-base').textContent = 'NT$ ' + fmt(v);
+    document.getElementById('calc-incl-tax').textContent = 'NT$ ' + fmt(tax);
+  }
+  inclInput.addEventListener('input', calcIncl);
+
+  // 範例點擊
+  document.querySelectorAll('.calc-example').forEach(el => {
+    el.addEventListener('click', () => {
+      const amount = el.dataset.amount;
+      const mode = el.dataset.mode;
+      if (mode === 'add') {
+        addInput.value = amount;
+        calcAdd();
+        addInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        addInput.focus();
+      } else {
+        inclInput.value = amount;
+        calcIncl();
+        inclInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        inclInput.focus();
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

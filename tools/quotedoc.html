@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>報價單產生器 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) { window.location.href = '../index.html'; }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  /* === 報價單編輯器 === */
+  .qb-editor {
+    display: grid; grid-template-columns: 1fr; gap: 24px;
+  }
+  @media (min-width: 1024px) {
+    .qb-editor { grid-template-columns: 380px 1fr; }
+  }
+  .qb-form-pane {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 24px; max-height: calc(100vh - 80px); overflow-y: auto;
+    position: sticky; top: 20px;
+  }
+  .qb-preview-pane {
+    background: white; border: 1px solid var(--line);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  }
+  .qb-form-section {
+    padding-bottom: 18px; margin-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .qb-form-section:last-of-type { border-bottom: none; }
+  .qb-form-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; color: var(--gold-deep);
+    margin-bottom: 12px; text-transform: uppercase; font-weight: 700;
+  }
+  .qb-row { margin-bottom: 10px; }
+  .qb-row label {
+    display: block; font-size: 11px; color: var(--ink-mute);
+    margin-bottom: 4px; letter-spacing: 0.05em;
+  }
+  .qb-row input, .qb-row select, .qb-row textarea {
+    width: 100%; padding: 8px 10px; background: var(--paper);
+    border: 1px solid var(--line); font-size: 13px;
+    font-family: 'Noto Serif TC', serif; color: var(--ink);
+  }
+  .qb-row input:focus, .qb-row textarea:focus, .qb-row select:focus {
+    outline: none; border-color: var(--gold);
+  }
+  .qb-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* 服務項目編輯 */
+  .qb-items-list { margin-top: 10px; }
+  .qb-item-edit {
+    background: var(--paper); border: 1px solid var(--line);
+    padding: 10px; margin-bottom: 8px;
+    display: grid; grid-template-columns: 1fr; gap: 6px;
+    position: relative;
+  }
+  .qb-item-edit input { padding: 6px 8px; font-size: 12px; }
+  .qb-item-edit-row { display: grid; grid-template-columns: 60px 90px; gap: 6px; }
+  .qb-item-del {
+    position: absolute; top: 4px; right: 4px;
+    background: transparent; border: none; color: var(--ink-mute);
+    cursor: pointer; font-size: 14px; padding: 2px 6px;
+  }
+  .qb-item-del:hover { color: var(--rust); }
+  .qb-add-item {
+    width: 100%; background: var(--paper); border: 1px dashed var(--gold);
+    color: var(--gold-deep); padding: 8px; cursor: pointer;
+    font-family: 'Noto Serif TC', serif; font-size: 12px;
+    margin-top: 6px; transition: all 0.15s;
+  }
+  .qb-add-item:hover { background: var(--gold); color: var(--ink); }
+
+  /* LOGO 上傳 */
+  .qb-logo-upload {
+    border: 2px dashed var(--line); padding: 16px;
+    text-align: center; cursor: pointer; transition: border-color 0.15s;
+    background: var(--paper);
+  }
+  .qb-logo-upload:hover { border-color: var(--gold); }
+  .qb-logo-upload input { display: none; }
+  .qb-logo-preview { max-width: 100%; max-height: 80px; }
+  .qb-logo-clear {
+    background: transparent; border: 1px solid var(--rust); color: var(--rust);
+    padding: 4px 8px; font-size: 11px; cursor: pointer; margin-top: 6px;
+  }
+
+  /* === 報價單預覽(列印用) === */
+  .qb-doc {
+    padding: 50px 60px;
+    font-family: 'Noto Serif TC', serif;
+    color: #1a1612;
+    min-height: 1000px;
+  }
+  .qb-doc-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 24px; border-bottom: 3px double #1a1612;
+    margin-bottom: 32px;
+    flex-wrap: wrap; gap: 20px;
+  }
+  .qb-doc-brand { flex: 1; min-width: 200px; }
+  .qb-doc-logo { max-height: 64px; max-width: 220px; margin-bottom: 12px; }
+  .qb-doc-company-name {
+    font-size: 22px; font-weight: 700; line-height: 1.3;
+    margin-bottom: 6px;
+  }
+  .qb-doc-company-info {
+    font-size: 12px; color: #6b5e4f; line-height: 1.7;
+  }
+  .qb-doc-meta { text-align: right; min-width: 200px; }
+  .qb-doc-title {
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-style: italic; font-size: 38px; font-weight: 600;
+    color: #b8893a; line-height: 1; margin-bottom: 4px;
+  }
+  .qb-doc-title-cn {
+    font-size: 18px; font-weight: 700; letter-spacing: 0.15em;
+    margin-bottom: 14px;
+  }
+  .qb-doc-meta-row {
+    font-size: 12px; color: #6b5e4f; margin-bottom: 4px;
+    display: flex; justify-content: flex-end; gap: 8px;
+  }
+  .qb-doc-meta-row strong { color: #1a1612; min-width: 70px; text-align: right; }
+
+  .qb-doc-client {
+    background: #f4ede0; padding: 18px 22px; margin-bottom: 28px;
+  }
+  .qb-doc-client-label {
+    font-size: 11px; color: #8a6224; letter-spacing: 0.2em;
+    margin-bottom: 8px; text-transform: uppercase;
+  }
+  .qb-doc-client-name {
+    font-size: 18px; font-weight: 700; margin-bottom: 4px;
+  }
+  .qb-doc-client-contact { font-size: 13px; color: #6b5e4f; }
+
+  /* 服務表 */
+  .qb-doc-table {
+    width: 100%; border-collapse: collapse;
+    margin-bottom: 24px;
+  }
+  .qb-doc-table thead {
+    background: #1a1612; color: #f4ede0;
+  }
+  .qb-doc-table th {
+    padding: 12px 14px; text-align: left;
+    font-size: 12px; letter-spacing: 0.1em;
+    font-weight: 700;
+  }
+  .qb-doc-table th.num { text-align: right; }
+  .qb-doc-table td {
+    padding: 14px;
+    font-size: 13.5px; line-height: 1.6;
+    border-bottom: 1px solid #ebe0cc;
+    vertical-align: top;
+  }
+  .qb-doc-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .qb-doc-table .item-name { font-weight: 700; margin-bottom: 4px; }
+  .qb-doc-table .item-desc { font-size: 12px; color: #6b5e4f; }
+
+  .qb-doc-totals {
+    margin-left: auto; width: 320px; max-width: 100%;
+    margin-bottom: 24px;
+  }
+  .qb-doc-total-row {
+    display: flex; justify-content: space-between;
+    padding: 8px 14px; font-size: 14px;
+    border-bottom: 1px solid #ebe0cc;
+  }
+  .qb-doc-total-row.tax { color: #6b5e4f; font-size: 13px; }
+  .qb-doc-total-row.grand {
+    background: #1a1612; color: #f4ede0;
+    border: none; padding: 14px;
+    font-size: 18px; font-weight: 700;
+    margin-top: 4px;
+  }
+  .qb-doc-total-row.grand .label {
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-style: italic; color: #b8893a;
+  }
+
+  .qb-doc-section {
+    margin-bottom: 22px;
+  }
+  .qb-doc-section-title {
+    font-size: 13px; font-weight: 700;
+    border-left: 3px solid #b8893a; padding-left: 10px;
+    margin-bottom: 10px; letter-spacing: 0.05em;
+  }
+  .qb-doc-section-content {
+    font-size: 13px; line-height: 1.85; color: #3d342a;
+    padding-left: 13px; white-space: pre-wrap;
+  }
+
+  .qb-doc-footer {
+    margin-top: 50px; padding-top: 22px;
+    border-top: 1px solid #ebe0cc;
+    text-align: center;
+    font-size: 11px; color: #8a6224;
+    letter-spacing: 0.1em;
+  }
+  .qb-doc-footer-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 14px;
+    color: #8a6224; margin-bottom: 4px;
+  }
+
+  /* 列印優化 */
+  @media print {
+    @page { size: A4; margin: 12mm; }
+    body { background: white !important; }
+    .ce-app { background: white !important; }
+    .ce-nav, .ce-saved-section, .qb-form-pane,
+    .ce-form-card, .ce-tool-disclaimer,
+    .ce-result-toolbar, .ce-brian-quote { display: none !important; }
+    .qb-editor { display: block !important; }
+    .qb-preview-pane {
+      box-shadow: none !important; border: none !important;
+      width: 100% !important;
+    }
+    .qb-doc {
+      padding: 0 !important;
+      min-height: auto !important;
+    }
+  }
+
+  /* 工具列 */
+  .qb-toolbar {
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .qb-tool-btn {
+    flex: 1 1 auto; padding: 10px 14px;
+    background: var(--ink); color: var(--paper);
+    border: none; cursor: pointer;
+    font-family: 'Noto Serif TC', serif; font-size: 13px;
+    font-weight: 700; letter-spacing: 0.05em;
+    transition: background 0.2s;
+  }
+  .qb-tool-btn:hover { background: var(--gold-deep); }
+  .qb-tool-btn.secondary {
+    background: transparent; color: var(--ink); border: 1px solid var(--ink);
+  }
+  .qb-tool-btn.secondary:hover {
+    background: var(--ink); color: var(--paper);
+  }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <nav class="ce-nav">
+    <a href="../index.html" class="ce-nav-brand" style="text-decoration:none;color:inherit;cursor:pointer;" title="回首頁">
+      <div class="ce-nav-mark">老闆的接案學院</div>
+      <div class="ce-nav-title" style="opacity:0.85;">報價單產生器</div>
+    </a>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新報價單</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container" style="max-width:1400px;">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Saved Quotes</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <header class="ce-header" style="margin-bottom:24px;">
+        <div class="ce-eyebrow">Print-Ready Quote Document</div>
+        <h1 class="ce-title">Quote Builder</h1>
+        <div class="ce-title-cn">報價單產生器</div>
+        <div class="ce-divider"></div>
+        <p class="ce-subtitle">
+          填好你的公司資料 + LOGO + 服務項目,<br/>
+          即時產生專業報價單,可直接列印或存 PDF 給客戶。
+        </p>
+      </header>
+
+      <div style="display:flex;gap:10px;align-items:flex-start;padding:14px 18px;background:rgba(184, 137, 58, 0.08);border-left:3px solid var(--gold);margin-bottom:24px;font-size:13px;line-height:1.7;color:var(--ink-soft);">
+        <span style="font-size:16px;flex-shrink:0;">☕</span>
+        <span>純文件工具,不用 API Key、不消耗任何費用。資料只存在你瀏覽器,離線也能用。</span>
+      </div>
+
+      <div class="qb-editor">
+        <!-- 左側:編輯區 -->
+        <div class="qb-form-pane">
+          <div class="qb-form-section">
+            <div class="qb-form-title">▶ 報價單資訊</div>
+            <div class="qb-row-2col">
+              <div class="qb-row">
+                <label>報價單編號</label>
+                <input type="text" id="qb-id" placeholder="Q-2026-001" />
+              </div>
+              <div class="qb-row">
+                <label>日期</label>
+                <input type="date" id="qb-date" />
+              </div>
+            </div>
+            <div class="qb-row">
+              <label>有效期</label>
+              <input type="text" id="qb-validity" placeholder="本報價自開立日起 14 天內有效" />
+            </div>
+          </div>
+
+          <div class="qb-form-section">
+            <div class="qb-form-title">▶ 你的公司 / 抬頭</div>
+            <div class="qb-row">
+              <label>LOGO(可選)</label>
+              <label class="qb-logo-upload" id="qb-logo-label">
+                <input type="file" id="qb-logo" accept="image/*" />
+                <img id="qb-logo-preview" class="qb-logo-preview" style="display:none;" />
+                <div id="qb-logo-text" style="font-size:12px;color:var(--ink-mute);">
+                  點此上傳 LOGO<br/>
+                  <small>(建議 PNG 透明背景,寬度 300px 以下)</small>
+                </div>
+              </label>
+              <button class="qb-logo-clear" id="qb-logo-clear" style="display:none;">清除 LOGO</button>
+            </div>
+            <div class="qb-row">
+              <label>公司 / 工作室名稱</label>
+              <input type="text" id="qb-from-name" placeholder="例如:Brian 設計工作室" />
+            </div>
+            <div class="qb-row">
+              <label>統一編號(可選)</label>
+              <input type="text" id="qb-from-tax" placeholder="統編 8 碼" />
+            </div>
+            <div class="qb-row">
+              <label>聯絡資訊</label>
+              <textarea id="qb-from-contact" rows="3" placeholder="電話:0900-000-000&#10;Email:hello@example.com&#10;LINE:@your_line"></textarea>
+            </div>
+          </div>
+
+          <div class="qb-form-section">
+            <div class="qb-form-title">▶ 客戶資訊</div>
+            <div class="qb-row">
+              <label>客戶公司 / 抬頭</label>
+              <input type="text" id="qb-to-name" placeholder="例如:好客戶有限公司" />
+            </div>
+            <div class="qb-row">
+              <label>聯絡人</label>
+              <input type="text" id="qb-to-contact" placeholder="王小明 經理" />
+            </div>
+            <div class="qb-row">
+              <label>客戶電話 / Email(可選)</label>
+              <input type="text" id="qb-to-info" placeholder="" />
+            </div>
+          </div>
+
+          <div class="qb-form-section">
+            <div class="qb-form-title">▶ 服務項目</div>
+            <div class="qb-items-list" id="qb-items"></div>
+            <button class="qb-add-item" id="qb-add-item">+ 新增項目</button>
+          </div>
+
+          <div class="qb-form-section">
+            <div class="qb-form-title">▶ 稅金</div>
+            <div class="qb-row">
+              <label>含稅方式</label>
+              <select id="qb-tax-mode">
+                <option value="none">不含稅</option>
+                <option value="add">外加 5% 營業稅</option>
+                <option value="incl">內含 5% 營業稅</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="qb-form-section">
+            <div class="qb-form-title">▶ 付款條件</div>
+            <div class="qb-row">
+              <textarea id="qb-payment" rows="3" placeholder="例如:&#10;簽約付款 50%(訂金)&#10;交付完成後付款 50%(尾款)"></textarea>
+            </div>
+          </div>
+
+          <div class="qb-form-section">
+            <div class="qb-form-title">▶ 備註</div>
+            <div class="qb-row">
+              <textarea id="qb-notes" rows="3" placeholder="例如:&#10;・本報價含 2 次大改、3 次小修&#10;・若需加急服務另計 30%"></textarea>
+            </div>
+          </div>
+
+          <div class="qb-toolbar">
+            <button class="qb-tool-btn" id="qb-print-btn">列印 / 存 PDF</button>
+            <button class="qb-tool-btn secondary" id="qb-save-btn">儲存</button>
+          </div>
+        </div>
+
+        <!-- 右側:預覽區 -->
+        <div class="qb-preview-pane">
+          <div class="qb-doc" id="qb-preview">
+            <div class="qb-doc-header">
+              <div class="qb-doc-brand">
+                <img class="qb-doc-logo" id="qbp-logo" style="display:none;" />
+                <div class="qb-doc-company-name" id="qbp-from-name">你的公司名稱</div>
+                <div class="qb-doc-company-info" id="qbp-from-info"></div>
+              </div>
+              <div class="qb-doc-meta">
+                <div class="qb-doc-title">Quotation</div>
+                <div class="qb-doc-title-cn">報價單</div>
+                <div class="qb-doc-meta-row"><strong>編號</strong><span id="qbp-id">Q-2026-001</span></div>
+                <div class="qb-doc-meta-row"><strong>日期</strong><span id="qbp-date">2026/04/29</span></div>
+                <div class="qb-doc-meta-row"><strong>有效期</strong><span id="qbp-validity">14 天</span></div>
+              </div>
+            </div>
+
+            <div class="qb-doc-client">
+              <div class="qb-doc-client-label">致 · TO</div>
+              <div class="qb-doc-client-name" id="qbp-to-name">客戶公司名稱</div>
+              <div class="qb-doc-client-contact" id="qbp-to-contact"></div>
+            </div>
+
+            <table class="qb-doc-table">
+              <thead>
+                <tr>
+                  <th style="width:50%;">服務項目</th>
+                  <th class="num" style="width:12%;">數量</th>
+                  <th class="num" style="width:18%;">單價</th>
+                  <th class="num" style="width:20%;">小計</th>
+                </tr>
+              </thead>
+              <tbody id="qbp-items"></tbody>
+            </table>
+
+            <div class="qb-doc-totals" id="qbp-totals"></div>
+
+            <div class="qb-doc-section" id="qbp-payment-section" style="display:none;">
+              <div class="qb-doc-section-title">付款條件 · Payment Terms</div>
+              <div class="qb-doc-section-content" id="qbp-payment"></div>
+            </div>
+
+            <div class="qb-doc-section" id="qbp-notes-section" style="display:none;">
+              <div class="qb-doc-section-title">備註 · Notes</div>
+              <div class="qb-doc-section-content" id="qbp-notes"></div>
+            </div>
+
+            <div class="qb-doc-footer">
+              <div class="qb-doc-footer-en">Thank you for your trust.</div>
+              <div>感謝您的信任,期待與您合作。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Brian 金句 -->
+      <div style="max-width:1100px;margin:60px auto 0;padding:0 24px;">
+        <div class="ce-brian-quote">
+          <div class="ce-brian-quote-eyebrow">★ BRIAN'S WISDOM</div>
+          <div class="ce-brian-quote-text">
+            一份漂亮的報價單,是你「值得高價」的第一個證據。<br/>
+            客戶還沒看內容,先看到的是包裝。<br/>
+            專業感,是從格式開始的。
+          </div>
+          <div class="ce-brian-quote-source">— BRIAN ON 報價單設計</div>
+        </div>
+      </div>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 報價單產生器</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('quote_docs');
+  let currentId = null;
+  let logoDataUrl = '';
+  let items = [];
+
+  // === 初始化欄位 ===
+  function todayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function autoQuoteId() {
+    const d = new Date();
+    return `Q-${d.getFullYear()}-${String(Date.now()).slice(-4)}`;
+  }
+  function fmtDate(s) {
+    if (!s) return '';
+    return s.replace(/-/g, '/');
+  }
+  function fmtMoney(n) {
+    if (isNaN(n)) return '0';
+    return Number(n).toLocaleString('zh-TW', { maximumFractionDigits: 0 });
+  }
+
+  // === DOM ===
+  const $ = id => document.getElementById(id);
+  const fields = {
+    id: $('qb-id'), date: $('qb-date'), validity: $('qb-validity'),
+    fromName: $('qb-from-name'), fromTax: $('qb-from-tax'), fromContact: $('qb-from-contact'),
+    toName: $('qb-to-name'), toContact: $('qb-to-contact'), toInfo: $('qb-to-info'),
+    taxMode: $('qb-tax-mode'),
+    payment: $('qb-payment'), notes: $('qb-notes')
+  };
+
+  // === LOGO 上傳 ===
+  $('qb-logo').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      logoDataUrl = ev.target.result;
+      $('qb-logo-preview').src = logoDataUrl;
+      $('qb-logo-preview').style.display = 'block';
+      $('qb-logo-text').style.display = 'none';
+      $('qb-logo-clear').style.display = 'inline-block';
+      render();
+    };
+    reader.readAsDataURL(file);
+  });
+  $('qb-logo-clear').addEventListener('click', () => {
+    logoDataUrl = '';
+    $('qb-logo-preview').src = '';
+    $('qb-logo-preview').style.display = 'none';
+    $('qb-logo-text').style.display = 'block';
+    $('qb-logo-clear').style.display = 'none';
+    $('qb-logo').value = '';
+    render();
+  });
+
+  // === 服務項目編輯 ===
+  function renderItemsEditor() {
+    $('qb-items').innerHTML = items.map((item, i) => `
+      <div class="qb-item-edit" data-i="${i}">
+        <button class="qb-item-del" data-del="${i}">✕</button>
+        <input type="text" class="item-name" placeholder="項目名稱(例如:品牌 Logo 設計)" value="${T.escapeHtml(item.name || '')}" />
+        <input type="text" class="item-desc" placeholder="說明(可選)" value="${T.escapeHtml(item.desc || '')}" />
+        <div class="qb-item-edit-row">
+          <input type="number" class="item-qty" placeholder="數量" value="${item.qty || 1}" min="0" step="any" />
+          <input type="number" class="item-price" placeholder="單價" value="${item.price || 0}" min="0" step="any" />
+        </div>
+      </div>
+    `).join('');
+
+    // 綁定編輯
+    $('qb-items').querySelectorAll('.qb-item-edit').forEach(el => {
+      const i = +el.dataset.i;
+      ['name', 'desc', 'qty', 'price'].forEach(f => {
+        const input = el.querySelector('.item-' + f);
+        if (input) {
+          input.addEventListener('input', () => {
+            items[i][f] = (f === 'qty' || f === 'price') ? Number(input.value) || 0 : input.value;
+            render();
+          });
+        }
+      });
+    });
+    $('qb-items').querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        items.splice(+btn.dataset.del, 1);
+        renderItemsEditor();
+        render();
+      });
+    });
+  }
+
+  $('qb-add-item').addEventListener('click', () => {
+    items.push({ name: '', desc: '', qty: 1, price: 0 });
+    renderItemsEditor();
+    render();
+  });
+
+  // === 渲染預覽 ===
+  function render() {
+    // 公司資訊
+    $('qbp-from-name').textContent = fields.fromName.value || '你的公司名稱';
+    let info = '';
+    if (fields.fromTax.value) info += '統編:' + fields.fromTax.value + '<br/>';
+    if (fields.fromContact.value) info += T.escapeHtml(fields.fromContact.value).replace(/\n/g, '<br/>');
+    $('qbp-from-info').innerHTML = info;
+
+    // LOGO
+    const logoEl = $('qbp-logo');
+    if (logoDataUrl) {
+      logoEl.src = logoDataUrl;
+      logoEl.style.display = 'block';
+    } else {
+      logoEl.style.display = 'none';
+    }
+
+    // Meta
+    $('qbp-id').textContent = fields.id.value || autoQuoteId();
+    $('qbp-date').textContent = fmtDate(fields.date.value || todayStr());
+    $('qbp-validity').textContent = fields.validity.value || '14 天';
+
+    // 客戶
+    $('qbp-to-name').textContent = fields.toName.value || '客戶公司名稱';
+    let contact = fields.toContact.value || '';
+    if (fields.toInfo.value) contact += (contact ? ' · ' : '') + fields.toInfo.value;
+    $('qbp-to-contact').textContent = contact;
+
+    // 服務項目
+    let subtotal = 0;
+    const itemsHtml = items.map(item => {
+      const lineTotal = (item.qty || 0) * (item.price || 0);
+      subtotal += lineTotal;
+      return `
+        <tr>
+          <td>
+            <div class="item-name">${T.escapeHtml(item.name || '(項目名稱)')}</div>
+            ${item.desc ? `<div class="item-desc">${T.escapeHtml(item.desc)}</div>` : ''}
+          </td>
+          <td class="num">${fmtMoney(item.qty)}</td>
+          <td class="num">NT$ ${fmtMoney(item.price)}</td>
+          <td class="num">NT$ ${fmtMoney(lineTotal)}</td>
+        </tr>
+      `;
+    }).join('');
+    $('qbp-items').innerHTML = itemsHtml || '<tr><td colspan="4" style="text-align:center;color:#8a6224;padding:20px;font-style:italic;">請從左側「+ 新增項目」加入服務</td></tr>';
+
+    // 稅金計算
+    const taxMode = fields.taxMode.value;
+    let tax = 0, grandTotal = 0, displaySubtotal = subtotal;
+    if (taxMode === 'add') {
+      tax = Math.round(subtotal * 0.05);
+      grandTotal = subtotal + tax;
+    } else if (taxMode === 'incl') {
+      tax = Math.round(subtotal / 21);
+      displaySubtotal = subtotal - tax;
+      grandTotal = subtotal;
+    } else {
+      grandTotal = subtotal;
+    }
+
+    let totalsHtml = `<div class="qb-doc-total-row"><span>小計</span><span>NT$ ${fmtMoney(taxMode === 'incl' ? displaySubtotal : subtotal)}</span></div>`;
+    if (taxMode === 'add') {
+      totalsHtml += `<div class="qb-doc-total-row tax"><span>5% 營業稅(外加)</span><span>NT$ ${fmtMoney(tax)}</span></div>`;
+    } else if (taxMode === 'incl') {
+      totalsHtml += `<div class="qb-doc-total-row tax"><span>5% 營業稅(內含)</span><span>NT$ ${fmtMoney(tax)}</span></div>`;
+    }
+    totalsHtml += `<div class="qb-doc-total-row grand"><span class="label">Total · 總計</span><span>NT$ ${fmtMoney(grandTotal)}</span></div>`;
+    $('qbp-totals').innerHTML = totalsHtml;
+
+    // 付款條件 / 備註
+    if (fields.payment.value.trim()) {
+      $('qbp-payment-section').style.display = 'block';
+      $('qbp-payment').textContent = fields.payment.value;
+    } else {
+      $('qbp-payment-section').style.display = 'none';
+    }
+    if (fields.notes.value.trim()) {
+      $('qbp-notes-section').style.display = 'block';
+      $('qbp-notes').textContent = fields.notes.value;
+    } else {
+      $('qbp-notes-section').style.display = 'none';
+    }
+  }
+
+  // 任何欄位變動就重新渲染
+  Object.values(fields).forEach(el => {
+    if (el) el.addEventListener('input', render);
+  });
+
+  // === 列印 ===
+  $('qb-print-btn').addEventListener('click', () => {
+    window.print();
+  });
+
+  // === 儲存 ===
+  $('qb-save-btn').addEventListener('click', () => {
+    const data = {
+      id: currentId || ('qd_' + Date.now()),
+      input: {
+        id: fields.id.value, date: fields.date.value, validity: fields.validity.value,
+        fromName: fields.fromName.value, fromTax: fields.fromTax.value, fromContact: fields.fromContact.value,
+        toName: fields.toName.value, toContact: fields.toContact.value, toInfo: fields.toInfo.value,
+        taxMode: fields.taxMode.value,
+        payment: fields.payment.value, notes: fields.notes.value,
+        items: items, logo: logoDataUrl
+      },
+      createdAt: Date.now()
+    };
+    storage.save(data.id, data);
+    currentId = data.id;
+    loadSavedList();
+    alert('已儲存!');
+  });
+
+  // === 載入 ===
+  function loadRecord(r) {
+    currentId = r.id;
+    fields.id.value = r.input.id || '';
+    fields.date.value = r.input.date || todayStr();
+    fields.validity.value = r.input.validity || '';
+    fields.fromName.value = r.input.fromName || '';
+    fields.fromTax.value = r.input.fromTax || '';
+    fields.fromContact.value = r.input.fromContact || '';
+    fields.toName.value = r.input.toName || '';
+    fields.toContact.value = r.input.toContact || '';
+    fields.toInfo.value = r.input.toInfo || '';
+    fields.taxMode.value = r.input.taxMode || 'none';
+    fields.payment.value = r.input.payment || '';
+    fields.notes.value = r.input.notes || '';
+    items = r.input.items || [];
+    logoDataUrl = r.input.logo || '';
+    if (logoDataUrl) {
+      $('qb-logo-preview').src = logoDataUrl;
+      $('qb-logo-preview').style.display = 'block';
+      $('qb-logo-text').style.display = 'none';
+      $('qb-logo-clear').style.display = 'inline-block';
+    }
+    renderItemsEditor();
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // === 已存記錄列表 ===
+  function loadSavedList() {
+    const records = storage.list();
+    $('ce-saved-count').textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      $('ce-saved-list').innerHTML = `<div class="ce-empty-state">尚未儲存任何報價單。</div>`;
+      return;
+    }
+    $('ce-saved-list').innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => {
+          const total = (r.input.items || []).reduce((s, i) => s + (i.qty || 0) * (i.price || 0), 0);
+          return `
+            <div class="ce-saved-card" data-id="${r.id}">
+              <button class="ce-saved-del" data-del="${r.id}">✕</button>
+              <div class="ce-saved-trade">${T.escapeHtml(r.input.toName || '未填客戶')}</div>
+              <div class="ce-saved-target">${T.escapeHtml(r.input.id || '')} · NT$ ${fmtMoney(total)}</div>
+              <div class="ce-saved-meta">${T.formatDate(r.createdAt)}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    $('ce-saved-list').querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) loadRecord(r);
+      });
+    });
+    $('ce-saved-list').querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除?')) {
+          storage.delete(btn.dataset.del);
+          loadSavedList();
+          if (currentId === btn.dataset.del) reset();
+        }
+      });
+    });
+  }
+
+  function reset() {
+    currentId = null;
+    items = [];
+    logoDataUrl = '';
+    Object.values(fields).forEach(el => { if (el && el.tagName === 'INPUT' && el.type !== 'date') el.value = ''; });
+    Object.values(fields).forEach(el => { if (el && el.tagName === 'TEXTAREA') el.value = ''; });
+    fields.taxMode.value = 'none';
+    fields.id.value = autoQuoteId();
+    fields.date.value = todayStr();
+    fields.validity.value = '本報價自開立日起 14 天內有效';
+    $('qb-logo-preview').style.display = 'none';
+    $('qb-logo-text').style.display = 'block';
+    $('qb-logo-clear').style.display = 'none';
+    $('qb-logo').value = '';
+    items = [{ name: '', desc: '', qty: 1, price: 0 }];
+    renderItemsEditor();
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  $('ce-new-btn').addEventListener('click', reset);
+
+  // === 啟動 ===
+  reset();
+  loadSavedList();
+})();
+</script>
+</body>
+</html>

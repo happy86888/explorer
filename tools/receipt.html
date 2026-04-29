@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>收據產生器 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) { window.location.href = '../index.html'; }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  .rc-editor {
+    display: grid; grid-template-columns: 1fr; gap: 24px;
+  }
+  @media (min-width: 1024px) {
+    .rc-editor { grid-template-columns: 380px 1fr; }
+  }
+  .rc-form-pane {
+    background: var(--paper-card); border: 1px solid var(--line);
+    padding: 24px;
+    position: sticky; top: 20px;
+    max-height: calc(100vh - 80px); overflow-y: auto;
+  }
+  .rc-preview-pane {
+    background: white; border: 1px solid var(--line);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  }
+
+  .rc-form-section {
+    padding-bottom: 18px; margin-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .rc-form-section:last-of-type { border-bottom: none; }
+  .rc-form-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 0.2em; color: var(--gold-deep);
+    margin-bottom: 12px; text-transform: uppercase; font-weight: 700;
+  }
+  .rc-row { margin-bottom: 10px; }
+  .rc-row label {
+    display: block; font-size: 11px; color: var(--ink-mute);
+    margin-bottom: 4px;
+  }
+  .rc-row input, .rc-row textarea, .rc-row select {
+    width: 100%; padding: 8px 10px; background: var(--paper);
+    border: 1px solid var(--line); font-size: 13px;
+    font-family: 'Noto Serif TC', serif; color: var(--ink);
+  }
+  .rc-row input:focus, .rc-row textarea:focus, .rc-row select:focus {
+    outline: none; border-color: var(--gold);
+  }
+  .rc-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* 收據樣式 */
+  .rc-doc {
+    padding: 50px 60px;
+    font-family: 'Noto Serif TC', serif;
+    color: #1a1612;
+    min-height: 800px;
+    position: relative;
+    overflow: hidden;
+  }
+  .rc-doc::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 8px;
+    background: repeating-linear-gradient(
+      90deg,
+      #b8893a 0, #b8893a 24px,
+      transparent 24px, transparent 48px
+    );
+  }
+  .rc-doc::after {
+    content: ''; position: absolute;
+    bottom: 0; left: 0; right: 0; height: 8px;
+    background: repeating-linear-gradient(
+      90deg,
+      #b8893a 0, #b8893a 24px,
+      transparent 24px, transparent 48px
+    );
+  }
+
+  .rc-doc-header {
+    text-align: center; padding-bottom: 28px;
+    border-bottom: 2px solid #1a1612; margin-bottom: 32px;
+  }
+  .rc-doc-title {
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-style: italic; font-size: 56px; font-weight: 600;
+    color: #b8893a; line-height: 1; letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .rc-doc-title-cn {
+    font-size: 28px; font-weight: 700;
+    letter-spacing: 0.6em;
+    padding-left: 0.6em;
+    margin-bottom: 12px;
+  }
+  .rc-doc-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: #6b5e4f;
+    letter-spacing: 0.15em;
+  }
+
+  .rc-doc-row {
+    display: flex; padding: 14px 0;
+    border-bottom: 1px dashed #ebe0cc;
+    font-size: 14px;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .rc-doc-label {
+    flex: 0 0 100px;
+    font-weight: 700; color: #1a1612;
+    letter-spacing: 0.1em;
+  }
+  .rc-doc-value {
+    flex: 1; color: #3d342a;
+    line-height: 1.7;
+  }
+
+  .rc-doc-amount {
+    margin: 32px 0;
+    padding: 28px 32px;
+    background: linear-gradient(135deg, #1a1612 0%, #2a241d 100%);
+    color: #f4ede0;
+    border-left: 6px solid #b8893a;
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 16px;
+  }
+  .rc-doc-amount-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: #b8893a;
+    letter-spacing: 0.25em;
+  }
+  .rc-doc-amount-value {
+    font-family: 'Cormorant Garamond', 'Noto Serif TC', serif;
+    font-size: 36px; font-weight: 700;
+    color: #f4ede0;
+  }
+  .rc-doc-amount-words {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(184, 137, 58, 0.3);
+    font-size: 13px;
+    color: #ebe0cc;
+    line-height: 1.6;
+  }
+
+  .rc-doc-purpose {
+    background: #f4ede0; padding: 18px 22px;
+    margin: 24px 0;
+  }
+  .rc-doc-purpose-label {
+    font-size: 11px; color: #8a6224;
+    letter-spacing: 0.2em; margin-bottom: 6px;
+  }
+  .rc-doc-purpose-content {
+    font-size: 14px; line-height: 1.8;
+    white-space: pre-wrap;
+  }
+
+  .rc-doc-sign {
+    margin-top: 50px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  .rc-doc-sign-block {
+    text-align: center;
+    border-top: 1px solid #6b5e4f;
+    padding-top: 12px;
+  }
+  .rc-doc-sign-label {
+    font-size: 12px; color: #6b5e4f;
+    letter-spacing: 0.15em;
+  }
+  .rc-doc-sign-name {
+    margin-top: 18px; font-size: 15px;
+    font-weight: 700; min-height: 22px;
+  }
+
+  .rc-doc-footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 11px; color: #8a6224;
+    letter-spacing: 0.1em;
+  }
+
+  /* 列印 */
+  @media print {
+    @page { size: A5; margin: 10mm; }
+    body { background: white !important; }
+    .ce-app { background: white !important; }
+    .ce-nav, .ce-saved-section, .rc-form-pane,
+    .ce-tool-disclaimer, .ce-brian-quote { display: none !important; }
+    .rc-editor { display: block !important; }
+    .rc-preview-pane {
+      box-shadow: none !important; border: none !important;
+    }
+    .rc-doc { padding: 30px 40px !important; min-height: auto !important; }
+    .rc-doc-title { font-size: 42px !important; }
+  }
+
+  .rc-toolbar {
+    margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .rc-tool-btn {
+    flex: 1 1 auto; padding: 10px 14px;
+    background: var(--ink); color: var(--paper);
+    border: none; cursor: pointer;
+    font-family: 'Noto Serif TC', serif; font-size: 13px;
+    font-weight: 700; letter-spacing: 0.05em;
+    transition: background 0.2s;
+  }
+  .rc-tool-btn:hover { background: var(--gold-deep); }
+  .rc-tool-btn.secondary {
+    background: transparent; color: var(--ink); border: 1px solid var(--ink);
+  }
+  .rc-tool-btn.secondary:hover { background: var(--ink); color: var(--paper); }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <nav class="ce-nav">
+    <a href="../index.html" class="ce-nav-brand" style="text-decoration:none;color:inherit;cursor:pointer;" title="回首頁">
+      <div class="ce-nav-mark">老闆的接案學院</div>
+      <div class="ce-nav-title" style="opacity:0.85;">收據產生器</div>
+    </a>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新收據</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container" style="max-width:1400px;">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Saved Receipts</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <header class="ce-header" style="margin-bottom:24px;">
+        <div class="ce-eyebrow">Print-Ready Receipt</div>
+        <h1 class="ce-title">Receipt Builder</h1>
+        <div class="ce-title-cn">收據產生器</div>
+        <div class="ce-divider"></div>
+        <p class="ce-subtitle">
+          收到客戶款項,給對方一張正式收據。<br/>
+          自動轉中文大寫金額,可直接列印簽收。
+        </p>
+      </header>
+
+      <div style="display:flex;gap:10px;align-items:flex-start;padding:14px 18px;background:rgba(184, 137, 58, 0.08);border-left:3px solid var(--gold);margin-bottom:24px;font-size:13px;line-height:1.7;color:var(--ink-soft);">
+        <span style="font-size:16px;flex-shrink:0;">☕</span>
+        <span>純文件工具,不用 API Key、不消耗任何費用。<strong>注意:這是私人收據(收款證明),不是統一發票</strong>,正式抵稅憑證請使用統一發票或電子發票。</span>
+      </div>
+
+      <div class="rc-editor">
+        <div class="rc-form-pane">
+
+          <div class="rc-form-section">
+            <div class="rc-form-title">▶ 收據資訊</div>
+            <div class="rc-row-2col">
+              <div class="rc-row">
+                <label>收據編號</label>
+                <input type="text" id="rc-id" placeholder="R-2026-001" />
+              </div>
+              <div class="rc-row">
+                <label>日期</label>
+                <input type="date" id="rc-date" />
+              </div>
+            </div>
+          </div>
+
+          <div class="rc-form-section">
+            <div class="rc-form-title">▶ 收款金額</div>
+            <div class="rc-row">
+              <label>金額(NT$)</label>
+              <input type="number" id="rc-amount" placeholder="0" step="any" min="0" />
+            </div>
+          </div>
+
+          <div class="rc-form-section">
+            <div class="rc-form-title">▶ 雙方資訊</div>
+            <div class="rc-row">
+              <label>付款人(客戶)</label>
+              <input type="text" id="rc-payer" placeholder="例如:王小明 / 好客戶有限公司" />
+            </div>
+            <div class="rc-row">
+              <label>收款人(你)</label>
+              <input type="text" id="rc-payee" placeholder="例如:陳大方 / Brian 設計工作室" />
+            </div>
+          </div>
+
+          <div class="rc-form-section">
+            <div class="rc-form-title">▶ 收款事由</div>
+            <div class="rc-row">
+              <textarea id="rc-purpose" rows="3" placeholder="例如:&#10;品牌 LOGO 設計案尾款&#10;(報價單編號:Q-2026-001)"></textarea>
+            </div>
+          </div>
+
+          <div class="rc-form-section">
+            <div class="rc-form-title">▶ 付款方式</div>
+            <div class="rc-row">
+              <select id="rc-method">
+                <option>現金</option>
+                <option selected>銀行轉帳</option>
+                <option>ATM 轉帳</option>
+                <option>支票</option>
+                <option>LINE Pay</option>
+                <option>街口支付</option>
+                <option>信用卡</option>
+                <option>其他</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="rc-toolbar">
+            <button class="rc-tool-btn" id="rc-print-btn">列印 / 存 PDF</button>
+            <button class="rc-tool-btn secondary" id="rc-save-btn">儲存</button>
+          </div>
+        </div>
+
+        <div class="rc-preview-pane">
+          <div class="rc-doc" id="rc-preview">
+            <div class="rc-doc-header">
+              <div class="rc-doc-title">Receipt</div>
+              <div class="rc-doc-title-cn">收 據</div>
+              <div class="rc-doc-id" id="rcp-id">No. R-2026-001</div>
+            </div>
+
+            <div class="rc-doc-row">
+              <div class="rc-doc-label">日 期</div>
+              <div class="rc-doc-value" id="rcp-date">2026 年 04 月 29 日</div>
+            </div>
+
+            <div class="rc-doc-row">
+              <div class="rc-doc-label">付 款 人</div>
+              <div class="rc-doc-value" id="rcp-payer">—</div>
+            </div>
+
+            <div class="rc-doc-row">
+              <div class="rc-doc-label">付款方式</div>
+              <div class="rc-doc-value" id="rcp-method">—</div>
+            </div>
+
+            <div class="rc-doc-amount">
+              <div>
+                <div class="rc-doc-amount-label">金額 · AMOUNT</div>
+              </div>
+              <div class="rc-doc-amount-value" id="rcp-amount-num">NT$ 0</div>
+              <div class="rc-doc-amount-words" id="rcp-amount-words">新台幣 零元 整</div>
+            </div>
+
+            <div class="rc-doc-purpose">
+              <div class="rc-doc-purpose-label">收款事由 · PURPOSE</div>
+              <div class="rc-doc-purpose-content" id="rcp-purpose">—</div>
+            </div>
+
+            <div class="rc-doc-sign">
+              <div class="rc-doc-sign-block">
+                <div class="rc-doc-sign-label">收款人簽章</div>
+                <div class="rc-doc-sign-name" id="rcp-payee">—</div>
+              </div>
+              <div class="rc-doc-sign-block">
+                <div class="rc-doc-sign-label">付款人簽章</div>
+                <div class="rc-doc-sign-name">　</div>
+              </div>
+            </div>
+
+            <div class="rc-doc-footer">
+              此收據為雙方款項往來證明
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Brian 金句 -->
+      <div style="max-width:1100px;margin:60px auto 0;padding:0 24px;">
+        <div class="ce-brian-quote">
+          <div class="ce-brian-quote-eyebrow">★ BRIAN'S WISDOM</div>
+          <div class="ce-brian-quote-text">
+            收款不只是收錢,是收下一份「合作的承諾完成」。<br/>
+            一張正式收據,讓客戶知道你是專業在做這件事,<br/>
+            下次找你還是專業價,不是兼差價。
+          </div>
+          <div class="ce-brian-quote-source">— BRIAN ON 收款專業度</div>
+        </div>
+      </div>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · 收據產生器</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('receipts');
+  let currentId = null;
+
+  // === 中文大寫金額轉換 ===
+  function num2chinese(n) {
+    if (!n || n <= 0) return '零元 整';
+    const digits = ['零', '壹', '貳', '參', '肆', '伍', '陸', '柒', '捌', '玖'];
+    const units = ['', '拾', '佰', '仟'];
+    const bigUnits = ['', '萬', '億', '兆'];
+
+    n = Math.floor(n);
+    if (n === 0) return '零元 整';
+
+    let result = '';
+    let str = String(n);
+    let groups = [];
+
+    // 拆成 4 位一組
+    while (str.length > 0) {
+      groups.unshift(str.slice(-4));
+      str = str.slice(0, -4);
+    }
+
+    groups.forEach((group, idx) => {
+      const groupNum = parseInt(group);
+      if (groupNum === 0) {
+        if (result && !result.endsWith('零')) result += '零';
+        return;
+      }
+
+      let groupStr = '';
+      let started = false;
+      for (let i = 0; i < group.length; i++) {
+        const d = parseInt(group[i]);
+        const unitPos = group.length - i - 1;
+        if (d === 0) {
+          if (started && i < group.length - 1) groupStr += '零';
+        } else {
+          // 去除連續零
+          if (groupStr.endsWith('零')) groupStr = groupStr.slice(0, -1) + digits[0];
+          groupStr += digits[d] + units[unitPos];
+          started = true;
+        }
+      }
+      // 去尾零
+      while (groupStr.endsWith('零')) groupStr = groupStr.slice(0, -1);
+
+      result += groupStr + bigUnits[groups.length - 1 - idx];
+    });
+
+    // 去除多餘的零
+    result = result.replace(/零+/g, '零');
+    result = result.replace(/零$/, '');
+    if (!result) result = '零';
+
+    return '新台幣 ' + result + '元 整';
+  }
+
+  function fmt(n) {
+    if (isNaN(n)) return '0';
+    return Math.round(n).toLocaleString('zh-TW');
+  }
+
+  function todayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function fmtDateCN(s) {
+    if (!s) return '';
+    const [y, m, d] = s.split('-');
+    return `${y} 年 ${m} 月 ${d} 日`;
+  }
+  function autoId() {
+    const d = new Date();
+    return `R-${d.getFullYear()}-${String(Date.now()).slice(-4)}`;
+  }
+
+  const $ = id => document.getElementById(id);
+  const fields = {
+    id: $('rc-id'), date: $('rc-date'), amount: $('rc-amount'),
+    payer: $('rc-payer'), payee: $('rc-payee'),
+    purpose: $('rc-purpose'), method: $('rc-method')
+  };
+
+  function render() {
+    $('rcp-id').textContent = 'No. ' + (fields.id.value || autoId());
+    $('rcp-date').textContent = fmtDateCN(fields.date.value || todayStr());
+    $('rcp-payer').textContent = fields.payer.value || '—';
+    $('rcp-method').textContent = fields.method.value || '—';
+    const amt = Number(fields.amount.value) || 0;
+    $('rcp-amount-num').textContent = 'NT$ ' + fmt(amt);
+    $('rcp-amount-words').textContent = num2chinese(amt);
+    $('rcp-purpose').textContent = fields.purpose.value || '—';
+    $('rcp-payee').textContent = fields.payee.value || '—';
+  }
+
+  Object.values(fields).forEach(el => {
+    if (el) el.addEventListener('input', render);
+  });
+
+  $('rc-print-btn').addEventListener('click', () => window.print());
+
+  $('rc-save-btn').addEventListener('click', () => {
+    const data = {
+      id: currentId || ('rc_' + Date.now()),
+      input: {
+        id: fields.id.value, date: fields.date.value,
+        amount: fields.amount.value, payer: fields.payer.value,
+        payee: fields.payee.value, purpose: fields.purpose.value,
+        method: fields.method.value
+      },
+      createdAt: Date.now()
+    };
+    storage.save(data.id, data);
+    currentId = data.id;
+    loadSavedList();
+    alert('已儲存!');
+  });
+
+  function loadRecord(r) {
+    currentId = r.id;
+    Object.keys(fields).forEach(key => {
+      if (fields[key] && r.input[key] !== undefined) {
+        fields[key].value = r.input[key];
+      }
+    });
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function loadSavedList() {
+    const records = storage.list();
+    $('ce-saved-count').textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      $('ce-saved-list').innerHTML = `<div class="ce-empty-state">尚未儲存任何收據。</div>`;
+      return;
+    }
+    $('ce-saved-list').innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => `
+          <div class="ce-saved-card" data-id="${r.id}">
+            <button class="ce-saved-del" data-del="${r.id}">✕</button>
+            <div class="ce-saved-trade">${T.escapeHtml(r.input.payer || '未填')}</div>
+            <div class="ce-saved-target">${T.escapeHtml(r.input.id || '')} · NT$ ${fmt(r.input.amount)}</div>
+            <div class="ce-saved-meta">${T.formatDate(r.createdAt)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    $('ce-saved-list').querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) loadRecord(r);
+      });
+    });
+    $('ce-saved-list').querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除?')) {
+          storage.delete(btn.dataset.del);
+          loadSavedList();
+          if (currentId === btn.dataset.del) reset();
+        }
+      });
+    });
+  }
+
+  function reset() {
+    currentId = null;
+    Object.values(fields).forEach(el => {
+      if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) el.value = '';
+    });
+    fields.id.value = autoId();
+    fields.date.value = todayStr();
+    fields.method.value = '銀行轉帳';
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  $('ce-new-btn').addEventListener('click', reset);
+
+  reset();
+  loadSavedList();
+})();
+</script>
+</body>
+</html>
