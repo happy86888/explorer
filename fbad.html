@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="bingbot" content="noindex, nofollow">
+<title>FB 廣告產生器 · 老闆的接案學院</title>
+<script src="../js/auth.js"></script>
+<script>
+  if (!window.BrianAuth.isVerified()) { window.location.href = '../index.html'; }
+</script>
+<link rel="stylesheet" href="../css/tools.css">
+<style>
+  /* === FB 廣告版位 === */
+  .fb-ad-grid {
+    display: grid; grid-template-columns: 1fr; gap: 20px;
+    margin-bottom: 24px;
+  }
+  @media (min-width: 920px) { .fb-ad-grid { grid-template-columns: 1fr 1fr; } }
+
+  .fb-ad-card {
+    background: white; border: 1px solid var(--line);
+    overflow: hidden; transition: all 0.2s;
+  }
+  .fb-ad-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    transform: translateY(-2px);
+  }
+  .fb-ad-head {
+    background: var(--ink); color: var(--paper);
+    padding: 12px 18px; display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 8px;
+  }
+  .fb-ad-num {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 24px; font-weight: 600; color: var(--gold);
+  }
+  .fb-ad-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    background: var(--gold); color: var(--ink);
+    padding: 3px 9px; letter-spacing: 0.15em; font-weight: 700;
+  }
+  .fb-ad-body { padding: 18px 20px; }
+
+  .fb-ad-section {
+    margin-bottom: 14px; padding-bottom: 14px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .fb-ad-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .fb-ad-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; color: var(--gold-deep);
+    margin-bottom: 6px; font-weight: 700; text-transform: uppercase;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .fb-ad-label .copy-mini {
+    background: transparent; border: 1px solid var(--gold-deep);
+    color: var(--gold-deep); padding: 2px 8px;
+    font-size: 10px; cursor: pointer;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em;
+    transition: all 0.15s;
+  }
+  .fb-ad-label .copy-mini:hover {
+    background: var(--gold-deep); color: white;
+  }
+  .fb-ad-label .copy-mini.copied {
+    background: var(--moss); color: white; border-color: var(--moss);
+  }
+  .fb-ad-headline {
+    font-size: 17px; font-weight: 700; line-height: 1.5;
+    color: var(--ink);
+  }
+  .fb-ad-primary {
+    font-size: 14px; line-height: 1.85; color: var(--ink-soft);
+    white-space: pre-wrap;
+  }
+  .fb-ad-desc {
+    font-size: 13px; color: var(--ink-mute); line-height: 1.6;
+  }
+  .fb-ad-cta-btn {
+    display: inline-block;
+    background: #1877F2; color: white;
+    padding: 8px 18px; font-weight: 700;
+    font-size: 13px; letter-spacing: 0.05em;
+    border-radius: 4px;
+  }
+  .fb-ad-image {
+    background: linear-gradient(135deg, rgba(184, 137, 58, 0.08), rgba(168, 68, 42, 0.04));
+    border-left: 3px solid var(--gold);
+    padding: 12px 16px;
+  }
+  .fb-ad-image-prompt {
+    font-size: 12.5px; line-height: 1.7;
+    color: var(--ink-soft); margin-bottom: 8px;
+    font-style: italic;
+  }
+  .fb-ad-image-direction {
+    font-size: 12px; color: var(--ink-mute); line-height: 1.6;
+  }
+
+  /* tone / goal 按鈕群 */
+  .ce-pill-group {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;
+  }
+  .ce-pill {
+    background: var(--paper); border: 1px solid var(--line);
+    color: var(--ink-soft); padding: 6px 14px;
+    font-family: 'Noto Serif TC', serif; font-size: 13px;
+    cursor: pointer; transition: all 0.15s; font-weight: 500;
+  }
+  .ce-pill:hover { border-color: var(--gold); color: var(--ink); }
+  .ce-pill.active {
+    background: var(--gold); border-color: var(--gold);
+    color: var(--ink); font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div class="ce-app">
+
+  <!-- API Key Modal -->
+  <div class="ce-modal-overlay" id="ce-key-modal">
+    <div class="ce-modal">
+      <div class="ce-modal-eyebrow">FIRST-TIME SETUP</div>
+      <div class="ce-modal-title">Connect Your Brain</div>
+      <div class="ce-modal-cn">第一次使用,請設定你的 AI 大腦</div>
+      <div class="ce-modal-body"></div>
+      <input type="password" id="ce-api-key" placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxx" autocomplete="off" />
+      <div class="ce-modal-actions">
+        <button class="ce-modal-btn primary" id="ce-key-save">儲存並開始</button>
+      </div>
+      <div class="ce-modal-cost"></div>
+    </div>
+  </div>
+
+  <nav class="ce-nav">
+    <a href="../index.html" class="ce-nav-brand" style="text-decoration:none;color:inherit;cursor:pointer;" title="回首頁">
+      <div class="ce-nav-mark">老闆的接案學院</div>
+      <div class="ce-nav-title" style="opacity:0.85;">FB 廣告產生器</div>
+    </a>
+    <div class="ce-nav-actions">
+      <a href="../index.html" class="ce-nav-btn">← 工具列表</a>
+      <button class="ce-nav-btn" id="ce-settings-btn">設定 API Key</button>
+      <button class="ce-nav-btn" id="ce-new-btn">+ 新廣告</button>
+    </div>
+  </nav>
+
+  <main class="ce-main">
+    <div class="ce-container">
+
+      <section class="ce-saved-section" id="ce-saved-section">
+        <div class="ce-saved-header">
+          <div class="ce-saved-title">My Ad Drafts</div>
+          <div class="ce-saved-count" id="ce-saved-count">0 STORED</div>
+        </div>
+        <div id="ce-saved-list"></div>
+      </section>
+
+      <div id="ce-form-page">
+        <header class="ce-header">
+          <div class="ce-eyebrow">Facebook & IG Ad Generator</div>
+          <h1 class="ce-title">The Ad Forge</h1>
+          <div class="ce-title-cn">FB 廣告產生器</div>
+          <div class="ce-divider"></div>
+          <p class="ce-subtitle">
+            填好你要打廣告的產業 / 產品 / TA,<br/>
+            AI 一次幫你產出 <strong>3 組完整廣告組合</strong>:<br/>
+            主標、內文、副標、CTA、視覺方向、Midjourney prompt 全包。
+          </p>
+        </header>
+
+        <section class="ce-form-card">
+          <div class="ce-tool-disclaimer">
+            <span class="ce-tool-disclaimer-icon">☕</span>
+            <span>廣告寫得再好,沒人按也是白搭。投出去後記得分析數據再優化。執行前歡迎<a href="https://lin.ee/9Ba3XjY" target="_blank">加 Brian 的 LINE</a>聊聊。</span>
+          </div>
+
+          <form id="ce-form" class="ce-form-grid">
+            <div class="ce-field">
+              <label for="fb-industry">產業類別 <span style="color:var(--rust);">*</span></label>
+              <input type="text" id="fb-industry" placeholder="例如:咖啡店 / 室內設計 / 健身工作室 / 線上課程..." required />
+            </div>
+
+            <div class="ce-field">
+              <label for="fb-product">產品 / 服務名稱(選填)</label>
+              <input type="text" id="fb-product" placeholder="例如:手沖單品咖啡 / 老屋翻新方案" />
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="fb-audience">目標客群(TA)</label>
+              <textarea id="fb-audience" placeholder="例如:25-40 歲都會女性,重視生活品質、願意花錢買體驗,常逛 IG 找新店家。" style="min-height:70px;"></textarea>
+              <div class="ce-helper">越具體越好:年齡、性別、興趣、生活型態、消費力</div>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label>廣告語氣</label>
+              <div class="ce-pill-group" id="fb-tone-group">
+                <button type="button" class="ce-pill active" data-val="專業">專業</button>
+                <button type="button" class="ce-pill" data-val="活潑">活潑</button>
+                <button type="button" class="ce-pill" data-val="溫馨">溫馨</button>
+                <button type="button" class="ce-pill" data-val="幽默">幽默</button>
+                <button type="button" class="ce-pill" data-val="高端">高端</button>
+                <button type="button" class="ce-pill" data-val="熱血">熱血</button>
+                <button type="button" class="ce-pill" data-val="文青">文青</button>
+                <button type="button" class="ce-pill" data-val="懸疑">懸疑</button>
+              </div>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label>行銷目標</label>
+              <div class="ce-pill-group" id="fb-goal-group">
+                <button type="button" class="ce-pill active" data-val="提升轉換">提升轉換</button>
+                <button type="button" class="ce-pill" data-val="品牌曝光">品牌曝光</button>
+                <button type="button" class="ce-pill" data-val="收集名單">收集名單</button>
+                <button type="button" class="ce-pill" data-val="促銷活動">促銷活動</button>
+                <button type="button" class="ce-pill" data-val="新品上市">新品上市</button>
+                <button type="button" class="ce-pill" data-val="店面引流">店面引流</button>
+                <button type="button" class="ce-pill" data-val="活動報名">活動報名</button>
+              </div>
+            </div>
+
+            <div class="ce-field ce-full">
+              <label for="fb-extra">補充資訊(選填,提升精準度)</label>
+              <textarea id="fb-extra" placeholder="例如:&#10;・這次想推 9 月限定的中秋禮盒,定價 1280&#10;・主打台中文青族群、預算每月 5 萬廣告&#10;・最近被競品搶走客群,想差異化"></textarea>
+            </div>
+
+            <button type="submit" class="ce-submit" id="ce-submit-btn">
+              產生 3 組廣告 →
+            </button>
+          </form>
+        </section>
+      </div>
+
+      <section class="ce-results" id="ce-results"></section>
+
+      <!-- Brian 金句 -->
+      <div style="max-width:1100px;margin:60px auto 0;padding:0 24px;">
+        <div class="ce-brian-quote">
+          <div class="ce-brian-quote-eyebrow">★ BRIAN'S WISDOM</div>
+          <div class="ce-brian-quote-text">
+            爛廣告找客戶,好廣告讓客戶找你。<br/>
+            差別不在預算,在「你有沒有講出對方心裡的話」。<br/>
+            文案的功夫,是用「同理心」換來的。
+          </div>
+          <div class="ce-brian-quote-source">— BRIAN ON 廣告文案</div>
+        </div>
+      </div>
+
+      <footer style="text-align:center;margin-top:60px;padding-top:28px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-mute);letter-spacing:0.1em;">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--gold-deep);margin-bottom:6px;">From Solo to System</div>
+        <div>老闆的接案學院 · FB 廣告產生器</div>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<script src="../js/tools-common.js"></script>
+<script>
+(function() {
+  const T = window.BrianTools;
+  const storage = T.createStorage('fb_ads');
+  let currentId = null;
+  let selectedTone = '專業';
+  let selectedGoal = '提升轉換';
+
+  const form = document.getElementById('ce-form');
+  const formPage = document.getElementById('ce-form-page');
+  const resultsEl = document.getElementById('ce-results');
+  const submitBtn = document.getElementById('ce-submit-btn');
+  const savedListEl = document.getElementById('ce-saved-list');
+  const savedCountEl = document.getElementById('ce-saved-count');
+
+  T.setupApiKeyModal('ce-key-modal', 'ce-api-key', 'ce-key-save');
+  document.getElementById('ce-settings-btn').addEventListener('click', () => {
+    document.getElementById('ce-api-key').value = T.getApiKey();
+    document.getElementById('ce-key-modal').classList.add('show');
+  });
+  document.getElementById('ce-new-btn').addEventListener('click', () => {
+    showFormPage(); form.reset();
+    selectedTone = '專業'; selectedGoal = '提升轉換';
+    refreshPills(); currentId = null;
+  });
+
+  function showFormPage() {
+    formPage.classList.remove('ce-hidden');
+    resultsEl.innerHTML = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideFormPage() { formPage.classList.add('ce-hidden'); }
+
+  // pills 選擇
+  function refreshPills() {
+    document.querySelectorAll('#fb-tone-group .ce-pill').forEach(b => {
+      b.classList.toggle('active', b.dataset.val === selectedTone);
+    });
+    document.querySelectorAll('#fb-goal-group .ce-pill').forEach(b => {
+      b.classList.toggle('active', b.dataset.val === selectedGoal);
+    });
+  }
+  document.getElementById('fb-tone-group').addEventListener('click', e => {
+    if (e.target.classList.contains('ce-pill')) {
+      selectedTone = e.target.dataset.val; refreshPills();
+    }
+  });
+  document.getElementById('fb-goal-group').addEventListener('click', e => {
+    if (e.target.classList.contains('ce-pill')) {
+      selectedGoal = e.target.dataset.val; refreshPills();
+    }
+  });
+
+  loadSavedList();
+  if (!T.getApiKey()) document.getElementById('ce-key-modal').classList.add('show');
+
+  function loadSavedList() {
+    const records = storage.list();
+    savedCountEl.textContent = `${records.length} STORED`;
+    if (records.length === 0) {
+      savedListEl.innerHTML = `<div class="ce-empty-state">尚未儲存任何廣告草稿。</div>`;
+      return;
+    }
+    savedListEl.innerHTML = `
+      <div class="ce-saved-grid">
+        ${records.map(r => `
+          <div class="ce-saved-card" data-id="${r.id}">
+            <button class="ce-saved-del" data-del="${r.id}">✕</button>
+            <div class="ce-saved-trade">${T.escapeHtml(r.input.industry)}</div>
+            <div class="ce-saved-target">${T.escapeHtml(r.input.tone)} · ${T.escapeHtml(r.input.goal)}</div>
+            <div class="ce-saved-meta">${T.formatDate(r.createdAt)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    savedListEl.querySelectorAll('.ce-saved-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.ce-saved-del')) return;
+        const r = storage.load(card.dataset.id);
+        if (r) { currentId = r.id; hideFormPage(); renderResults(r); }
+      });
+    });
+    savedListEl.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm('確定刪除?')) {
+          storage.delete(btn.dataset.del); loadSavedList();
+          if (currentId === btn.dataset.del) { showFormPage(); currentId = null; }
+        }
+      });
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!T.getApiKey()) { document.getElementById('ce-key-modal').classList.add('show'); return; }
+
+    const input = {
+      industry: document.getElementById('fb-industry').value.trim(),
+      product: document.getElementById('fb-product').value.trim(),
+      audience: document.getElementById('fb-audience').value.trim(),
+      tone: selectedTone, goal: selectedGoal,
+      extra: document.getElementById('fb-extra').value.trim()
+    };
+    if (!input.industry) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '正在打造廣告...';
+    resultsEl.innerHTML = `
+      <div class="ce-loading">
+        <div class="ce-loading-text">Brian 正在從消費者心理切入,設計 3 組 FB 廣告...</div>
+        <div class="ce-loading-bar"></div>
+      </div>
+    `;
+
+    try {
+      const data = await generateAds(input);
+      const id = 'fb_' + Date.now();
+      const record = { id, input, data, createdAt: Date.now() };
+      storage.save(id, record);
+      currentId = id;
+      renderResults(record);
+      loadSavedList();
+    } catch (err) {
+      console.error(err);
+      resultsEl.innerHTML = `<div class="ce-error">產生失敗:${T.escapeHtml(err.message)}</div>`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '產生 3 組廣告 →';
+    }
+  });
+
+  async function generateAds(input) {
+    const prompt = `你是 Brian(老闆的接案學院創辦人),13 年實戰行銷經驗。
+你擅長從「消費者心理」設計 FB / IG 廣告,讓客戶按到流口水。
+
+請為以下狀況設計 3 組「結構不同」的 FB 廣告:
+
+【廣告需求】
+- 產業:${input.industry}
+- 產品/服務:${input.product || '(未指定,請從產業推測)'}
+- 目標客群:${input.audience || '(未指定,請推測這產業的典型客群)'}
+- 廣告語氣:${input.tone}
+- 行銷目標:${input.goal}
+- 補充資訊:${input.extra || '(無)'}
+
+【輸出 JSON,只回 JSON,不要 markdown code fence】
+
+{
+  "brian_note": "用 Brian 口吻寫 100-150 字的「文案心法」,告訴接案者:這個產業 + 客群最有效的廣告角度是什麼。",
+
+  "ads": [
+    {
+      "angle": "這組廣告的切入角度(例如:痛點放大型 / 故事感型 / 數據說服型 / 反差驚奇型 / 急迫稀缺型)",
+      "headline": "主標題(20-30 字,要有 hook,讓人想停下來)",
+      "primary": "貼文內文(150-250 字,有開頭鉤子、中間痛點/利益、結尾 CTA。可以用換行讓閱讀更輕鬆,emoji 適量但不過度)",
+      "description": "副標 / 摘要(20-40 字,補強主標未說的關鍵點)",
+      "cta": "CTA 按鈕(從 FB 標準 CTA 選一個適合的:了解詳情 / 立即購買 / 預約諮詢 / 取得優惠 / 索取資料 / 立即報名 / 聯絡我們)",
+      "image_prompt": "Midjourney/AI 繪圖的 prompt(英文,30-60 字,描述視覺主體、構圖、光線、風格,結尾加 --ar 1:1)",
+      "image_direction": "如果要實拍/找素材,給攝影/挑圖的方向建議(中文 80-120 字)"
+    }
+  ],
+
+  "ab_testing_tips": [
+    "A/B 測試建議 1(具體要測什麼變數)",
+    "建議 2",
+    "建議 3"
+  ]
+}
+
+【三組廣告的硬性要求】
+
+❌ 不接受:三組只是換不同字句,本質相同
+✅ 必須:三組「切入角度完全不同」
+
+建議的 3 種角度組合(挑 3 個不同的):
+1. 痛點放大型 — 戳對方痛、放大焦慮、給解方
+2. 故事感型 — 講一個真實/虛構的客戶故事,從故事帶到產品
+3. 數據說服型 — 用數字、案例、社會證明說服
+4. 反差驚奇型 — 製造意外、顛覆常識的開頭
+5. 急迫稀缺型 — 限時、限量、不買吃虧
+6. 提問互動型 — 用問題勾起好奇/共鳴
+7. 比較對照型 — vs 對手 / vs 過去 / vs 沒用你產品的人
+
+【關於語氣「${input.tone}」的指引】
+- 專業:像顧問講話,有理性論述、有依據
+- 活潑:有 emoji、口語、好像在跟朋友聊
+- 溫馨:像家人寫信,有溫度有故事
+- 幽默:會玩梗、有意外、讓人笑
+- 高端:用詞精準、留白多、不喧鬧
+- 熱血:有節奏、有口號、能煽動
+- 文青:押韻、優美、像詩
+- 懸疑:留謎、引發好奇、最後揭曉
+
+【關於目標「${input.goal}」的 CTA】
+- 提升轉換 → 立即購買 / 取得優惠
+- 品牌曝光 → 了解更多 / 認識我們
+- 收集名單 → 索取資料 / 訂閱電子報
+- 促銷活動 → 立即搶購 / 領取優惠
+- 新品上市 → 搶先體驗 / 立即預約
+- 店面引流 → 預約到店 / 立即預訂
+- 活動報名 → 立即報名 / 加入活動
+
+【硬核要求】
+- 全部繁體中文,台灣用語(不要中國用語)
+- headline 不要寫死板的「○○○就找我們」這種爛廣告
+- primary 內文要寫到讓人想往下滑而不是看一眼就過
+- image_prompt 用英文寫,具體可餵給 Midjourney
+- 不要寫「您好」開頭,FB 廣告不需要打招呼
+- 三組廣告 angle 必須是 3 種不同類型`;
+
+    return await T.callClaude(prompt, { parseJson: true, maxTokens: 5000 });
+  }
+
+  function renderResults(record) {
+    hideFormPage();
+    const d = record.data;
+
+    let html = `
+      <div class="ce-result-toolbar">
+        <div class="ce-result-info">
+          <strong>${T.escapeHtml(record.input.industry)}</strong> · ${T.escapeHtml(record.input.tone)} · ${T.escapeHtml(record.input.goal)}
+        </div>
+        <div class="ce-result-actions">
+          <button class="ce-action-btn" id="ce-back-btn">+ 新廣告</button>
+        </div>
+      </div>
+
+      ${d.brian_note ? `
+        <div class="ce-brian-note">
+          <div class="ce-brian-note-label">文案心法 · BRIAN'S NOTE</div>
+          <div class="ce-brian-note-body">${T.escapeHtml(d.brian_note)}</div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-section-title">3 Ad Variations</div>
+        <div class="ce-section-cn">3 組廣告(角度不同 · 可直接用)</div>
+        <div class="fb-ad-grid">
+          ${(d.ads || []).map((ad, i) => renderAd(ad, i)).join('')}
+        </div>
+      </div>
+
+      ${(d.ab_testing_tips && d.ab_testing_tips.length) ? `
+        <div class="ce-result-section">
+          <div class="ce-section-title">A/B Testing</div>
+          <div class="ce-section-cn">A/B 測試建議</div>
+          <div class="ce-block">
+            <div class="ce-block-body">
+              <ul style="list-style:none;padding:0;">
+                ${d.ab_testing_tips.map(t => `<li style="padding:8px 0 8px 20px;position:relative;font-size:14px;line-height:1.7;border-bottom:1px dashed var(--line);"><span style="position:absolute;left:0;color:var(--gold-deep);">▶</span> ${T.escapeHtml(t)}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      <div class="ce-result-section">
+        <div class="ce-block">
+          <div class="ce-block-header"><div class="ce-block-title">進階深挖</div></div>
+          <div class="ce-block-body">
+            <div class="ce-deep-buttons">
+              <button class="ce-deep-btn btn-primary" data-action="more-angles">🎯 給我 3 組「不同切角」的版本</button>
+              <button class="ce-deep-btn btn-rust" data-action="competitor-angle">分析「競品最常做什麼角度」我該怎麼差異化</button>
+              <button class="ce-deep-btn" data-action="budget-plan">設計這檔的廣告預算分配</button>
+              <button class="ce-deep-btn" data-action="landing-copy">幫我寫對應的「落地頁文案」</button>
+              <a href="https://lin.ee/9Ba3XjY" target="_blank" rel="noopener" class="ce-deep-btn ce-deep-line-btn">💬 加 Brian 的 LINE 一對一聊</a>
+            </div>
+            <div class="ce-deep-result" id="ce-deep-result"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    resultsEl.innerHTML = html;
+    bindResultEvents(record);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderAd(ad, i) {
+    const escapeForData = (s) => (s || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    return `
+      <div class="fb-ad-card">
+        <div class="fb-ad-head">
+          <span class="fb-ad-num">0${i+1}</span>
+          <span class="fb-ad-tag">${T.escapeHtml(ad.angle || 'AD')}</span>
+        </div>
+        <div class="fb-ad-body">
+          <div class="fb-ad-section">
+            <div class="fb-ad-label">
+              主標題 · HEADLINE
+              <button class="copy-mini" data-copy="${escapeForData(ad.headline)}">複製</button>
+            </div>
+            <div class="fb-ad-headline">${T.escapeHtml(ad.headline || '')}</div>
+          </div>
+
+          <div class="fb-ad-section">
+            <div class="fb-ad-label">
+              貼文內文 · PRIMARY TEXT
+              <button class="copy-mini" data-copy="${escapeForData(ad.primary)}">複製</button>
+            </div>
+            <div class="fb-ad-primary">${T.escapeHtml(ad.primary || '')}</div>
+          </div>
+
+          <div class="fb-ad-section">
+            <div class="fb-ad-label">
+              副標 · DESCRIPTION
+              <button class="copy-mini" data-copy="${escapeForData(ad.description)}">複製</button>
+            </div>
+            <div class="fb-ad-desc">${T.escapeHtml(ad.description || '')}</div>
+          </div>
+
+          <div class="fb-ad-section">
+            <div class="fb-ad-label">CTA 按鈕</div>
+            <span class="fb-ad-cta-btn">${T.escapeHtml(ad.cta || '了解更多')}</span>
+          </div>
+
+          <div class="fb-ad-section">
+            <div class="fb-ad-label">
+              ▶ 視覺方向 · CREATIVE DIRECTION
+              <button class="copy-mini" data-copy="${escapeForData(ad.image_prompt)}">複製 Prompt</button>
+            </div>
+            <div class="fb-ad-image">
+              <div class="fb-ad-image-prompt">${T.escapeHtml(ad.image_prompt || '')}</div>
+              <div class="fb-ad-image-direction">📷 ${T.escapeHtml(ad.image_direction || '')}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function bindResultEvents(record) {
+    document.getElementById('ce-back-btn').addEventListener('click', () => {
+      showFormPage(); currentId = null; form.reset();
+      selectedTone = '專業'; selectedGoal = '提升轉換'; refreshPills();
+    });
+
+    document.querySelectorAll('.copy-mini').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = btn.dataset.copy.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+        navigator.clipboard?.writeText(text).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = '✓ 已複製'; btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+        });
+      });
+    });
+
+    document.querySelectorAll('.ce-deep-btn[data-action]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const action = btn.dataset.action;
+        const resultEl = document.getElementById('ce-deep-result');
+        btn.disabled = true; const orig = btn.textContent;
+        btn.textContent = '思考中...';
+        resultEl.classList.add('show');
+        resultEl.textContent = 'Brian 正在分析...';
+        try { resultEl.textContent = await deepDive(record, action); }
+        catch (err) { resultEl.textContent = '產生失敗:' + err.message; }
+        finally { btn.disabled = false; btn.textContent = orig; }
+      });
+    });
+  }
+
+  async function deepDive(record, action) {
+    const prompts = {
+      'more-angles': `學員已經看過 3 組廣告了,現在再給他 3 組「完全不同切角」的版本。
+
+要求:
+- 每組廣告必須跟前面的角度都不同
+- 給標題、內文(150-200 字)、CTA
+- 不需要視覺方向,專注在文案本身
+- 結尾簡短說每組「適合什麼狀況用」
+
+格式:
+【廣告 4 · OO 型】
+標題:...
+內文:...
+CTA:...
+適用:...
+
+【廣告 5】...
+【廣告 6】...`,
+
+      'competitor-angle': `請分析這個產業(${record.input.industry})的「典型廣告角度」:
+
+1. 列出 3 個競品最常用的廣告切角(具體舉例)
+2. 為什麼這些切角「對某些客戶有效但已經麻木」
+3. 給 2 個「逆向操作 / 差異化」的廣告策略
+4. 寫 1 個具體可用的「差異化廣告開頭」(50-80 字)
+
+寫得像 Brian 在分享,不要寫成報告。`,
+
+      'budget-plan': `為這檔廣告設計預算分配策略。
+
+要求:
+1. 假設預算 1 萬 / 5 萬 / 10 萬,各該怎麼分配給 3 組廣告
+2. 測試期 vs 放大期的預算比例
+3. 哪些指標達標就該追加預算、哪些就該停損
+4. 受眾分配建議(廣告層級分配:興趣 vs 自訂 vs 類似)
+
+具體、可執行,不要空話。`,
+
+      'landing-copy': `為這個 FB 廣告設計對應的「落地頁文案結構」。
+
+學員點下 CTA 後會看到的頁面,結構:
+1. Hero 區(主標 + 副標 + 視覺方向)
+2. 痛點區(3 個讀者的痛)
+3. 解方區(你的產品如何解決)
+4. 信任區(見證 / 數據 / 媒體報導)
+5. FAQ(3-5 個)
+6. 最終 CTA
+
+每段寫出實際文案,不是寫「此處放...」。
+落地頁文案要跟 FB 廣告的調性連貫。`
+    };
+
+    const prompt = `你是 Brian。
+案件背景:
+- 產業:${record.input.industry}
+- 產品:${record.input.product || '未指定'}
+- TA:${record.input.audience || '未指定'}
+- 語氣:${record.input.tone}
+- 目標:${record.input.goal}
+
+任務:${prompts[action]}
+
+繁體中文,台灣用語,直接輸出。`;
+
+    return await T.callClaude(prompt, { maxTokens: 3500 });
+  }
+})();
+</script>
+</body>
+</html>
