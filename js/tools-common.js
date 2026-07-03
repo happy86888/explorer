@@ -91,7 +91,7 @@
   // === Claude API ===
   async function callClaudeInternal(prompt, options, apiKey) {
     const body = {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: options.maxTokens || 4000,
       messages: options.messages || [{ role: 'user', content: prompt }]
     };
